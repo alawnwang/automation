@@ -3,7 +3,7 @@ import ipaddress
 import pypinyin
 from math import ceil
 
-db = pymysql.connect(host='119.91.102.106',user='root',password='uz8954UZN',database='building_information')
+db = pymysql.connect(host='0.0.0.0',user='root',password='11111',database='building_information')
 cursor = db.cursor(cursor=pymysql.cursors.DictCursor,)
 
 sql = 'show tables'
@@ -131,4 +131,11 @@ def generation_device_name():
         devicelist.append(floor_device_dict)
     return devicelist
 
+def get_ip_planning_info():
+    for entry in ip_planning(project):
+        if entry['description'] == 'MGT':
+            print(entry)
+        else:
+            pass
 
+get_ip_planning_info()
