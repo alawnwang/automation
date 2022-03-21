@@ -1,9 +1,11 @@
+import ipaddr
 import pymysql
 import ipaddress
 import pypinyin
+import config_template
 from math import ceil
 
-db = pymysql.connect(host='0.0.0.0',user='root',password='11111',database='building_information')
+db = pymysql.connect(host='111',user='222',password='333',database='building_information')
 cursor = db.cursor(cursor=pymysql.cursors.DictCursor,)
 
 sql = 'show tables'
@@ -48,7 +50,7 @@ def manage_ip():
         if entry['function'] == '网络设备管理':
             mgt_network = ipaddress.IPv4Network(entry['network'])
             for ip in mgt_network:
-                mgt_ip_list.append(ip)
+                mgt_ip_list.append((ip,mgt_network.netmask))
                 doa_mgt = mgt_ip_list[1:4]
                 d_xoa_mgt = mgt_ip_list[4:18]
                 e_xoa_mgt = mgt_ip_list[18:32]
@@ -56,6 +58,7 @@ def manage_ip():
                 w_ewl_mgt = mgt_ip_list[59:63]
             mgt_dict = {'floor':entry['floor'],'doa_mgt':doa_mgt,'d_xoa_mgt':d_xoa_mgt,'e_xoa_mgt':e_xoa_mgt,'v_evp_mgt':v_evp_mgt,'w_ewl_mgt':w_ewl_mgt}
             all_mgt_list.append(mgt_dict)
+    print(all_mgt_list)
     return all_mgt_list
 
 def device_prefix(city,building_name):
@@ -84,7 +87,6 @@ def device_number_dict():
     for entry in endpoint(project):
         device_number_dict = {'floor':entry['floor'],'bdr':entry['bdr']}
         device_number_dict.update(device_number(entry['dpoint'],entry['epoint'],entry['vpoint'],entry['area']))
-            # .update(device_number(entry['dpoint'],entry['epoint'],entry['vpoint'],entry['area']))
         device_number_dict_list.append(device_number_dict)
     return device_number_dict_list
 
@@ -93,7 +95,6 @@ def device_number_dict():
 
 
 def get_equipment_type():
-    # for di in device_number_dict():
     type_list = []
     for entry in equipment_type(project):
         if entry['supplier'] == 'cisco':
@@ -127,15 +128,45 @@ def generation_device_name():
         e_xoa_name = ['-'.join((generation_prefix(),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',entry['xoa'],str(num).rjust(2,'0'))) for num in range (1,entry['e_xoa']+1)]
         v_evp_name = ['-'.join((generation_prefix(),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'V',entry['evp'],str(num).rjust(2,'0'))) for num in range (1,entry['v_evp']+1)]
         v_ewl_name = ['-'.join((generation_prefix(),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'V',entry['ewl'],str(num).rjust(2,'0'))) for num in range (1,entry['w_ewl']+1)]
-        floor_device_dict = {'DDOA':d_doa_name,'EDOA':e_doa_name,'DXOA':d_xoa_name,'EXOA':e_xoa_name,'VEVP':v_evp_name,'VEWL':v_ewl_name}
+        floor_device_dict = {'floor':entry['floor'],'DDOA':d_doa_name,'EDOA':e_doa_name,'DXOA':d_xoa_name,'EXOA':e_xoa_name,'VEVP':v_evp_name,'VEWL':v_ewl_name}
         devicelist.append(floor_device_dict)
     return devicelist
 
 def get_ip_planning_info():
+    device_mgt_list = []
     for entry in ip_planning(project):
         if entry['description'] == 'MGT':
-            print(entry)
+            ip_list = [ip for ip in ipaddr.IPv4Network(entry['network'])]
+            d_doa_mgt = ip_list[2]
+            e_doa_mgt = ip_list[3]
+            d_xoa_mgt = ip_list[4:18]
+            e_xoa_mgt = ip_list[18:32]
+            v_evp_mgt = ip_list[32:46]
+            w_ewl_mgt = ip_list[59:63]
+            device_mgt_list.append({'floor':entry['floor'],'DDOA':d_doa_mgt,'EDOA':e_doa_mgt,'DXOA':d_xoa_mgt,'EXOA':e_xoa_mgt,'VEVP':v_evp_mgt,'VEWL':w_ewl_mgt})
         else:
             pass
+    return device_mgt_list
 
-get_ip_planning_info()
+
+for n,m in zip(get_ip_planning_info(),generation_device_name()):
+    print(n['DDOA'],m['DDOA'])
+    print(n['EDOA'], m['EDOA'])
+    # for D in list(zip((n['DXOA']),m['DXOA'])):
+    #     print(D)
+    #     print(D[0],D[1],config_template.cisco.xoa_c9300_port()[0],config_template.cisco.xoa_c9300_port()[1])
+    # for E in list(zip((n['EXOA']), m['EXOA'])):
+    #     print(E[0],E[1],config_template.cisco.xoa_c9300_port()[0],config_template.cisco.xoa_c9300_port()[1])
+    # for V in list(zip((n['VEVP']), m['VEVP'])):
+    #     print(V[0],V[1],config_template.cisco.evp_c2960_port()[0],config_template.cisco.evp_c2960_port()[1])
+    # for W in list(zip((n['VEWL']), m['VEWL'])):
+    #     print(W[0],W[1],config_template.cisco.ewl_c3650_fd_port()[0],config_template.cisco.ewl_c3650_fd_port()[1])
+
+
+    # EXOA = [EXOA for E in list(zip((n['EXOA']),m['EXOA'])) for EXOA in E]
+    # VEVP = [VEVP for V in list(zip((n['VEVP']),m['VEVP'])) for VEVP in V]
+    # VEWL = [VEWL for W in list(zip((n['VEWL']),m['VEWL'])) for VEWL in W]
+
+    # print(EXOA)
+    # print(VEVP)
+    # print(VEWL)
