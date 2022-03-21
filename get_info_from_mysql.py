@@ -9,7 +9,7 @@ import jinja2
 
 
 
-db = pymysql.connect(host='119.91.102.106',user='root',password='uz8954UZN',database='building_information')
+db = pymysql.connect(host='111',user='222',password='333',database='444')
 
 cursor = db.cursor(cursor=pymysql.cursors.DictCursor,)
 
