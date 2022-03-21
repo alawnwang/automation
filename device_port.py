@@ -15,10 +15,13 @@ class cisco:
     #     up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,9)]
     #     interconnect = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (47,49)]
     def doa_c9300_port():
-        down_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (1,47)]
-        up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,9)]
+        ddown_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (1,15)]
+        edown_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (15,29)]
+        vdown_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (29,43)]
+        wdown_link = ['TenGigabitEthernet1/1/' + str(portnum) for portnum in range(5, 9)]
+        up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,5)]
         interconnect = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (47,49)]
-        return {'downlink':down_link,'uplink':up_link,'interconnect':interconnect}
+        return {'ddownlink':ddown_link,'edownlink':edown_link,'vdownlink':vdown_link,'wdownlink':wdown_link,'uplink':up_link,'interconnect':interconnect}
     def xoa_c9300_port():
         up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,9)]
         return up_link

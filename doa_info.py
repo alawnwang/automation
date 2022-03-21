@@ -3,27 +3,34 @@ import device_name_prefix
 import ipaddress
 import device_port
 
-def generation_coa_name(project):
-    coa_prefix = '-'.join((device_name_prefix.device_prefix(mysql_table_query.workplace_info(project)[0]['city'],mysql_table_query.workplace_info(project)[0]['building_name']),'BDR'+str(mysql_table_query.workplace_info(project)[0]['core_bdr_floor'])+'01'))
-    return coa_prefix
+def generation_doa_name(project):
+    doa_prefix = '-'.join((device_name_prefix.device_prefix(mysql_table_query.workplace_info(project)[0]['city'],mysql_table_query.workplace_info(project)[0]['building_name']),'BDR'+str(mysql_table_query.workplace_info(project)[0]['core_bdr_floor'])+'01'))
+    return doa_prefix
 
-def get_coa_type(project):
+def get_doa_type(project):
     for entry in mysql_table_query.equipment_type(project):
-        if entry['function'] == 'coa':
-            coa_type = entry['equipment_type']
-            return coa_type
+        if entry['function'] == 'doa':
+            doa_type = entry['equipment_type']
+            return doa_type
 
-def get_coa_port(device_type):
-    if device_type == '4500-16':
-        coa_port = device_port.cisco.coa_c4500x_16_port()
-        return coa_port
+def get_doa_port(device_type):
+    if device_type == '9300':
+        doa_port = device_port.cisco.doa_c9300_port()
+        return doa_port
 
-def get_coa_info(project,device_type):
-    for enrty in mysql_table_query.ip_planning(project):
-        if enrty['function'] == '核心网段':
-            mcoa_ip = ipaddress.IPv4Network(enrty['network'])[1]
-            scoa_ip = ipaddress.IPv4Network(enrty['network'])[2]
-            mgt_dict = {'floor':enrty['floor'],'MCOA':('-'.join((generation_coa_name(project),'A01',get_coa_type(project),'COA','01')))
-                ,'MMGTIP':str(mcoa_ip),'SCOA':('-'.join((generation_coa_name(project),'A02',get_coa_type(project),'COA','01'))),'SMGTIP':str(scoa_ip),'port_assign':get_coa_port(device_type)}
-            return mgt_dict
+def get_doa_info(project,device_type):
+    all_mgt_list = []
+    for entry in mysql_table_query.ip_planning(project):
+        mgt_ip_list = []
+        if entry['description'] == 'MGT':
+            for ip in ipaddress.IPv4Network(entry['network']):
+                mgt_ip_list.append((ip, ipaddress.IPv4Network(entry['network']).netmask))
+        else:
+            continue
+        d_doa_mgt = mgt_ip_list[2]
+        e_doa_mgt = mgt_ip_list[3]
+        all_mgt_list.append(
+            {'floor': entry['floor'],'hsrp':{'ip':str(mgt_ip_list[1][0]),'netmask':str(mgt_ip_list[1][1])},'DDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'D',get_doa_type(project),'DOA','01')),'mgtip':str(d_doa_mgt[0]),'netmask':str(d_doa_mgt[1])}, 'EDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',get_doa_type(project),'DOA','01')),'mgtip':str(e_doa_mgt[0]),'netmask':str(e_doa_mgt[1])},'prot_assign':get_doa_port(device_type)})
+    return all_mgt_list
+
 

@@ -24,6 +24,6 @@ def get_coa_info(project,device_type):
             mcoa_ip = ipaddress.IPv4Network(enrty['network'])[1]
             scoa_ip = ipaddress.IPv4Network(enrty['network'])[2]
             mgt_dict = {'floor':enrty['floor'],'MCOA':('-'.join((generation_coa_name(project),'A01',get_coa_type(project),'COA','01')))
-                ,'MMGTIP':str(mcoa_ip),'SCOA':('-'.join((generation_coa_name(project),'A02',get_coa_type(project),'COA','01'))),'SMGTIP':str(scoa_ip),'port_assign':get_coa_port(device_type)}
+                ,'MMGTIP':{'ip':str(mcoa_ip),'netmask':'255.255.255.255'},'SCOA':('-'.join((generation_coa_name(project),'A02',get_coa_type(project),'COA','01'))),'SMGTIP':{'ip':str(scoa_ip),'netmask':'255.255.255.255'},'port_assign':get_coa_port(device_type)}
             return mgt_dict
 
