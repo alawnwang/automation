@@ -11,7 +11,7 @@ def generation_coa_name(project):
 def get_coa_type(project):
     for entry in mysql_table_query.equipment_type(project):
         if entry['function'] == 'coa':
-            coa_type = entry['equipment_type']
+            coa_type = entry['name']
             return coa_type
 
 def get_coa_info(project):

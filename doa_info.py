@@ -11,7 +11,7 @@ def generation_doa_name(project):
 def get_doa_type(project):
     for entry in mysql_table_query.equipment_type(project):
         if entry['function'] == 'doa':
-            doa_type = entry['equipment_type']
+            doa_type = entry['name']
             return doa_type
 
 def get_doa_port(device_type):

@@ -37,7 +37,7 @@ def get_equipment_type(project):
             equipment_type_acronym = 'H'
         elif entry['supplier'] == 'aruba':
             equipment_type_acronym = 'A'
-        type_function = equipment_type_acronym+entry['equipment_type']+'-'+str(entry['function']).upper()
+        type_function = equipment_type_acronym+entry['name']+'-'+str(entry['function']).upper()
         type_dict = {entry['function']:type_function}
         type_list.append(type_dict)
     return type_list
