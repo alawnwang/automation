@@ -1,2 +1,12 @@
-dictionary= {'floor': 15, 'bdr': 1, 'number': {'doa': 2, 'd_xoa': 7, 'e_xoa': 7, 'v_evp': 7, 'w_ewl': 1}}
-dictionary.update({'coa':'4500'})
+import mysql_table_query
+project = input('项目名称: ')
+def test():
+    for type in mysql_table_query.equipment_type(project=project):
+        if type['function'] == 'xoa':
+            xoa = type['equipment_type']
+        elif type['function'] == 'evp':
+            evp = type['equipment_type']
+        elif type['function'] == 'ewl':
+            ewl = type['equipment_type']
+    return {'xoa':xoa,'evp':evp,'ewl':ewl}
+print(test())

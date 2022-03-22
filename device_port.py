@@ -1,5 +1,5 @@
-class cisco:
-    def coa_c4500x_16_port():
+def cisco(type):
+    if type == '4500_16':
         down_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (1,11)]
         cvp = 'TenGigabitEthernet1/1/12'
         up_link = 'TenGigabitEthernet1/1/11'
@@ -14,7 +14,7 @@ class cisco:
     #     down_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (1,47)]
     #     up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,9)]
     #     interconnect = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (47,49)]
-    def doa_c9300_port():
+    elif type == '9300_48un':
         ddown_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (1,15)]
         edown_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (15,29)]
         vdown_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (29,43)]
@@ -22,16 +22,16 @@ class cisco:
         up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,5)]
         interconnect = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (47,49)]
         return {'ddownlink':ddown_link,'edownlink':edown_link,'vdownlink':vdown_link,'wdownlink':wdown_link,'uplink':up_link,'interconnect':interconnect}
-    def xoa_c9300_port():
+    elif type == '9300_48t':
         up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,9)]
         return up_link
-    def evp_c2960_port():
+    elif type ==  '2960_pst':
         uplink =['GigabitEthernet0/'+str(portnum) for portnum in range (3,5)]
         return uplink
-    def ewl_c3650_fs_port():
+    elif type == '3650_fs':
         uplink = ['GigabitEthernet1/0/' + str(portnum) for portnum in range(45, 49)]
         return uplink
-    def ewl_c3650_fd_port():
+    elif type == '3650_fd':
         uplink = ['TenGigabitEthernet1/1/' + str(portnum) for portnum in range(3, 5)]
         return uplink
     # def normal_config(self):

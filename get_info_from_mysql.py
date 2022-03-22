@@ -4,7 +4,6 @@ import pypinyin
 import device_port
 from math import ceil
 import config_template
-import jinja2
 
 
 
@@ -23,6 +22,9 @@ project = input('项目名称:')
 def get_acronym(str_data):
     return ''.join([i[0][0] for i in pypinyin.pinyin(str_data,style=pypinyin.NORMAL)])
 
+def device_prefix(city,building_name):
+    device_prefix = '-'.join((get_acronym(city).upper(),get_acronym(building_name).upper()))
+    return device_prefix
 
 def workplace_info(project):
     workplace_info = "select * from workplace_information where project = '%s'" %project
@@ -110,7 +112,6 @@ def device_number_dict():
         device_number_dict.update(device_number(entry['dpoint'],entry['epoint'],entry['vpoint'],entry['area']))
         device_number_dict_list.append(device_number_dict)
     return device_number_dict_list
-device_number_dict()
 #
 #
 #
@@ -157,29 +158,29 @@ def generation_floor_device_name():
         e_xoa_name = ['-'.join((generation_prefix(),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',entry['xoa'],str(num).rjust(2,'0'))) for num in range (1,entry['e_xoa']+1)]
         v_evp_name = ['-'.join((generation_prefix(),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'V',entry['evp'],str(num).rjust(2,'0'))) for num in range (1,entry['v_evp']+1)]
         v_ewl_name = ['-'.join((generation_prefix(),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'V',entry['ewl'],str(num).rjust(2,'0'))) for num in range (1,entry['w_ewl']+1)]
-        floor_device_dict = {'floor':entry['floor'],'MCOA':m_coa,'SCOA':s_coa,'DDOA':d_doa_name,'EDOA':e_doa_name,'DXOA':d_xoa_name,'EXOA':e_xoa_name,'VEVP':v_evp_name,'VEWL':v_ewl_name}
+        floor_device_dict = {'floor':entry['floor'],'DDOA':d_doa_name,'EDOA':e_doa_name,'DXOA':d_xoa_name,'EXOA':e_xoa_name,'VEVP':v_evp_name,'VEWL':v_ewl_name}
         devicelist.append(floor_device_dict)
     return devicelist
 
 #
 #
-# for n,m in zip(manage_ip(),generation_device_name()):
-#     DDOA = (str(n['DDOA'][0]),str(n['DDOA'][1]),m['DDOA'],device_port.cisco.doa_c9300_port()['uplink'][0],device_port.cisco.doa_c9300_port()['uplink'][1])
-#     EDOA = (str(n['EDOA'][0]),str(n['EDOA'][1]),m['EDOA'],device_port.cisco.doa_c9300_port()['uplink'][0],device_port.cisco.doa_c9300_port()['uplink'][1])
-#     for D in list(zip((n['DXOA']),m['DXOA'])):
-#         DXOA = (str(D[0][0]),str(D[0][1]),D[1],device_port.cisco.xoa_c9300_port()[0],device_port.cisco.xoa_c9300_port()[1])
-#     for E in list(zip((n['EXOA']), m['EXOA'])):
-#         EXOA = (str(E[0][0]),str(E[0][1]),E[1],device_port.cisco.xoa_c9300_port()[0],device_port.cisco.xoa_c9300_port()[1])
-#     for V in list(zip((n['VEVP']), m['VEVP'])):
-#         VEVP = (str(V[0][0]),str(V[0][1]),V[1],device_port.cisco.evp_c2960_port()[0],device_port.cisco.evp_c2960_port()[1])
-#     for W in list(zip((n['VEWL']), m['VEWL'])):
-#         VEWL = (str(W[0][0]),str(W[0][1]),W[1],device_port.cisco.ewl_c3650_fd_port()[0],device_port.cisco.ewl_c3650_fd_port()[1])
-#     doa_uplink = config_template.doa_uplink().render(port_num = DDOA[3],uplink_descr='1111')
-#     print(DDOA[2],doa_uplink)
-    # EXOA = [EXOA for E in list(zip((n['EXOA']),m['EXOA'])) for EXOA in E]
-    # VEVP = [VEVP for V in list(zip((n['VEVP']),m['VEVP'])) for VEVP in V]
-    # VEWL = [VEWL for W in list(zip((n['VEWL']),m['VEWL'])) for VEWL in W]
+for n,m in zip(doa_xoa_manage_ip(),generation_floor_device_name()):
+    DDOA = (str(n['DDOA'][0]),str(n['DDOA'][1]),m['DDOA'],device_port.cisco.doa_c9300_port()['uplink'][0],device_port.cisco.doa_c9300_port()['uplink'][1])
+    EDOA = (str(n['EDOA'][0]),str(n['EDOA'][1]),m['EDOA'],device_port.cisco.doa_c9300_port()['uplink'][0],device_port.cisco.doa_c9300_port()['uplink'][1])
+    for D in list(zip((n['DXOA']),m['DXOA'])):
+        DXOA = (str(D[0][0]),str(D[0][1]),D[1],device_port.cisco.xoa_c9300_port()[0],device_port.cisco.xoa_c9300_port()[1])
+    for E in list(zip((n['EXOA']), m['EXOA'])):
+        EXOA = (str(E[0][0]),str(E[0][1]),E[1],device_port.cisco.xoa_c9300_port()[0],device_port.cisco.xoa_c9300_port()[1])
+    for V in list(zip((n['VEVP']), m['VEVP'])):
+        VEVP = (str(V[0][0]),str(V[0][1]),V[1],device_port.cisco.evp_c2960_port()[0],device_port.cisco.evp_c2960_port()[1])
+    for W in list(zip((n['VEWL']), m['VEWL'])):
+        VEWL = (str(W[0][0]),str(W[0][1]),W[1],device_port.cisco.ewl_c3650_fd_port()[0],device_port.cisco.ewl_c3650_fd_port()[1])
+    doa_uplink = config_template.doa_uplink().render(port_num = DDOA[3],uplink_descr='1111')
+    print(DDOA[2],doa_uplink)
+    EXOA = [EXOA for E in list(zip((n['EXOA']),m['EXOA'])) for EXOA in E]
+    VEVP = [VEVP for V in list(zip((n['VEVP']),m['VEVP'])) for VEVP in V]
+    VEWL = [VEWL for W in list(zip((n['VEWL']),m['VEWL'])) for VEWL in W]
 
-    # print(EXOA)
-    # print(VEVP)
-    # print(VEWL)
+    print(EXOA)
+    print(VEVP)
+    print(VEWL)
