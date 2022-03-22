@@ -23,7 +23,7 @@ def cisco(type):
         interconnect = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (47,49)]
         return {'ddownlink':ddown_link,'edownlink':edown_link,'vdownlink':vdown_link,'wdownlink':wdown_link,'uplink':up_link,'interconnect':interconnect}
     elif type == '9300_48t':
-        up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,9)]
+        up_link = ['TenGigabitEthernet1/1/'+str(portnum) for portnum in range (1,34)]
         return up_link
     elif type ==  '2960_pst':
         uplink =['GigabitEthernet0/'+str(portnum) for portnum in range (3,5)]

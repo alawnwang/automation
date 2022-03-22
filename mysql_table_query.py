@@ -2,6 +2,7 @@ import pymysql
 
 db = pymysql.connect(host='111',user='222',password='333',database='444')
 
+
 cursor = db.cursor(cursor=pymysql.cursors.DictCursor,)
 
 sql = 'show tables'

@@ -84,11 +84,28 @@ def generation_floor_device_name(project):
 #
 
 def generation_access_info(project):
-    access_info_list = []
+    access_list = []
     for n,m in  zip(generation_floor_device_name(project),access_manage_ip(project)):
-        DXOA = [DXOA for D in list(zip((n['DXOA']), m['DXOA'])) for DXOA in D]
-        EXOA = [EXOA for E in list(zip((n['EXOA']), m['EXOA'])) for EXOA in E]
-        VEVP = [VEVP for V in list(zip((n['VEVP']), m['VEVP'])) for VEVP in V]
-        VEWL = [VEWL for W in list(zip((n['VEWL']), m['VEWL'])) for VEWL in W]
-        access_info_list.append({'floor':n['floor'],'gateway':m['gw'],'DXOA':(DXOA,device_port.cisco(type(project)['xoa'])),'EXOA':(EXOA,device_port.cisco(type(project)['xoa'])),'VEVP':(VEVP,device_port.cisco(type(project)['evp'])),'VEWL':(VEWL,device_port.cisco(type(project)['ewl']))})
-    return access_info_list
+        access_dict = {'floor':n['floor'],'gateway':str(m['gw'][0]),'netmask':str(m['gw'][1]),'DXOA':[],'EXOA':[],'VEVP':[],'VEWL':[]}
+        for name in n['DXOA']:
+            dxoa = {'floor':n['floor'],'name':name,'ip':str(m['DXOA'].pop(0)[0]),'netmask':str(m['DXOA'].pop(0)[1]),'port_assign':device_port.cisco(type(project)['xoa'])}
+            if access_dict['floor'] == dxoa['floor']:
+                access_dict['DXOA'].append(dxoa)
+        for name in n['EXOA']:
+            exoa = {'floor': n['floor'], 'name': name, 'ip': str(m['EXOA'].pop(0)[0]),
+                    'netmask': str(m['EXOA'].pop(0)[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
+            if access_dict['floor'] == exoa['floor']:
+                access_dict['DXOA'].append(exoa)
+        for name in n['VEVP']:
+            vevp = {'floor': n['floor'], 'name': name, 'ip': str(m['VEVP'].pop(0)[0]),
+                    'netmask': str(m['VEVP'].pop(0)[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
+            if access_dict['floor'] == vevp['floor']:
+                access_dict['DXOA'].append(vevp)
+        for name in n['VEWL']:
+            vewl = {'floor': n['floor'], 'name': name, 'ip': str(m['VEWL'].pop(0)[0]),
+                    'netmask': str(m['VEWL'].pop(0)[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
+            if access_dict['floor'] == vewl['floor']:
+                access_dict['DXOA'].append(vewl)
+        access_list.append(access_dict)
+    return access_list
+    # return access_info_list
