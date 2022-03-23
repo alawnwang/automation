@@ -34,3 +34,4 @@ def equipment_type(project):
     cursor.execute(equipment_type)
     equipment_data = cursor.fetchall()
     return equipment_data
+

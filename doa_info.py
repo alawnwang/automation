@@ -31,7 +31,9 @@ def get_doa_info(project):
         d_doa_mgt = mgt_ip_list[2]
         e_doa_mgt = mgt_ip_list[3]
         all_mgt_list.append(
-            {'floor': entry['floor'],'hsrp':{'ip':str(mgt_ip_list[1][0]),'netmask':str(mgt_ip_list[1][1])},'DDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'D',get_doa_type(project),'DOA','01')),'mgtip':str(d_doa_mgt[0]),'netmask':str(d_doa_mgt[1]),'port_assign':device_port.cisco(type(project)['doa'])}, 'EDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',get_doa_type(project),'DOA','01')),'mgtip':str(e_doa_mgt[0]),'netmask':str(e_doa_mgt[1]),'port_assign':device_port.cisco(type(project)['doa'])}})
+            {'floor': entry['floor'],'hsrp':{'ip':str(mgt_ip_list[1][0]),'netmask':str(mgt_ip_list[1][1])},
+             'DDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'D',get_doa_type(project),'DOA','01')),'mgtip':str(d_doa_mgt[0]),'netmask':str(d_doa_mgt[1]),'port_assign':device_port.cisco(type(project)['doa'])},
+             'EDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',get_doa_type(project),'DOA','01')),'mgtip':str(e_doa_mgt[0]),'netmask':str(e_doa_mgt[1]),'port_assign':device_port.cisco(type(project)['doa'])}})
     return all_mgt_list
 
 

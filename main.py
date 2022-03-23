@@ -1,7 +1,7 @@
 import coa_info
 import config_template
 import doa_info
-import xoa_info
+import access_info
 import jinja2
 import openpyxl
 
@@ -14,9 +14,19 @@ connect_sheet.append(['主端设备','端口','对端设备','端口'])
 project = input('项目名称: ')
 # print(coa_info.get_coa_info(project))
 
+#核心链接关系
+connect_sheet.append([coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0]])
+connect_sheet.append([coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1]])
 
+#汇聚到核心互联/汇聚互联
+for coa,doa in zip(coa_info.get_coa_info(project)['port_assign']['downlink'],doa_info.get_doa_info(project)):
+    connect_sheet.append([doa['DDOA']['name'],doa['DDOA']['port_assign']['uplink'][0],coa_info.get_coa_info(project)['MCOA'],coa])
+    connect_sheet.append([doa['EDOA']['name'],doa['EDOA']['port_assign']['uplink'][0],coa_info.get_coa_info(project)['SCOA'],coa])
+    connect_sheet.append([doa['DDOA']['name'],doa['DDOA']['port_assign']['interconnect'][0],doa['EDOA']['name'],doa['EDOA']['port_assign']['interconnect'][0]])
+    connect_sheet.append([doa['DDOA']['name'],doa['DDOA']['port_assign']['interconnect'][1],doa['EDOA']['name'],doa['EDOA']['port_assign']['interconnect'][1]])
 
-for doa,xoa in zip(doa_info.get_doa_info(project),xoa_info.generation_access_info(project)):
+#接入到汇聚互联/管理IP
+for doa,xoa in zip(doa_info.get_doa_info(project), access_info.generation_access_info(project)):
     mgt_sheet.append([doa['DDOA']['name'],doa['DDOA']['mgtip'],doa['DDOA']['netmask']])
     mgt_sheet.append([doa['EDOA']['name'],doa['EDOA']['mgtip'],doa['EDOA']['netmask']])
     for dname in xoa['DXOA']:
@@ -42,7 +52,6 @@ for doa,xoa in zip(doa_info.get_doa_info(project),xoa_info.generation_access_inf
               (doa['DDOA']['port_assign']['wdownlink']).pop(0)])
         connect_sheet.append([wname['name'], wname['port_assign'][1], doa['EDOA']['name'],
               (doa['EDOA']['port_assign']['wdownlink']).pop(0)])
-
 
 planning_workbook.save('/Users/alawn/Desktop/合肥中安一期.xlsx')
 

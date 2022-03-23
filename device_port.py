@@ -1,10 +1,10 @@
 def cisco(type):
     if type == '4500_16':
-        down_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (1,11)]
+        down_link = ['TenGigabitEthernet1/0/'+str(portnum) for portnum in range (1,11)]
         cvp = 'TenGigabitEthernet1/1/12'
         up_link = 'TenGigabitEthernet1/1/11'
-        cwl = ['FiveGigabitEthernet1/0/13', 'FiveGigabitEthernet1/0/14']
-        interconnect = ['FiveGigabitEthernet1/0/15','FiveGigabitEthernet1/0/16']
+        cwl = ['TenGigabitEthernet1/0/13', 'TenGigabitEthernet1/0/14']
+        interconnect = ['TenGigabitEthernet1/0/15','TenGigabitEthernet1/0/16']
         return {'downlink': down_link,'uplink': up_link,'cvp':cvp,'cwl':cwl,'interconnect': interconnect}
     # def coa_c4500x_32_port():
     #     down_link = ['FiveGigabitEthernet1/0/'+str(portnum) for portnum in range (1,47)]
