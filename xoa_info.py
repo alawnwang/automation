@@ -95,17 +95,17 @@ def generation_access_info(project):
             exoa = {'floor': n['floor'], 'name': name, 'ip': str(m['EXOA'].pop(0)[0]),
                     'netmask': str(m['EXOA'].pop(0)[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
             if access_dict['floor'] == exoa['floor']:
-                access_dict['DXOA'].append(exoa)
+                access_dict['EXOA'].append(exoa)
         for name in n['VEVP']:
             vevp = {'floor': n['floor'], 'name': name, 'ip': str(m['VEVP'].pop(0)[0]),
                     'netmask': str(m['VEVP'].pop(0)[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
             if access_dict['floor'] == vevp['floor']:
-                access_dict['DXOA'].append(vevp)
+                access_dict['VEVP'].append(vevp)
         for name in n['VEWL']:
             vewl = {'floor': n['floor'], 'name': name, 'ip': str(m['VEWL'].pop(0)[0]),
                     'netmask': str(m['VEWL'].pop(0)[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
             if access_dict['floor'] == vewl['floor']:
-                access_dict['DXOA'].append(vewl)
+                access_dict['VEWL'].append(vewl)
         access_list.append(access_dict)
     return access_list
     # return access_info_list
