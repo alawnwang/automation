@@ -13,3 +13,4 @@ def type(project):
             ewl = type['equipment_type']
     type_dict = {'coa':coa,'doa':doa,'xoa':xoa,'evp':evp,'ewl':ewl}
     return type_dict
+
