@@ -1,3 +1,5 @@
+import ipaddress
+
 import coa_info
 import config_template
 import doa_info
@@ -5,6 +7,7 @@ import access_info
 import jinja2
 import openpyxl
 import ip_planning
+import pymysql
 import type_dict
 planning_workbook = openpyxl.Workbook()
 mgt_sheet  = planning_workbook.create_sheet('mgt_ip')
@@ -14,10 +17,18 @@ connect_sheet.append(['主端设备','端口','对端设备','端口'])
 
 project = input('项目名称: ')
 
+
+
+
+# for n, m in zip(ip_planning.mgt_num(project),ip_planning.network_class(project)['public']):
+#     print(n,m)
+
+ip_planning.oa_network_assign(project)
+
 # print(type_dict.type(project))
 # print(coa_info.get_coa_info(project))
 #
-# #核心链接关系
+# 核心链接关系
 # connect_sheet.append([coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0]])
 # connect_sheet.append([coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1]])
 #
@@ -59,10 +70,10 @@ project = input('项目名称: ')
 # #
 # planning_workbook.save('/Users/alawn/Desktop/%s.xlsx'%project)
 
-
-for network in ip_planning.num_of_network(project):
-    print(network)
-
-ip_planning.ip_assign(project)
+#
+# for network in ip_planning.num_of_network(project):
+#     print(network)
+#
+# ip_planning.ip_assign(project)
 
 
