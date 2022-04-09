@@ -23,7 +23,7 @@ project = input('项目名称: ')
 # for n, m in zip(ip_planning.mgt_num(project),ip_planning.network_class(project)['public']):
 #     print(n,m)
 
-ip_planning.oa_network_assign(project)
+print(ip_planning.network_assign(project))
 
 # print(type_dict.type(project))
 # print(coa_info.get_coa_info(project))

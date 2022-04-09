@@ -34,7 +34,7 @@ def network_class(project):
     pubilc_network_list = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
     mgt_ip = ip_address.__next__()
-    network_class_dict = {'mgt':mgt_ip,'public':[],'normal':''}
+    network_class_dict = {'mgt':mgt_ip,'public':[],'normal':None}
     n = cacl_public(project)
     while n != 0:
         n = n - 1
@@ -89,15 +89,43 @@ def cacl_voip(project):
 def generation_netwrok_dict(project):
     return {'public':cacl_public(project),'oa':cacl_oa(project),'ty':cacl_ty(project),'voip':cacl_voip(project)}
 
+# def oa_assign(floor,normal_network):
+#     oa_assign_list = []
+#     vlan_oa = 19
+#     while floor['oa'] != 0:
+#         floor['oa'] = floor['oa'] - 1
+#         vlan_oa = vlan_oa + 1
+#         oa_assign_list.append(
+#             {'vlan': vlan_oa, 'floor': floor['floor'], 'network': normal_network.__next__(), 'fun': 'OA'})
+#     return oa_assign_list
 
-def oa_network_assign(project):
+
+
+def network_assign(project):
+    oa_dict_list = []
+    normal_network = network_class(project)['normal']
     for floor in num_of_network(project):
-        vlan = 19
+        vlan_oa = 19
         while floor['oa'] != 0:
             floor['oa'] = floor['oa'] - 1
-            vlan = vlan +1
-            print(floor['floor'],vlan,network_class(project)['normal'].__next__())
-            print(list(network_class(project)['normal']))
+            vlan_oa = vlan_oa + 1
+            oa_dict_list.append(
+                {'vlan': vlan_oa, 'floor': floor['floor'], 'network': normal_network.__next__(), 'fun': 'OA'})
+        return oa_dict_list
+        # def ty_assign():
+        #     vlan_ty = 29
+        #     while floor['ty'] != 0:
+        #         floor['ty'] = floor['ty'] - 1
+        #         vlan_ty = vlan_ty +1
+        #         print(vlan_ty,normal_network.__next__())
+        # def voip_assign():
+        #     vlan_voip = 99
+        #     while floor['voip'] != 0:
+        #         floor['voip'] = floor['voip'] - 1
+        #         vlan_voip = vlan_voip + 1
+        #         print(vlan_voip, normal_network.__next__())
+            # print(network_class(project)['normal'].__next__())
+            # print(floor['floor'],vlan,type(network_class(project)['normal']))
 
 
 
