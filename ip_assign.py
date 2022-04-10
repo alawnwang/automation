@@ -58,19 +58,22 @@ def network_class(network,project):
 
 def mgt_num(project):
     public_dict_list = []
-    for fun in ['mgt', 'ap_mgt', 'video', 'oa_device', 'geli']:
+    function_list = ['网络设备管理', 'AP网', '会议设备网', '行政设备网', '隔离VLAN']
+    description_list = ['MGT', 'AP_MGT', 'Video', 'OA_Device', 'GELI']
+    for fun,des in zip(function_list,description_list):
         for floor_bdr in cacl_floor_bdr_num(project):
-            if fun == 'mgt':
+            if des == 'MGT':
                 vlan = 10
-            elif fun == 'ap_mgt':
+            elif des == 'AP_MGT':
                 vlan = 11
-            elif fun == 'video':
+            elif des == 'Video':
                 vlan = 44
-            elif fun == 'oa_device':
+            elif des == 'OA_Device':
                 vlan = 600
-            elif fun == 'geli':
+            elif des == 'GELI':
                 vlan = 666
-            public_dict = {'vlan': vlan, 'bdr': floor_bdr,'network':'','fun': fun}
+            floor_bdr_split = floor_bdr.split('-')
+            public_dict = {'vlan': vlan, 'floor': str(floor_bdr_split[0]),'bdr':str(floor_bdr_split[1]),'network':'','fun':fun,'desc':des}
             public_dict_list.append(public_dict)
     return public_dict_list
 
@@ -106,31 +109,37 @@ class network_assign:
         oa_dict_list = []
         for floor in num_of_network(project):
             vlan_oa = 19
+            num = 0
             while floor['oa'] != 0:
                 floor['oa'] = floor['oa'] - 1
                 vlan_oa = vlan_oa + 1
+                num = num + 1
                 oa_dict_list.append(
-                    {'vlan': vlan_oa, 'floor': str(floor['floor'])+'-'+str(floor['bdr']), 'network': func.__next__(), 'fun': 'OA'})
+                    {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': func.__next__(), 'fun': '有线办公网','desc':('OA_'+str(num))})
         return oa_dict_list
 
     def ty_network_assign(func,project):
         ty_dict_list = []
         for floor in num_of_network(project):
             vlan_oa = 29
+            num = 0
             while floor['ty'] != 0:
                 floor['ty'] = floor['ty'] - 1
                 vlan_oa = vlan_oa + 1
+                num = num + 1
                 ty_dict_list.append(
-                    {'vlan': vlan_oa, 'floor': str(floor['floor'])+'-'+str(floor['bdr']), 'network': func.__next__(), 'fun': 'TY'})
+                    {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': func.__next__(), 'fun': '有线体验网','desc':('TY_'+str(num))})
         return ty_dict_list
 
     def voip_network_assign(func,project):
         ty_dict_list = []
         for floor in num_of_network(project):
             vlan_oa = 99
+            num = 0
             while floor['voip'] != 0:
                 floor['voip'] = floor['voip'] - 1
                 vlan_oa = vlan_oa + 1
+                num = num + 1
                 ty_dict_list.append(
-                    {'vlan': vlan_oa, 'floor': str(floor['floor'])+'-'+str(floor['bdr']), 'network': func.__next__(), 'fun': 'VOIP'})
+                    {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': func.__next__(), 'fun': 'VOIP网','desc':('VOIP_'+str(num))})
         return ty_dict_list

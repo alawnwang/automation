@@ -43,7 +43,7 @@ def cisco(type):
 
 def h3c(type):
     if type == '9850_4c':
-        down_link = ['Ten-GigabitEthernet1/0'+str(portnum) for portnum in range (1,41)]
+        down_link = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (1,41)]
         cvp = 'Ten-GigabitEthernet1/0/44'
         up_link = 'Ten-GigabitEthernet1/0/43'
         cwl = ['Ten-GigabitEthernet1/0/45', 'Ten-GigabitEthernet1/0/46']
@@ -70,7 +70,7 @@ def h3c(type):
     elif type == '5130_52p':
         uplink = ['GigabitEthernet1/0/' + str(portnum) for portnum in range(49,51)]
         return uplink
-    elif type == '5560-54c':
+    elif type == '5560_54c':
         uplink = ['Ten-GigabitEthernet1/0/' + str(portnum) for portnum in range(49,51)]
         return uplink
 

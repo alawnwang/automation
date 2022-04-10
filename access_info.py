@@ -26,6 +26,7 @@ def device_number_dict(project):
         device_number_dict_list.append(device_number_dict)
     return device_number_dict_list
 
+
 def get_equipment_type(project):
     type_list = []
     for entry in mysql_table_query.equipment_type(project):
@@ -37,11 +38,12 @@ def get_equipment_type(project):
             equipment_type_acronym = 'H'
         elif entry['supplier'] == 'aruba':
             equipment_type_acronym = 'A'
-        type_function = equipment_type_acronym+entry['equipment_type']+'-'+str(entry['function']).upper()
+        type_function = equipment_type_acronym+entry['name']+'-'+str(entry['function']).upper()
         type_dict = {entry['function']:type_function}
         type_list.append(type_dict)
     return type_list
-# #
+
+# # #
 def access_manage_ip(project):
     all_mgt_list = []
     for entry in mysql_table_query.ip_planning(project):
@@ -61,7 +63,8 @@ def access_manage_ip(project):
             {'floor': entry['floor'],'gw':default_gw,'DXOA': d_xoa_mgt, 'EXOA': e_xoa_mgt,
              'VEVP': v_evp_mgt, 'VEWL': w_ewl_mgt})
     return all_mgt_list
-#
+
+# #
 def generation_device_info_dict(project):
     device_info_list = []
     for entry in device_number_dict(project):
@@ -69,8 +72,9 @@ def generation_device_info_dict(project):
             entry.update(type)
         device_info_list.append(entry)
     return device_info_list
-#
 
+# #
+#
 def generation_floor_device_name(project):
     devicelist = []
     for entry in generation_device_info_dict(project):
@@ -81,7 +85,47 @@ def generation_floor_device_name(project):
         floor_device_dict = {'floor':entry['floor'],'DXOA':d_xoa_name,'EXOA':e_xoa_name,'VEVP':v_evp_name,'VEWL':v_ewl_name}
         devicelist.append(floor_device_dict)
     return devicelist
-#
+
+# #
+def get_xoa_type(project):
+    port_assign = {'name': None, 'port_assign': None}
+    for entry in mysql_table_query.equipment_type(project):
+        if entry['function'] == 'xoa':
+            access_type = {'supplier':entry['supplier'],'type':entry['equipment_type']}
+            if access_type['supplier'] == 'cisco':
+                port_assign['name'] = 'C'+str(entry['name'])
+                port_assign['port_assign'] = device_port.cisco(access_type['type'])
+            elif access_type['supplier'] == 'h3c':
+                port_assign['name'] = 'H'+str(entry['name'])
+                port_assign['port_assign'] = device_port.h3c(access_type['type'])
+    return port_assign
+
+def get_evp_type(project):
+    port_assign = {'name': None, 'port_assign': None}
+    for entry in mysql_table_query.equipment_type(project):
+        if entry['function'] == 'evp':
+            access_type = {'supplier':entry['supplier'],'type':entry['equipment_type']}
+            if access_type['supplier'] == 'cisco':
+                port_assign['name'] = 'C'+str(entry['name'])
+                port_assign['port_assign'] = device_port.cisco(access_type['type'])
+            elif access_type['supplier'] == 'h3c':
+                port_assign['name'] = 'H'+str(entry['name'])
+                port_assign['port_assign'] = device_port.h3c(access_type['type'])
+    return port_assign
+
+
+def get_ewl_type(project):
+    port_assign = {'name': None, 'port_assign': None}
+    for entry in mysql_table_query.equipment_type(project):
+        if entry['function'] == 'ewl':
+            access_type = {'supplier':entry['supplier'],'type':entry['equipment_type']}
+            if access_type['supplier'] == 'cisco':
+                port_assign['name'] = 'C'+str(entry['name'])
+                port_assign['port_assign'] = device_port.cisco(access_type['type'])
+            elif access_type['supplier'] == 'h3c':
+                port_assign['name'] = 'H'+str(entry['name'])
+                port_assign['port_assign'] = device_port.h3c(access_type['type'])
+    return port_assign
 
 def get_access_info(project):
     access_list = []
@@ -89,25 +133,25 @@ def get_access_info(project):
         access_dict = {'floor':n['floor'],'gateway':str(m['gw'][0]),'netmask':str(m['gw'][1]),'DXOA':[],'EXOA':[],'VEVP':[],'VEWL':[]}
         for name in n['DXOA']:
             ip_address = m['DXOA'].pop(0)
-            dxoa = {'floor':n['floor'],'name':name,'ip':str(ip_address[0]),'netmask':str(ip_address[1]),'port_assign':device_port.cisco(type(project)['xoa'])}
+            dxoa = {'floor':n['floor'],'name':name,'ip':str(ip_address[0]),'netmask':str(ip_address[1]),'port_assign':get_xoa_type(project)['port_assign']}
             if access_dict['floor'] == dxoa['floor']:
                 access_dict['DXOA'].append(dxoa)
         for name in n['EXOA']:
             ip_address = m['EXOA'].pop(0)
             exoa = {'floor': n['floor'], 'name': name, 'ip': str(ip_address[0]),
-                    'netmask': str(ip_address[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
+                    'netmask': str(ip_address[1]), 'port_assign': get_xoa_type(project)['port_assign']}
             if access_dict['floor'] == exoa['floor']:
                 access_dict['EXOA'].append(exoa)
         for name in n['VEVP']:
             ip_address = m['VEVP'].pop(0)
             vevp = {'floor': n['floor'], 'name': name, 'ip': str(ip_address[0]),
-                    'netmask': str(ip_address[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
+                    'netmask': str(ip_address[1]), 'port_assign':get_evp_type(project)['port_assign']}
             if access_dict['floor'] == vevp['floor']:
                 access_dict['VEVP'].append(vevp)
         for name in n['VEWL']:
             ip_address = m['VEWL'].pop(0)
             vewl = {'floor': n['floor'], 'name': name, 'ip': str(ip_address[0]),
-                    'netmask': str(ip_address[1]), 'port_assign': device_port.cisco(type(project)['xoa'])}
+                    'netmask': str(ip_address[1]), 'port_assign':get_ewl_type(project)['port_assign']}
             if access_dict['floor'] == vewl['floor']:
                 access_dict['VEWL'].append(vewl)
         access_list.append(access_dict)
