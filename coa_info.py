@@ -11,15 +11,16 @@ def generation_coa_name(project):
 def get_coa_type(project):
     for entry in mysql_table_query.equipment_type(project):
         if entry['function'] == 'coa':
-            coa_type = entry['name']
+            coa_type = entry['equipment_type']
             return coa_type
 
 def get_coa_info(project):
     for enrty in mysql_table_query.ip_planning(project):
+        print(enrty)
         if enrty['function'] == '核心网段':
             mcoa_ip = ipaddress.IPv4Network(enrty['network'])[1]
             scoa_ip = ipaddress.IPv4Network(enrty['network'])[2]
             mgt_dict = {'floor':enrty['floor'],'MCOA':('-'.join((generation_coa_name(project),'A01',get_coa_type(project),'COA','01')))
-                ,'MMGTIP':{'ip':str(mcoa_ip),'netmask':'255.255.255.255'},'SCOA':('-'.join((generation_coa_name(project),'A02',get_coa_type(project),'COA','01'))),'SMGTIP':{'ip':str(scoa_ip),'netmask':'255.255.255.255'},'port_assign':device_port.h3c(type(project)['coa'])}
+                ,'MMGTIP':{'ip':str(mcoa_ip),'netmask':'255.255.255.255'},'SCOA':('-'.join((generation_coa_name(project),'A02',get_coa_type(project),'COA','01'))),'SMGTIP':{'ip':str(scoa_ip),'netmask':'255.255.255.255'},'port_assign':device_port.cisco(type(project)['coa'])}
             return mgt_dict
 

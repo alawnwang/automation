@@ -11,7 +11,7 @@ def generation_doa_name(project):
 def get_doa_type(project):
     for entry in mysql_table_query.equipment_type(project):
         if entry['function'] == 'doa':
-            doa_type = entry['name']
+            doa_type = entry['equipment_type']
             return doa_type
 
 def get_doa_info(project):
@@ -27,6 +27,6 @@ def get_doa_info(project):
         e_doa_mgt = mgt_ip_list[3]
         all_mgt_list.append(
             {'floor': entry['floor'],'hsrp':{'ip':str(mgt_ip_list[1][0]),'netmask':str(mgt_ip_list[1][1])},
-             'DDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'D',get_doa_type(project),'DOA','01')),'mgtip':str(d_doa_mgt[0]),'netmask':str(d_doa_mgt[1]),'port_assign':device_port.h3c(type(project)['doa'])},
-             'EDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',get_doa_type(project),'DOA','01')),'mgtip':str(e_doa_mgt[0]),'netmask':str(e_doa_mgt[1]),'port_assign':device_port.h3c(type(project)['doa'])}})
+             'DDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'D',get_doa_type(project),'DOA','01')),'mgtip':str(d_doa_mgt[0]),'netmask':str(d_doa_mgt[1]),'port_assign':device_port.cisco(type(project)['doa'])},
+             'EDOA':{'name':'-'.join((generation_doa_name(project),('BDR'+str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',get_doa_type(project),'DOA','01')),'mgtip':str(e_doa_mgt[0]),'netmask':str(e_doa_mgt[1]),'port_assign':device_port.cisco(type(project)['doa'])}})
     return all_mgt_list
