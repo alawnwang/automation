@@ -16,12 +16,12 @@ connect_sheet.append(['主端设备','端口','对端设备','端口'])
 ip_planning_sheet = planning_workbook.create_sheet('ip_planning')
 ip_planning_sheet.append(['vlan','network','function','floor'])
 project = input('项目名称: ')
-
+network = input('IP地址：')
 # #IP规划
-for n, m in zip(ip_planning.mgt_num(project),ip_planning.network_class(project)['public']):
+for n, m in zip(ip_planning.mgt_num(project),ip_planning.network_class(network,project)['public']):
     n['network'] = str(m)
     ip_planning_sheet.append([n['vlan'],n['network'],n['fun'],n['bdr']])
-network_list = ip_planning.network_class(project)['normal']
+network_list = ip_planning.network_class(network,project)['normal']
 for o in ip_planning.network_assign.oa_network_assign(network_list,project):
     ip_planning_sheet.append([o['vlan'], str(o['network']), o['fun'], o['floor']])
 for t in ip_planning.network_assign.ty_network_assign(network_list,project):

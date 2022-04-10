@@ -3,7 +3,7 @@ import ipaddress
 import mysql_table_query
 
 
-network = '30.18.0.0/16'
+
 
 
 def num_of_network(project):
@@ -35,7 +35,7 @@ def cacl_floor_bdr_num(project):
     return bdr_list
 
 
-def network_class(project):
+def network_class(network,project):
     pubilc_network_list = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
     mgt_ip = ip_address.__next__()
