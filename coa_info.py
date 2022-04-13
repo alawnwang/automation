@@ -21,15 +21,15 @@ def get_coa_type(project):
     return port_assign
 
 def get_coa_info(project):
-    for enrty in mysql_table_query.ip_planning(project):
-        if enrty['function'] == '核心网段':
-            mcoa_ip = ipaddress.IPv4Network(enrty['network'])[1]
-            scoa_ip = ipaddress.IPv4Network(enrty['network'])[2]
-            mgt_dict = {'floor': enrty['floor'], 'MCOA': (
-                '-'.join((generation_coa_name(project), 'A01', str(get_coa_type(project)['name']), 'COA', '01')))
-                , 'MMGTIP': {'ip': str(mcoa_ip), 'netmask': '255.255.255.255'}, 'SCOA': (
-                    '-'.join((generation_coa_name(project), 'A02', get_coa_type(project)['name'], 'COA', '01'))),
-                        'SMGTIP': {'ip': str(scoa_ip), 'netmask': '255.255.255.255'},
-                        'port_assign': get_coa_type(project)['port_assign']}
-            return mgt_dict
+    entry = (mysql_table_query.core_ip()).pop(0)
+    mgt_network = ipaddress.IPv4Network(entry['network'])
+    mcoa_ip = mgt_network[1]
+    scoa_ip = mgt_network[2]
+    mgt_dict = {'floor': entry['floor'], 'MCOA': (
+        '-'.join((generation_coa_name(project), 'A01', str(get_coa_type(project)['name']), 'COA', '01')))
+        , 'MMGTIP': {'ip': mcoa_ip, 'netmask': '255.255.255.255'}, 'SCOA': (
+            '-'.join((generation_coa_name(project), 'A02', get_coa_type(project)['name'], 'COA', '01'))),
+                'SMGTIP': {'ip': scoa_ip, 'netmask': '255.255.255.255'},
+                'port_assign': get_coa_type(project)['port_assign']}
+    return mgt_dict
 

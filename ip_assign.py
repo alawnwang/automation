@@ -2,10 +2,6 @@ from math import ceil
 import ipaddress
 import mysql_table_query
 
-
-
-
-
 def num_of_network(project):
     num_network = []
     for network in mysql_table_query.endpoint(project):
@@ -18,8 +14,6 @@ def num_of_network(project):
         num_network.append(floor_network_num_dict)
     return num_network
 
-
-
 def cacl_public(project):
     public_num = 0
     for public in num_of_network(project):
@@ -27,19 +21,17 @@ def cacl_public(project):
         public_num += num
     return ceil(public_num)
 
-
 def cacl_floor_bdr_num(project):
     bdr_list = []
     for mgt in mysql_table_query.endpoint(project):
         bdr_list.append('-'.join((str(mgt['floor']), str(mgt['bdr']))))
     return bdr_list
 
-
 def network_class(network,project):
     pubilc_network_list = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
     mgt_ip = ip_address.__next__()
-    network_class_dict = {'mgt': mgt_ip, 'public': [], 'normal': None}
+    network_class_dict = {'mgt':mgt_ip,'public':[],'normal':None}
     n = cacl_public(project)
     while n != 0:
         n = n - 1
@@ -54,7 +46,6 @@ def network_class(network,project):
         normal_network_list.append(ip_address.__next__())
     network_class_dict['normal'] = (ip for ip in normal_network_list)
     return network_class_dict
-
 
 def mgt_num(project):
     public_dict_list = []
@@ -84,13 +75,11 @@ def cacl_oa(project):
         num_oa += oa['oa']
     return ceil(num_oa)
 
-
 def cacl_ty(project):
     num_ty = 0
     for ty in num_of_network(project):
         num_ty += ty['ty']
     return ceil(num_ty)
-
 
 def cacl_voip(project):
     num_voip = 0
@@ -98,13 +87,10 @@ def cacl_voip(project):
         num_voip += voip['voip']
     return ceil(num_voip)
 
-
 def generation_netwrok_dict(project):
     return {'public': cacl_public(project), 'oa': cacl_oa(project), 'ty': cacl_ty(project), 'voip': cacl_voip(project)}
 
-
 class network_assign:
-
     def oa_network_assign(func,project):
         oa_dict_list = []
         for floor in num_of_network(project):
@@ -143,3 +129,4 @@ class network_assign:
                 ty_dict_list.append(
                     {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': func.__next__(), 'fun': 'VOIP网','desc':('VOIP_'+str(num))})
         return ty_dict_list
+
