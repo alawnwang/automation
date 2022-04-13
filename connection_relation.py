@@ -1,36 +1,12 @@
-import test
 import coa_info
 import doa_info
 import access_info
-import openpyxl
-import time
-import ip_assign
-import pandas as pd
-import mysql_table_query
 
-planning_workbook = openpyxl.Workbook()
-mgt_sheet  = planning_workbook.create_sheet('mgt_ip')
-mgt_sheet.append(['hostname','mgtip','netmask'])
-connect_sheet = planning_workbook.create_sheet('connect_sheet')
-connect_sheet.append(['主端设备','端口','对端设备','端口'])
-ip_planning_sheet = planning_workbook.create_sheet('ip_planning')
-ip_planning_sheet.append(['vlan','network','function','desctiption','floor','bdr'])
+def connection_relation():
+    connection_list = []
 
-project = input('项目名称: ')
-
-network = input('IP地址：')
-planning_workbook.save(planning_workbook.save('/Users/alawn/Desktop/%s.xlsx'%project))
-
-
-def intser_sql():
-    for net in ip_assign.generation_ip_planning(network,project):
-        ip = pd.DataFrame.from_dict(net, orient='columns')
-        ip.to_sql(con=mysql_table_query.link_db(), name='ip_planning', if_exists='append', index=False)
-        ip.to_excel(planning_workbook,sheet_name='ip_planning',index=False)
-
-def core_link():
 #核心链接关系
-    connect_sheet.append([coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0]])
+    master_connection= {'Acoa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0]])
     connect_sheet.append([coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1]])
     print(coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][0])
     print(coa_info.get_coa_info(project)['MCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1],coa_info.get_coa_info(project)['SCOA'],coa_info.get_coa_info(project)['port_assign']['interconnect'][1])
@@ -42,6 +18,8 @@ def core_doa_link():
         connect_sheet.append([doa['EDOA']['name'],doa['EDOA']['port_assign']['uplink'][0],coa_info.get_coa_info(project)['SCOA'],coa])
         connect_sheet.append([doa['DDOA']['name'],doa['DDOA']['port_assign']['interconnect'][0],doa['EDOA']['name'],doa['EDOA']['port_assign']['interconnect'][0]])
         connect_sheet.append([doa['DDOA']['name'],doa['DDOA']['port_assign']['interconnect'][1],doa['EDOA']['name'],doa['EDOA']['port_assign']['interconnect'][1]])
+        doa_up_connection_relation = {'A_device':doa['DDOA']['name'], 'A_port':doa['DDOA']['port_assign']['uplink'][0], 'A_ip': '', 'Z_device':coa_info.get_coa_info(project)['MCOA'], 'Z_port':coa, 'Z_ip': ''}
+        doa_inter_connection_relation = {'A_device':doa['DDOA']['name'], 'A_port':doa['DDOA']['port_assign']['uplink'][0], 'A_ip': '', 'Z_device':coa_info.get_coa_info(project)['MCOA'], 'Z_port':coa, 'Z_ip': ''}
         print(doa['DDOA']['name'],doa['DDOA']['port_assign']['uplink'][0],coa_info.get_coa_info(project)['MCOA'],coa)
         print(doa['EDOA']['name'],doa['EDOA']['port_assign']['uplink'][0],coa_info.get_coa_info(project)['SCOA'],coa)
         print(doa['DDOA']['name'],doa['DDOA']['port_assign']['interconnect'][0],doa['EDOA']['name'],doa['EDOA']['port_assign']['interconnect'][0])
@@ -92,19 +70,3 @@ def doa_access_link():
               (doa['DDOA']['port_assign']['wdownlink']).pop(0))
         print(wname['name'], wname['port_assign'][1], doa['EDOA']['name'],
               (doa['EDOA']['port_assign']['wdownlink']).pop(0))
-
-
-
-
-
-#
-# print('IP规划已生成完毕')
-#
-# core_link()
-# core_doa_link()
-# doa_access_link()
-# print('建设规划已生成完毕')
-# planning_workbook.save('/Users/alawn/Desktop/%s.xlsx'%project)
-
-
-

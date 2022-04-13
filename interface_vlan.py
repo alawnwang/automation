@@ -1,3 +1,13 @@
+import openpyxl
+from IPy import IP
+IP_PLANNING_EXCEL = openpyxl.load_workbook('C:/Users/alawn/Desktop/宏业大厦IP规划&连接关系.xlsx')
+IP_PLANNING_SHEET = IP_PLANNING_EXCEL['ip_planning_sheet']
+MGT_IP_SHEET = IP_PLANNING_EXCEL['mgt_ip_sheet']
+CONNECTION_SHEET = IP_PLANNING_EXCEL['connection_sheet']
+
+IP_ROW = IP_PLANNING_SHEET.max_row
+MGT_ROW = MGT_IP_SHEET.max_row
+CONNECTION_ROW = CONNECTION_SHEET.max_row
 lay2_vlan='''
 vlan $vlan
 name $name
@@ -38,17 +48,17 @@ no passive-interface $vlan10
 '''
 
 
-class Ip_dict:
-    def __init__(self,vlan,description,hsrpip,masterip,backupip,netmask,acl,function,floor):
-        self.floor = floor
-        self.vlan = vlan
-        self.description = description
-        self.hsrpip = hsrpip
-        self.masterip = masterip
-        self.backupip = backupip
-        self.netmask = netmask
-        self.acl = acl
-        self.function = function
+# class Ip_dict:
+#     def __init__(self,vlan,description,hsrpip,masterip,backupip,netmask,acl,function,floor_bdr):
+#         self.floor = floor_bdr
+#         self.vlan = vlan
+#         self.description = description
+#         self.hsrpip = hsrpip
+#         self.masterip = masterip
+#         self.backupip = backupip
+#         self.netmask = netmask
+#         self.acl = acl
+#         self.function = function
 
 def get_dict(excel,row):
     dict_list = []
