@@ -2,6 +2,7 @@ from math import ceil
 import ipaddress
 import mysql_table_query
 
+
 def num_of_network(project):
     num_network = []
     for network in mysql_table_query.endpoint(project):
@@ -27,13 +28,47 @@ def cacl_floor_bdr_num(project):
         bdr_list.append('-'.join((str(mgt['floor']), str(mgt['bdr']))))
     return bdr_list
 
+def cacl_oa(project):
+    num_oa = 0
+    for oa in num_of_network(project):
+        num_oa += oa['oa']
+    return ceil(num_oa)
+
+def cacl_ty(project):
+    num_ty = 0
+    for ty in num_of_network(project):
+        num_ty += ty['ty']
+    return ceil(num_ty)
+
+def cacl_voip(project):
+    num_voip = 0
+    for voip in num_of_network(project):
+        num_voip += voip['voip']
+    return ceil(num_voip)
+
 def network_class(network,project):
     pubilc_network_list = []
+    core_ip = None
+    loopback = []
+
+    # connectip = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
-    mgt_ip = ip_address.__next__()
-    network_class_dict = {'mgt':mgt_ip,'public':[],'normal':None}
-    # connection_ip = (network_class_dict['mgt'].subnets(new_prefix=30)).__next__()
-    # print(connection_ip)
+    core_network = ip_address.__next__()
+    connect_ip = (len(cacl_floor_bdr_num(project)))*4/256
+    if connect_ip < 1:
+        core_ip = (ip for ip in core_network.subnets(new_prefix=30))
+    else:
+        numbers_of_connect_ip = ceil(connect_ip)
+        while numbers_of_connect_ip != 0:
+            core_ip = (ip for ip in core_network.subnets(new_prefix=30))
+            numbers_of_connect_ip = numbers_of_connect_ip - 1
+    loopbackip = 0
+    while loopbackip <= 7:
+        loopback.append(core_ip.__next__())
+        loopbackip = loopbackip + 1
+    # for con in core_ip:
+    #     connectip.append(con)
+    network_class_dict = {'mgt':core_network,'connection_ip':core_ip,'public':[],'normal':None}
     n = cacl_public(project)
     while n != 0:
         n = n - 1
@@ -47,8 +82,11 @@ def network_class(network,project):
         m = m - 1
         normal_network_list.append(ip_address.__next__())
     network_class_dict['normal'] = (ip for ip in normal_network_list)
+
     return network_class_dict
 
+
+#
 def mgt_num(project):
     public_dict_list = []
     function_list = ['网络设备管理', 'AP网', '会议设备网', '行政设备网', '隔离VLAN']
@@ -71,23 +109,7 @@ def mgt_num(project):
     return public_dict_list
 
 
-def cacl_oa(project):
-    num_oa = 0
-    for oa in num_of_network(project):
-        num_oa += oa['oa']
-    return ceil(num_oa)
 
-def cacl_ty(project):
-    num_ty = 0
-    for ty in num_of_network(project):
-        num_ty += ty['ty']
-    return ceil(num_ty)
-
-def cacl_voip(project):
-    num_voip = 0
-    for voip in num_of_network(project):
-        num_voip += voip['voip']
-    return ceil(num_voip)
 
 def generation_netwrok_dict(project):
     return {'public': cacl_public(project), 'oa': cacl_oa(project), 'ty': cacl_ty(project), 'voip': cacl_voip(project)}
@@ -137,7 +159,7 @@ def generation_ip_planning(network,project):
     ip_planning_list = []
     # #IP规划
     core_ipaddress = network_class(network,project)['mgt']
-    core_ip_dict = {'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','project':project,'building_name':None,'floor':None,'bdr':None,'type_of_workplace':None}
+    core_ip_dict = {'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':None,'bdr':None,'type_of_workplace':None}
     ip_planning_list.append(core_ip_dict)
 
     for n, m in zip(mgt_num(project),network_class(network,project)['public']):
@@ -157,7 +179,7 @@ def generation_ip_planning(network,project):
 
     network_list = network_class(network,project)['normal']
     for o in network_assign.oa_network_assign(network_list,project):
-        ip_planning_sheet.append([o['vlan'], str(o['network']), o['fun'],o['desc'],o['floor'],o['bdr']])
+        # ip_planning_sheet.append([o['vlan'], str(o['network']), o['fun'],o['desc'],o['floor'],o['bdr']])
         oa_ip = {'network': [o['network']], 'status': None, 'domain': None, 'vlan': [o['vlan']], 'func': [o['fun']],
                      'description': [o['desc']],'acl':'OA','project': project, 'building_name': None, 'floor': [o['floor']],
                      'bdr': [o['bdr']], 'type_of_workplace': None}
@@ -176,4 +198,5 @@ def generation_ip_planning(network,project):
                      'description': [v['desc']],'acl':'VOIP','project': project, 'building_name': None, 'floor': [v['floor']],
                      'bdr': [v['bdr']], 'type_of_workplace': None}
         ip_planning_list.append(voip_ip)
+    print(ip_planning_list)
     return ip_planning_list
