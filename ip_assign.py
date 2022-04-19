@@ -1,3 +1,4 @@
+import itertools
 from math import ceil
 import ipaddress
 import mysql_table_query
@@ -48,27 +49,30 @@ def cacl_voip(project):
 
 def network_class(network,project):
     pubilc_network_list = []
-    core_ip = None
+    core_ip_list = []
     loopback = []
-
-    # connectip = []
+    mgt_network = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
-    core_network = ip_address.__next__()
-    connect_ip = (len(cacl_floor_bdr_num(project)))*4/256
+    connect_ip = (len(cacl_floor_bdr_num(project)))*8/256
     if connect_ip < 1:
-        core_ip = (ip for ip in core_network.subnets(new_prefix=30))
+        core_network = ip_address.__next__()
+        mgt_network.append(core_network)
+        for ip in core_network.subnets(new_prefix=30):
+            core_ip_list.append(ip)
     else:
         numbers_of_connect_ip = ceil(connect_ip)
         while numbers_of_connect_ip != 0:
-            core_ip = (ip for ip in core_network.subnets(new_prefix=30))
+            core_network = ip_address.__next__()
+            mgt_network.append(core_network)
+            for ip in core_network.subnets(new_prefix=30):
+                core_ip_list.append(ip)
             numbers_of_connect_ip = numbers_of_connect_ip - 1
+    core_ip = itertools.product(core_ip_list)
     loopbackip = 0
     while loopbackip <= 7:
         loopback.append(core_ip.__next__())
         loopbackip = loopbackip + 1
-    # for con in core_ip:
-    #     connectip.append(con)
-    network_class_dict = {'mgt':core_network,'connection_ip':core_ip,'public':[],'normal':None}
+    network_class_dict = {'mgt':mgt_network,'connection_ip':core_ip,'public':[],'normal':None}
     n = cacl_public(project)
     while n != 0:
         n = n - 1
@@ -82,7 +86,6 @@ def network_class(network,project):
         m = m - 1
         normal_network_list.append(ip_address.__next__())
     network_class_dict['normal'] = (ip for ip in normal_network_list)
-
     return network_class_dict
 
 
@@ -159,8 +162,17 @@ def generation_ip_planning(network,project):
     ip_planning_list = []
     # #IP规划
     core_ipaddress = network_class(network,project)['mgt']
-    core_ip_dict = {'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':None,'bdr':None,'type_of_workplace':None}
-    ip_planning_list.append(core_ip_dict)
+    core_network = len(core_ipaddress)
+    if core_network <= 1:
+        ip_planning_list.append({'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':None,'bdr':None,'type_of_workplace':None})
+    else:
+        for n in core_ipaddress:
+            core_ip_dict = {'network': [n], 'status': None, 'domain': None, 'vlan': None, 'func': ['核心网段'],
+                            'description': ['interconnection'], 'acl': None, 'project': project, 'building_name': None,
+                            'floor': None, 'bdr': None, 'type_of_workplace': None}
+            ip_planning_list.append(core_ip_dict)
+
+
 
     for n, m in zip(mgt_num(project),network_class(network,project)['public']):
         acl = ''
@@ -174,7 +186,7 @@ def generation_ip_planning(network,project):
             acl = 'GELI'
         n['network'] = str(m)
         # ip_planning_sheet.append([n['vlan'],n['network'],n['fun'],n['desc'],n['floor'],n['bdr']])
-        public_ip = {'network':[n['network']],'status':None,'domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']],'type_of_workplace':None}
+        public_ip = {'network':[ipaddress.ip_network(n['network'])],'status':None,'domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']],'type_of_workplace':None}
         ip_planning_list.append(public_ip)
 
     network_list = network_class(network,project)['normal']
@@ -198,5 +210,4 @@ def generation_ip_planning(network,project):
                      'description': [v['desc']],'acl':'VOIP','project': project, 'building_name': None, 'floor': [v['floor']],
                      'bdr': [v['bdr']], 'type_of_workplace': None}
         ip_planning_list.append(voip_ip)
-    print(ip_planning_list)
     return ip_planning_list
