@@ -68,7 +68,6 @@ def core_ip():
 
 # def parameter(project):
 #     db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
-#
 #     cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
 #     parameter = "select * from parameter where project = '%s'" %project
 #     cursor1.execute(parameter)

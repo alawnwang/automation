@@ -87,8 +87,6 @@ def network_class(network,project):
         normal_network_list.append(ip_address.__next__())
     network_class_dict['normal'] = (ip for ip in normal_network_list)
     return network_class_dict
-
-
 #
 def mgt_num(project):
     public_dict_list = []
@@ -110,8 +108,6 @@ def mgt_num(project):
             public_dict = {'vlan': vlan, 'floor': str(floor_bdr_split[0]),'bdr':str(floor_bdr_split[1]),'network':'','fun':fun,'desc':des}
             public_dict_list.append(public_dict)
     return public_dict_list
-
-
 
 
 def generation_netwrok_dict(project):
@@ -163,13 +159,15 @@ def generation_ip_planning(network,project):
     # #IP规划
     core_ipaddress = network_class(network,project)['mgt']
     core_network = len(core_ipaddress)
+    core_bdr_floor = mysql_table_query.workplace_info(project).pop(0)['core_bdr_floor']
+    print(core_bdr_floor)
     if core_network <= 1:
-        ip_planning_list.append({'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':None,'bdr':None,'type_of_workplace':None})
+        ip_planning_list.append({'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':[core_bdr_floor],'bdr':[1],'type_of_workplace':None})
     else:
         for n in core_ipaddress:
             core_ip_dict = {'network': [n], 'status': None, 'domain': None, 'vlan': None, 'func': ['核心网段'],
                             'description': ['interconnection'], 'acl': None, 'project': project, 'building_name': None,
-                            'floor': None, 'bdr': None, 'type_of_workplace': None}
+                            'floor': [core_bdr_floor], 'bdr': [1], 'type_of_workplace': None}
             ip_planning_list.append(core_ip_dict)
 
 

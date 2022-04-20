@@ -211,7 +211,13 @@ interface {{interface_vlan}}
 ''')
 
 
+
 class route_config:
+    def ospf_config():
+        return Template('''
+router ospf 100
+ silent-interface all
+    ''')
     def undo_silcent():
         return Template('''
  undo silent-interface {{interconnect_interface}}
@@ -224,9 +230,6 @@ class route_config:
   network {{ipaddress}} 0.0.0.0
   stub
         ''')
-    def ospf_config():
-        return Template('''
-router ospf 100
- silent-interface all
-''')
+
+
 

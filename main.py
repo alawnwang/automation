@@ -19,17 +19,10 @@ ip_planning_sheet.append(['vlan','network','function','desctiption','floor','bdr
 
 project = input('项目名称: ')
 
+#
 network = input('IP地址：')
 
-# con = connection_relation.connection_relation(network,project)
-# for i in con:
-#     print(i)
-
-# print(ip_assign.num_of_network(project))
-# paramete = mysql_table_query.parameter(project)
 #
-# print((paramete['AP_dhcp']).split(';'))
-
 def ip_planning_intser_sql():
     for net in ip_assign.generation_ip_planning(network,project):
         ip = pd.DataFrame.from_dict(net, orient='columns')
@@ -40,18 +33,11 @@ ip_planning_intser_sql()
 print('IP规划已生成完毕')
 
 def connection_intser_sql():
-    connect = connection_relation.connection_relation(network,project)
+    connect = connection_relation.connection_relation(network,project)['connect']
     con = pd.DataFrame.from_dict(connect, orient='columns')
-    print(con)
     con.to_sql(con=mysql_table_query.link_db(), name='connection_relation', if_exists='append', index=False)
+    mgtip = connection_relation.connection_relation(network,project)['mgtip']
+    mgt = pd.DataFrame.from_dict(mgtip, orient='columns')
+    mgt.to_sql(con=mysql_table_query.link_db(), name='Manage_IP_assignments', if_exists='append', index=False)
 connection_intser_sql()
 print('链接关系已生成完毕')
-
-# core_link()
-# core_doa_link()
-# doa_access_link()
-
-# planning_workbook.save(planning_workbook.save('/Users/alawn/Desktop/%s.xlsx'%project))
-#
-#
-#

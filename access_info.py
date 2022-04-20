@@ -2,7 +2,6 @@ import mysql_table_query
 import device_name_prefix
 import ipaddress
 import device_port
-from type_dict import type
 from math import ceil
 
 #计算每层楼接入设备数量
@@ -60,7 +59,7 @@ def access_manage_ip(project):
         v_evp_mgt = mgt_ip_list[32:46]
         w_ewl_mgt = mgt_ip_list[59:63]
         all_mgt_list.append(
-            {'floor': entry['floor'],'gw':default_gw,'DXOA': d_xoa_mgt, 'EXOA': e_xoa_mgt,
+            {'floor': entry['floor'],'bdr':entry['bdr'],'gw':default_gw,'DXOA': d_xoa_mgt, 'EXOA': e_xoa_mgt,
              'VEVP': v_evp_mgt, 'VEWL': w_ewl_mgt})
     return all_mgt_list
 
@@ -82,7 +81,7 @@ def generation_floor_device_name(project):
         e_xoa_name = ['-'.join((device_name_prefix.device_prefix(mysql_table_query.workplace_info(project)[0]['city'],mysql_table_query.workplace_info(project)[0]['building_name']),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'E',entry['xoa'],str(num).rjust(2,'0'))) for num in range (1,entry['e_xoa']+1)]
         v_evp_name = ['-'.join((device_name_prefix.device_prefix(mysql_table_query.workplace_info(project)[0]['city'],mysql_table_query.workplace_info(project)[0]['building_name']),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'V',entry['evp'],str(num).rjust(2,'0'))) for num in range (1,entry['v_evp']+1)]
         v_ewl_name = ['-'.join((device_name_prefix.device_prefix(mysql_table_query.workplace_info(project)[0]['city'],mysql_table_query.workplace_info(project)[0]['building_name']),(str(entry['floor'])+str(entry['bdr']).rjust(2,'0')),'V',entry['ewl'],str(num).rjust(2,'0'))) for num in range (1,entry['w_ewl']+1)]
-        floor_device_dict = {'floor':entry['floor'],'DXOA':d_xoa_name,'EXOA':e_xoa_name,'VEVP':v_evp_name,'VEWL':v_ewl_name}
+        floor_device_dict = {'floor':entry['floor'],'bdr':entry['bdr'],'DXOA':d_xoa_name,'EXOA':e_xoa_name,'VEVP':v_evp_name,'VEWL':v_ewl_name}
         devicelist.append(floor_device_dict)
     return devicelist
 
@@ -133,24 +132,24 @@ def get_access_info(project):
         access_dict = {'floor':n['floor'],'gateway':str(m['gw'][0]),'netmask':str(m['gw'][1]),'DXOA':[],'EXOA':[],'VEVP':[],'VEWL':[]}
         for name in n['DXOA']:
             ip_address = m['DXOA'].pop(0)
-            dxoa = {'floor':n['floor'],'name':name,'ip':str(ip_address[0]),'netmask':str(ip_address[1]),'port_assign':get_xoa_type(project)['port_assign']}
+            dxoa = {'floor':n['floor'],'bdr':n['bdr'],'name':name,'ip':str(ip_address[0]),'netmask':str(ip_address[1]),'port_assign':get_xoa_type(project)['port_assign']}
             if access_dict['floor'] == dxoa['floor']:
                 access_dict['DXOA'].append(dxoa)
         for name in n['EXOA']:
             ip_address = m['EXOA'].pop(0)
-            exoa = {'floor': n['floor'], 'name': name, 'ip': str(ip_address[0]),
+            exoa = {'floor': n['floor'],'bdr':n['bdr'],'name': name, 'ip': str(ip_address[0]),
                     'netmask': str(ip_address[1]), 'port_assign': get_xoa_type(project)['port_assign']}
             if access_dict['floor'] == exoa['floor']:
                 access_dict['EXOA'].append(exoa)
         for name in n['VEVP']:
             ip_address = m['VEVP'].pop(0)
-            vevp = {'floor': n['floor'], 'name': name, 'ip': str(ip_address[0]),
+            vevp = {'floor': n['floor'],'bdr':n['bdr'],'name': name, 'ip': str(ip_address[0]),
                     'netmask': str(ip_address[1]), 'port_assign':get_evp_type(project)['port_assign']}
             if access_dict['floor'] == vevp['floor']:
                 access_dict['VEVP'].append(vevp)
         for name in n['VEWL']:
             ip_address = m['VEWL'].pop(0)
-            vewl = {'floor': n['floor'], 'name': name, 'ip': str(ip_address[0]),
+            vewl = {'floor': n['floor'],'bdr':n['bdr'],'name': name, 'ip': str(ip_address[0]),
                     'netmask': str(ip_address[1]), 'port_assign':get_ewl_type(project)['port_assign']}
             if access_dict['floor'] == vewl['floor']:
                 access_dict['VEWL'].append(vewl)
