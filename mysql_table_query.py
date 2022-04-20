@@ -66,6 +66,15 @@ def core_ip():
     info_data = cursor1.fetchall()
     return info_data
 
+def deivce_ip(project):
+    db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
+
+    cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
+    info = "select * from Manage_IP_assignments where project = '%s'" % project
+    cursor1.execute(info)
+    device_ip = cursor1.fetchall()
+    return device_ip
+
 # def parameter(project):
 #     db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
 #     cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
