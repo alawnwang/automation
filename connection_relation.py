@@ -2,7 +2,7 @@ import coa_info
 import doa_info
 import access_info
 import ip_assign
-
+#
 def connection_relation(network,project):
     coa_info_summary = coa_info.get_coa_info(project)
     doa_info_summary = doa_info.get_doa_info(project)
