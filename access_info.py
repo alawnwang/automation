@@ -138,19 +138,19 @@ def get_access_info(project):
         for name in n['EXOA']:
             ip_address = m['EXOA'].pop(0)
             exoa = {'floor': n['floor'],'bdr':n['bdr'],'name': name, 'ip': str(ip_address[0]),
-                    'netmask': str(ip_address[1]), 'port_assign': get_xoa_type(project)['port_assign']}
+                    'netmask': str(ip_address[1]),'gateway':str(m['gw'][0]), 'port_assign': get_xoa_type(project)['port_assign']}
             if access_dict['floor'] == exoa['floor']:
                 access_dict['EXOA'].append(exoa)
         for name in n['VEVP']:
             ip_address = m['VEVP'].pop(0)
             vevp = {'floor': n['floor'],'bdr':n['bdr'],'name': name, 'ip': str(ip_address[0]),
-                    'netmask': str(ip_address[1]), 'port_assign':get_evp_type(project)['port_assign']}
+                    'netmask': str(ip_address[1]),'gateway':str(m['gw'][0]), 'port_assign':get_evp_type(project)['port_assign']}
             if access_dict['floor'] == vevp['floor']:
                 access_dict['VEVP'].append(vevp)
         for name in n['VEWL']:
             ip_address = m['VEWL'].pop(0)
             vewl = {'floor': n['floor'],'bdr':n['bdr'],'name': name, 'ip': str(ip_address[0]),
-                    'netmask': str(ip_address[1]), 'port_assign':get_ewl_type(project)['port_assign']}
+                    'netmask': str(ip_address[1]),'gateway':str(m['gw'][0]), 'port_assign':get_ewl_type(project)['port_assign']}
             if access_dict['floor'] == vewl['floor']:
                 access_dict['VEWL'].append(vewl)
         access_list.append(access_dict)
