@@ -4,6 +4,7 @@ import ipaddress
 import device_port
 from math import ceil
 
+
 #计算每层楼接入设备数量
 def device_number(dpoint,epoint,vpoint,area):
     d_xoa = ceil(dpoint/48)
@@ -15,7 +16,6 @@ def device_number(dpoint,epoint,vpoint,area):
     else:
         w_ewl = 1
     return {'d_xoa':d_xoa,'e_xoa':e_xoa,'v_evp':v_evp,'w_ewl':w_ewl}
-
 #
 def device_number_dict(project):
     device_number_dict_list = []
@@ -128,11 +128,11 @@ def get_ewl_type(project):
 
 def get_access_info(project):
     access_list = []
-    for n,m in  zip(generation_floor_device_name(project),access_manage_ip(project)):
-        access_dict = {'floor':n['floor'],'gateway':str(m['gw'][0]),'netmask':str(m['gw'][1]),'DXOA':[],'EXOA':[],'VEVP':[],'VEWL':[]}
+    for n,m in zip(generation_floor_device_name(project),access_manage_ip(project)):
+        access_dict = {'floor':n['floor'],'bdr':n['bdr'],'DXOA':[],'EXOA':[],'VEVP':[],'VEWL':[]}
         for name in n['DXOA']:
             ip_address = m['DXOA'].pop(0)
-            dxoa = {'floor':n['floor'],'bdr':n['bdr'],'name':name,'ip':str(ip_address[0]),'netmask':str(ip_address[1]),'port_assign':get_xoa_type(project)['port_assign']}
+            dxoa = {'floor':n['floor'],'bdr':n['bdr'],'name':name,'ip':str(ip_address[0]),'netmask':str(ip_address[1]),'gateway':str(m['gw'][0]),'port_assign':get_xoa_type(project)['port_assign']}
             if access_dict['floor'] == dxoa['floor']:
                 access_dict['DXOA'].append(dxoa)
         for name in n['EXOA']:
@@ -154,4 +154,7 @@ def get_access_info(project):
             if access_dict['floor'] == vewl['floor']:
                 access_dict['VEWL'].append(vewl)
         access_list.append(access_dict)
+
     return access_list
+
+
