@@ -43,9 +43,9 @@ hwtacacs scheme tencent_scheme
  secondary authentication  10.14.160.75
  secondary authorization  10.14.160.75
  secondary accounting  10.14.160.75
- key authentication cipher {{tacacs_key}}
- key authorization cipher {{tacacs_key}}
- key accounting cipher {{tacacs_key}}
+ key authentication cipher tencent
+ key authorization cipher tencent
+ key accounting cipher tencent
  user-name-format without-domain
  nas-ip {{nas_ip}}
     ''')
