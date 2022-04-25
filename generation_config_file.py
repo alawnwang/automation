@@ -47,11 +47,6 @@ def basic_device_info_dict(func):
     return doa_config_info
 
 
-        # print(vlan_config)
-        # for con in mysql_table_query.connection(project):
-        #     print(con)
-
-
 doa = basic_device_info_dict(mysql_table_query.deivce_ip(project))
 for d in doa:
     if '-D-' in d['device_name']:
