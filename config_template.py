@@ -1,8 +1,8 @@
 from jinja2 import Template
 class config_template:
 
-    def doa_uplink(self):
-        self.DOA_UP_LINK_PORT = Template('''
+    def doa_uplink():
+        DOA_UP_LINK_PORT = Template('''
 interface {{port_num}}
 description {{uplink_descr}}
 ip address {{ip_address}} {{netmask}}
@@ -125,7 +125,7 @@ domain tencent_domain
     def local_user():
         return '''
 local-user netman class manage
- password simple tencent@123
+ password simple {{password}}
  service-type telnet ssh terminal
  authorization-attribute user-role network-admin
 '''

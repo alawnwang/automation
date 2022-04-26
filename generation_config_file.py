@@ -48,9 +48,11 @@ def basic_device_info_dict(func):
 
 
 doa = basic_device_info_dict(mysql_table_query.deivce_ip(project))
+
 for d in doa:
     if '-D-' in d['device_name']:
         with open('/Users/wanghaoyu/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
+
             for n in d['network']:
                 config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
 
