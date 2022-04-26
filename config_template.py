@@ -183,6 +183,7 @@ interface {{port_channel}}
         return Template('''
 vlan {{vlan_num}}
  name {{vlan_des}}
+#
 ''')
 
     def mater_interface_vlan_config():
@@ -196,18 +197,20 @@ interface {{interface_vlan}}
  dhcp select relay
  dhcp relay server-address {{master_dhcp}}
  dhcp relay server-address {{slave_dhcp}}
+#
 ''')
 
     def slaver_interface_vlan_config():
         return Template('''
 interface {{interface_vlan}}
  description {{vlan_des}}
- ip address {{slaver_vlan_ipaddress}} {{vlan_netmask}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} {{vrrp_ip}}
  packet-filter name {{acl_name}} inbound
  dhcp select relay
  dhcp relay server-address {{master_dhcp}}
  dhcp relay server-address {{slave_dhcp}}
+#
 ''')
 
 
