@@ -8,46 +8,62 @@ def basic_device_info_dict(func):
     manage_ip_list = func
     network = mysql_table_query.ip_planning(project)
     connect = mysql_table_query.connection(project)
+    interconnection_list = []
+    for c in connect:
+        if '-DOA-' in c['A_device'] and '-DOA-' in c['Z_device'] :
+            connection = {'A_device': None, 'A_port': None, 'Z_device': None, 'Z_port': None}
+            connection['A_device'] = c['A_device']
+            connection['A_port'] = c['A_port']
+            connection['Z_device'] = c['Z_device']
+            connection['Z_port'] = c['Z_port']
+            interconnection_list.append(connection)
 
     for ip in manage_ip_list:
-        networklist = []
-        mcon = []
-        scon = []
-        for n in network:
-            interface_vlan = {'vlan': None, 'network': None,'desc':None,'acl':None}
-            if str(n['floor'])+str(n['bdr']) == str(ip['floor'])+str(ip['bdr']):
-                interface_vlan['vlan'] = n['vlan']
-                interface_vlan['network'] = n['network']
-                interface_vlan['desc'] = n['description']
-                interface_vlan['acl'] = n['acl']
+        interconnect = {'interconnect':[]}
+        for n in interconnection_list:
+            print(n)
+            if ip['device_name'] == n['A_device']:
+                interconnect['interconnect'].append(n)
+
+    #
+    #     networklist = []
+    #     mcon = []
+    #     scon = []
+        # for n in network:
+        #     interface_vlan = {'vlan': None, 'network': None,'desc':None,'acl':None}
+        #     if str(n['floor'])+str(n['bdr']) == str(ip['floor'])+str(ip['bdr']):
+        #         interface_vlan['vlan'] = n['vlan']
+        #         interface_vlan['network'] = n['network']
+        #         interface_vlan['desc'] = n['description']
+        #         interface_vlan['acl'] = n['acl']
+        #
+        #
+        #         networklist.append(interface_vlan)
+        # if '-DOA-' not in ip['device_name']:
+        #     pass
+        # else:
+        #     ip.update({'network':networklist})
+        #     doa_config_info.append(ip)
 
 
-                networklist.append(interface_vlan)
-        if '-DOA-' not in ip['device_name']:
-            pass
-        else:
-            ip.update({'network':networklist})
-            doa_config_info.append(ip)
 
-        for c in connect:
-            connection = {'A_deivce':None,'A_port':None,'Z_device':None,'Z_port':None}
-            if str(c['A_floor']) + str(c['A_bdr']) == str(ip['floor']) + str(ip['bdr']):
-                if '-D-' in ip['device_name'] and '-DOA-' in ip['device_name'] and '-D-' in c['A_device']:
-                    connection['A_device'] = c['A_device']
-                    connection['A_port'] = c['A_port']
-                    connection['Z_device'] = c['Z_device']
-                    connection['Z_port'] = c['Z_port']
-                    mcon.append(connection)
-                    ip.update({'mconnect':mcon})
-                if '-E-' in ip['device_name'] and '-DOA-' in ip['device_name'] and '-E-' in c['A_device'] or '-E-' in c['Z_device']:
-                    connection['A_device'] = c['A_device']
-                    connection['A_port'] = c['A_port']
-                    connection['Z_device'] = c['Z_device']
-                    connection['Z_interface'] = c['Z_port']
-                    scon.append(connection)
-                    ip.update({'sconnect': scon})
-        print(ip)
-    return doa_config_info
+            #     if '-DOA-' in ip['device_name'] and  '-DOA-' in ip['']
+                # if '-D-' in ip['device_name'] and '-DOA-' in ip['device_name'] and '-D-' in c['A_device']:
+                #     connection['A_device'] = c['A_device']
+                #     connection['A_port'] = c['A_port']
+                #     connection['Z_device'] = c['Z_device']
+                #     connection['Z_port'] = c['Z_port']
+                #     mcon.append(connection)
+                #     ip.update({'mconnect':mcon})
+                # if '-E-' in ip['device_name'] and '-DOA-' in ip['device_name'] and '-E-' in c['A_device']:
+                #     connection['A_device'] = c['A_device']
+                #     connection['A_port'] = c['A_port']
+                #     connection['Z_device'] = c['Z_device']
+                #     connection['Z_interface'] = c['Z_port']
+                #     scon.append(connection)
+                #     ip.update({'sconnect': scon})
+        # print(ip)
+    # return doa_config_info
 
 basic_device_info_dict(mysql_table_query.deivce_ip(project))
 
