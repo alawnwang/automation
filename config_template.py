@@ -9,7 +9,7 @@ ip address {{ip_address}} {{netmask}}
 no ip redric
 no ip unreachable
         ''')
-        return self.DOA_UP_LINK_PORT
+        return DOA_UP_LINK_PORT
 
     def doa_downlink():
         DOA_DOWN_LINK_PROT=Template('''
@@ -125,7 +125,7 @@ domain tencent_domain
     def local_user():
         return '''
 local-user netman class manage
- password simple {{password}}
+ password simple 1111111
  service-type telnet ssh terminal
  authorization-attribute user-role network-admin
 '''
@@ -186,7 +186,26 @@ vlan {{vlan_num}}
 #
 ''')
 
-    def mater_interface_vlan_config():
+    def vlan10_mater_interface_vlan_config():
+        return Template('''
+interface {{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vlan_num}} priority 120
+#
+''')
+
+    def vlan10_slaver_interface_vlan_config():
+        return Template('''
+interface {{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+#
+''')
+
+    def normal_mater_interface_vlan_config():
         return Template('''
 interface {{interface_vlan}}
  description {{vlan_des}}
@@ -200,7 +219,7 @@ interface {{interface_vlan}}
 #
 ''')
 
-    def slaver_interface_vlan_config():
+    def normal_slaver_interface_vlan_config():
         return Template('''
 interface {{interface_vlan}}
  description {{vlan_des}}
@@ -213,26 +232,47 @@ interface {{interface_vlan}}
 #
 ''')
 
+    def voip_mater_interface_vlan_config():
+        return Template('''
+interface {{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ packet-filter name {{acl_name}} inbound
+ dhcp select relay
+ dhcp relay server-address {{master_dhcp}}
+ dhcp relay server-address {{slave_dhcp}}
+#
+''')
+
+    def voip_slaver_interface_vlan_config():
+        return Template('''
+interface {{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vlan_num}} priority 120
+ packet-filter name {{acl_name}} inbound
+ dhcp select relay
+ dhcp relay server-address {{master_dhcp}}
+ dhcp relay server-address {{slave_dhcp}}
+#
+''')
 
 
 class route_config:
     def ospf_config():
-        return Template('''
+        return ('''
 router ospf 100
- silent-interface all
-    ''')
+ silent-interface all''')
     def undo_silcent():
         return Template('''
  undo silent-interface {{interconnect_interface}}
- undo silent-interface {{mgt_vlan_num}}
-        ''')
-
+ undo silent-interface {{mgt_vlan_num}}''')
     def network_area():
-        return Template('''
- area {{core_network}}
-  network {{ipaddress}} 0.0.0.0
-  stub
-        ''')
+        return Template('''area {{core_network}}''')
+    def network():
+        return Template('''network {{ipaddress}} 0.0.0.0''')
 
 
 
