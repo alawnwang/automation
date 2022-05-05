@@ -43,7 +43,7 @@ def endpoint(project):
     db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
 
     cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
-    endpoint = "select * from endpoint where project = '%s'" %project
+    endpoint = "select * from endpoint where project = '%s' ORDER BY floor*1" %project
     cursor1.execute(endpoint)
     endpoint_data = cursor1.fetchall()
     return endpoint_data
@@ -81,6 +81,15 @@ def connection(project):
 
     cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
     info = "select * from connection_relation where project = '%s'" % project
+    cursor1.execute(info)
+    connection = cursor1.fetchall()
+    return connection
+
+def dhcp(project):
+    db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
+
+    cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
+    info = "select * from parameter where project = '%s'" % project
     cursor1.execute(info)
     connection = cursor1.fetchall()
     return connection

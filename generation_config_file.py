@@ -87,80 +87,282 @@ def basic_device_info_dict(func):
 doa = basic_device_info_dict(mysql_table_query.deivce_ip(project))
 core_network = mysql_table_query.core_ip()
 ospf_area = ipaddress.IPv4Network(core_network[0]['network']).network_address
+def login_acl():
+    login_acl = []
+    rule_num = 65
+
+    for acl in core_network:
+        rule_num = rule_num+5
+        logacl = ' rule '+str(rule_num)+' permit soure '+str(ipaddress.IPv4Network(acl['network']).network_address)+' '+str(ipaddress.IPv4Network(acl['network']).hostmask)
+        login_acl.append(logacl)
+    return login_acl
+
+
+ap_dhcp = str(mysql_table_query.dhcp(project)[0]['AP_dhcp']).split(';')
+video_dhcp = str(mysql_table_query.dhcp(project)[0]['Video_dhcp']).split(';')
+oadevice_dhcp = str(mysql_table_query.dhcp(project)[0]['OA-Device_dhcp']).split(';')
+geli_dhcp =str(mysql_table_query.dhcp(project)[0]['GELI_dhcp']).split(';')
+oa_dhcp = str(mysql_table_query.dhcp(project)[0]['OA_dhcp']).split(';')
+ty_dhcp = str(mysql_table_query.dhcp(project)[0]['TY_dhcp']).split(';')
+voip_dhcp = str(mysql_table_query.dhcp(project)[0]['VOIP_dhcp']).split(';')
+
+
+
 for d in doa:
     if '-D-' in d['device_name']:
-        def geneneration_ospf():
+        with open('/Users/wanghaoyu/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
+            config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
+            config.write('\n'+'#')
+            config.write(config_template.config_template.time_zone())
+            config.write('#')
+            config.write(config_template.config_template.login_acl_use())
+            config.write('#')
+            config.write(config_template.config_template.dldp_lldp())
+            config.write('#')
+            config.write(config_template.config_template.line_aux())
+            config.write('#')
+            config.write(config_template.config_template.vty())
+            config.write('#')
+            config.write(config_template.config_template.logging())
+            config.write('#')
+            config.write(config_template.config_template.ntp())
+            def geneneration_ospf():
+                unslicent = None
+                for n in d['network']:
+                    if n['desc'] == 'MGT':
+                        unslicent = config_template.route_config.undo_silcent().render(
+                            interconnect_interface=d['layer3connection']['Z_port'],
+                            mgt_vlan_num='vlan' + str(n['vlan']))
+                return unslicent
+            for n in d['network']:
+                config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
+
             for n in d['network']:
                 if n['desc'] == 'MGT':
-                    unslicent= config_template.route_config.undo_silcent().render(
-                        interconnect_interface=d['layer3connection']['Z_port'], mgt_vlan_num='vlan' + str(n['vlan']))
+                    config.write(config_template.h3c_port_config_template.vlan10_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'],vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'],vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                elif 'AP' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in ap_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n'+'#')
+                elif 'Video' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in video_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n'+'#')
+                elif 'OA_Device' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in oadevice_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n'+'#')
+                elif 'GELI' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in geli_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n'+'#')
+                elif 'OA' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in oa_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n'+'#')
+                elif 'TY' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in ty_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n'+'#')
+                elif 'VOIP' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.voip_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in voip_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n'+'#')
 
-            # area = config_template.route_config.network_area().render(core_network=str(ospf_area))
-            #     network = config_template.route_config.network().render(ipaddress=ipaddress.ip_network(n['network'])[1])
 
+            for i in d['interconnect']:
+                config.write(config_template.h3c_port_config_template.interconnect_phy_interface_config().render(phy_interface=i['A_port'],description=(i['Z_device']+'-'+i['Z_port'])))
+            for c in d['downlinkconnect']:
+                config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+c['Z_port'])))
+            config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(
+                phy_interface=d['layer3connection']['Z_port'],
+                description=d['layer3connection']['A_device'] + '-' + d['layer3connection']['A_port'],
+                ipaddress=d['layer3connection']['Z_ipaddress'], netmask=' 255.255.255.252'))
 
-                # print(area)
-                # print(network)
+            config.write(config_template.route_config.ospf_config())
+            config.write(geneneration_ospf())
+            config.write(config_template.route_config.network_area().render(core_network=str(ospf_area)))
+            for n in d['network']:
+                network = config_template.route_config.network().render(ipaddress=str(ipaddress.ip_network(n['network'])[2]))
+                config.write(network)
+            config.write('\n'+'  stub')
+            config.write('\n'+'#')
+            config.write(config_template.config_template.advance_acl())
+            config.write(config_template.config_template.aaa_tacacs().render(nas_ip=str(ipaddress.ip_network(n['network'])[2])))
+            config.write('\n'+'#')
+            config.write(config_template.config_template.snmp_acl())
+            config.write('#')
+            config.write(config_template.config_template.snmp_config())
+            config.write('#')
+            config.write(config_template.config_template.stand_login_acl())
+            for acl_cotent in login_acl():
+                config.write(config_template.config_template.floor_login_acl().render(login_acl=acl_cotent))
+            config.write(config_template.config_template.domain_lookup())
+        config.close()
+#     #
+    if '-E-' in d['device_name']:
+        with open('/Users/wanghaoyu/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
+            config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
+            config.write('\n'+'#')
+            config.write(config_template.config_template.time_zone())
+            config.write('#')
+            config.write(config_template.config_template.login_acl_use())
+            config.write('#')
+            config.write(config_template.config_template.dldp_lldp())
+            config.write('#')
+            config.write(config_template.config_template.line_aux())
+            config.write('#')
+            config.write(config_template.config_template.vty())
+            config.write('#')
+            config.write(config_template.config_template.logging())
+            config.write('#')
+            config.write(config_template.config_template.ntp())
+            def geneneration_ospf():
+                unslicent = None
+                for n in d['network']:
+                    if n['desc'] == 'MGT':
+                        unslicent = config_template.route_config.undo_silcent().render(
+                            interconnect_interface=d['layer3connection']['Z_port'],
+                            mgt_vlan_num='vlan' + str(n['vlan']))
+                return unslicent
+            for n in d['network']:
+                config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
 
-        geneneration_ospf()
-    #     with open('/Users/alawn/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
-    #
-    #         for n in d['network']:
-    #             print(n)
-    #             config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
-    #             if n['desc'] == 'MGT':
-    #                 config.write(config_template.h3c_port_config_template.vlan10_mater_interface_vlan_config().render(interface_vlan=n['vlan'],vlan_des=n['desc'],
-    #                                                                                                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-    #                                                                                                        vlan_num=n['vlan'],vrrp_ip=ipaddress.ip_network(n['network'])[1]))
-    #             elif 'VOIP' in n['desc']:
-    #                 config.write(config_template.h3c_port_config_template.voip_mater_interface_vlan_config().render(interface_vlan=n['vlan'],vlan_des=n['desc'],
-    #                                                                                                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-    #                                                                                                        vlan_num=n['vlan'],vrrp_ip=ipaddress.ip_network(n['network'])[1],acl_name=n['acl']))
-    #             else:
-    #                 config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(interface_vlan=n['vlan'],vlan_des=n['desc'],
-    #                                                                                                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-    #                                                                                                        vlan_num=n['vlan'],vrrp_ip=ipaddress.ip_network(n['network'])[1],acl_name=n['acl']))
-    #
-    #
-    #         for i in d['interconnect']:
-    #             config.write(config_template.h3c_port_config_template.interconnect_phy_interface_config().render(phy_interface=i['A_port'],description=(i['Z_device']+'-'+i['Z_port'])))
-    #         for c in d['downlinkconnect']:
-    #             config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+c['Z_port'])))
-    #         config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(
-    #             phy_interface=d['layer3connection']['Z_port'],
-    #             description=d['layer3connection']['A_device'] + '-' + d['layer3connection']['A_port'],
-    #             ipaddress=d['layer3connection']['Z_ipaddress'], netmask=' 255.255.255.252'))
-    #     config.close()
-    #
-    # if '-E-' in d['device_name']:
-    #     with open('/Users/alawn/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
-    #         for n in d['network']:
-    #             print(n)
-    #             config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
-    #
-    #             if n['desc'] == 'MGT':
-    #                 config.write(config_template.h3c_port_config_template.vlan10_slaver_interface_vlan_config().render(interface_vlan=n['vlan'],vlan_des=n['desc'],
-    #                                                                                                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-    #                                                                                                        vlan_num=n['vlan'],vrrp_ip=ipaddress.ip_network(n['network'])[1]))
-    #             elif 'VOIP' in n['desc']:
-    #                 config.write(config_template.h3c_port_config_template.voip_slaver_interface_vlan_config().render(interface_vlan=n['vlan'],vlan_des=n['desc'],
-    #                                                                                                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-    #                                                                                                        vlan_num=n['vlan'],vrrp_ip=ipaddress.ip_network(n['network'])[1],acl_name=n['acl']))
-    #             else:
-    #                 config.write(config_template.h3c_port_config_template.normal_slaver_interface_vlan_config().render(interface_vlan=n['vlan'],vlan_des=n['desc'],
-    #                                                                                                        vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-    #                                                                                                        vlan_num=n['vlan'],vrrp_ip=ipaddress.ip_network(n['network'])[1],acl_name=n['acl']))
-    #             config.write(config_template.route_config.ospf_config())
-    #             if n['desc'] == 'MGT':
-    #                 config.write(config_template.route_config.undo_silcent().render(interconnect_interface = d['layer3connection']['Z_port'],mgt_vlan_num= 'vlan'+n['vlan']))
-    #             config.write(config_template.route_config.network_area().render(core_network=str(ospf_area)))
-    #             config.write(config_template.route_config.network().render(ipaddress=n['network'])[1])
-    #             config.write(' stub')
-    #         for i in d['interconnect']:
-    #             config.write(config_template.h3c_port_config_template.interconnect_phy_interface_config().render(phy_interface=i['Z_port'],description=(i['A_device']+'-'+i['A_port'])))
-    #         for c in d['downlinkconnect']:
-    #             config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+c['Z_port'])))
-    #         config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(phy_interface=d['layer3connection']['Z_port'],description=d['layer3connection']['A_device']+'-'+d['layer3connection']['A_port'],ipaddress=d['layer3connection']['Z_ipaddress'],netmask=' 255.255.255.252'))
-    #     config.close()
-    #
+            for n in d['network']:
+                if n['desc'] == 'MGT':
+                    config.write(config_template.h3c_port_config_template.vlan10_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                elif 'AP' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in ap_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n' + '#')
+                elif 'Video' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in video_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n' + '#')
+                elif 'OA_Device' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in oadevice_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n' + '#')
+                elif 'GELI' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in geli_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n' + '#')
+                elif 'OA' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in oa_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n' + '#')
+                elif 'TY' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in ty_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n' + '#')
+                elif 'VOIP' in n['desc']:
+                    config.write(config_template.h3c_port_config_template.voip_mater_interface_vlan_config().render(
+                        interface_vlan=n['vlan'], vlan_des=n['desc'],
+                        vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
+                        vlan_netmask=ipaddress.ip_network(n['network']).netmask,
+                        vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                    for dhcp in voip_dhcp:
+                        config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
+                    config.write('\n' + '#')
+            for i in d['interconnect']:
+                config.write(config_template.h3c_port_config_template.interconnect_phy_interface_config().render(phy_interface=i['Z_port'],description=(i['A_device']+'-'+i['A_port'])))
+            for c in d['downlinkconnect']:
+                config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+c['Z_port'])))
+            config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(phy_interface=d['layer3connection']['Z_port'],description=d['layer3connection']['A_device']+'-'+d['layer3connection']['A_port'],ipaddress=d['layer3connection']['Z_ipaddress'],netmask=' 255.255.255.252'))
+            config.write(config_template.route_config.ospf_config())
+            config.write(geneneration_ospf())
+            config.write(config_template.route_config.network_area().render(core_network=str(ospf_area)))
+            for n in d['network']:
+                network = config_template.route_config.network().render(ipaddress=str(ipaddress.ip_network(n['network'])[3]))
+                config.write(network)
+            config.write('\n'+'  stub')
+            config.write('\n' + '#')
+            config.write(config_template.config_template.advance_acl())
+            config.write(
+                config_template.config_template.aaa_tacacs().render(nas_ip=str(ipaddress.ip_network(n['network'])[3])))
+            config.write('\n' + '#')
+            config.write(config_template.config_template.snmp_acl())
+            config.write('#')
+            config.write(config_template.config_template.snmp_config())
+            config.write('#')
+            config.write(config_template.config_template.stand_login_acl())
+            for acl_cotent in login_acl():
+                config.write(config_template.config_template.floor_login_acl().render(login_acl=acl_cotent))
+            config.write('#')
+            config.write(config_template.config_template.domain_lookup())
+        config.close()
+
     #

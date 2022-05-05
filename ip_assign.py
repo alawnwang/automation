@@ -160,7 +160,6 @@ def generation_ip_planning(network,project):
     core_ipaddress = network_class(network,project)['mgt']
     core_network = len(core_ipaddress)
     core_bdr_floor = mysql_table_query.workplace_info(project).pop(0)['core_bdr_floor']
-    print(core_bdr_floor)
     if core_network <= 1:
         ip_planning_list.append({'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':[core_bdr_floor],'bdr':[1],'type_of_workplace':None})
     else:

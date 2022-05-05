@@ -18,7 +18,6 @@ ip_planning_sheet = planning_workbook.create_sheet('ip_planning')
 ip_planning_sheet.append(['vlan','network','function','desctiption','floor','bdr'])
 
 project = input('项目名称: ')
-
 #
 network = input('IP地址：')
 
