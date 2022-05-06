@@ -36,6 +36,16 @@
 # df = pd.DataFrame(new_dict)
 # df.to_excel('/Users/wanghaoyu/Desktop/test.xlsx',sheet_name='test',)
 
-import mysql_table_query
-project = input('项目名称: ')
-print(mysql_table_query.dhcp(project))
+# import mysql_table_query
+# project = input('项目名称: ')
+# print(mysql_table_query.dhcp(project))
+import re
+def convert_interface_name(portname):
+    interface_name = None
+    if 'Ten-GigabitEthernet' in portname:
+        interface_name = portname.replace('Ten-GigabitEthernet','Te')
+    elif 'GigabitEthernet1' in portname:
+        interface_name = portname.replace('GigabitEthernet','Gi')
+    elif 'Smartrate-Ethernet' in portname:
+        interface_name = portname.replace('Smartrate-Ethernet','SGE')
+    return interface_name

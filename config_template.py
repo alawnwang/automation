@@ -545,8 +545,8 @@ interface {{phy_interface}}
 
     def port_channel_interface_config():
         return Template('''
-interface {{port_channel}}
- description {{description}}
+interface Bridge-Aggregation1
+ description {{description}}-Po1
  port link-type trunk
  undo port trunk permit vlan 1
  port trunk permit vlan 2 to 4094
