@@ -85,7 +85,7 @@ def basic_device_info_dict(func):
 #
 #
 doa = basic_device_info_dict(mysql_table_query.deivce_ip(project))
-core_network = mysql_table_query.core_ip()
+core_network = mysql_table_query.core_ip(project)
 ospf_area = ipaddress.IPv4Network(core_network[0]['network']).network_address
 def login_acl():
     login_acl = []

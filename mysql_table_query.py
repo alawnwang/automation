@@ -16,11 +16,6 @@ def link_db():
 #     session = Session()
 #     res = session.query(table).first()
 
-
-
-
-
-
 def workplace_info(project):
     db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
 
@@ -57,11 +52,11 @@ def equipment_type(project):
     equipment_data = cursor1.fetchall()
     return equipment_data
 
-def core_ip():
+def core_ip(project):
     db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
 
     cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
-    ip_info = "select * from ip_planning where func = '核心网段'"
+    ip_info = "select * from ip_planning where func = '核心网段' and project = '%s'" %project
     cursor1.execute(ip_info)
     info_data = cursor1.fetchall()
     return info_data

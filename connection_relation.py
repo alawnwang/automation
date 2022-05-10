@@ -1,3 +1,5 @@
+import ipaddress
+
 import coa_info
 import doa_info
 import access_info
@@ -43,12 +45,12 @@ def connection_relation(network,project):
         connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
         connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
         connection_dict['connect']['A_port'].append(coa)
-        connection_dict['connect']['A_ip'].append(d_a_z_ip[1])
+        connection_dict['connect']['A_ip'].append(str(d_a_z_ip[1])+'/'+str(d_a_z_ip.prefixlen))
         connection_dict['connect']['Z_floor'].append(doa['DDOA']['floor'])
         connection_dict['connect']['Z_bdr'].append(doa['DDOA']['bdr'])
         connection_dict['connect']['Z_device'].append(doa['DDOA']['name'])
         connection_dict['connect']['Z_port'].append(doa['DDOA']['port_assign']['uplink'][0])
-        connection_dict['connect']['Z_ip'].append(d_a_z_ip[2])
+        connection_dict['connect']['Z_ip'].append(str(d_a_z_ip[2])+'/'+str(d_a_z_ip.prefixlen))
 
         e_a_z_ip = connect_ip.__next__()[0]
         connection_dict['connect']['project'].append(project)
@@ -56,12 +58,12 @@ def connection_relation(network,project):
         connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
         connection_dict['connect']['A_device'].append(coa_info_summary['SCOA'])
         connection_dict['connect']['A_port'].append(coa)
-        connection_dict['connect']['A_ip'].append(e_a_z_ip[1])
+        connection_dict['connect']['A_ip'].append(str(e_a_z_ip[1])+'/'+str(e_a_z_ip.prefixlen))
         connection_dict['connect']['Z_floor'].append(doa['EDOA']['floor'])
         connection_dict['connect']['Z_bdr'].append(doa['EDOA']['bdr'])
         connection_dict['connect']['Z_device'].append(doa['EDOA']['name'])
         connection_dict['connect']['Z_port'].append(doa['EDOA']['port_assign']['uplink'][0])
-        connection_dict['connect']['Z_ip'].append(e_a_z_ip[2])
+        connection_dict['connect']['Z_ip'].append(str(e_a_z_ip[2])+'/'+str(e_a_z_ip.prefixlen))
 
     for coa, doa in zip(coa_info_summary['port_assign']['downlink'], doa_info_summary):
         connection_dict['connect']['project'].append(project)
