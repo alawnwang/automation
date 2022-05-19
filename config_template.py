@@ -668,6 +668,15 @@ interface Vlan-interface{{interface_vlan}}
         return Template('\n'+''' dhcp relay server-address {{dhcp_relay}}
 ''')
 
+    def access_mgt_interface_vlan_config():
+        return Template('''
+interface Vlan-interface{{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+''')
+
+    def access_default_gateway():
+        return Template('''ip route-static 0.0.0.0 0 {{gateway}}''' )
 
 
 
