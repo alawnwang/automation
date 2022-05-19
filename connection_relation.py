@@ -5,6 +5,8 @@ import doa_info
 import access_info
 import ip_assign
 #
+
+
 def connection_relation(network,project):
     coa_info_summary = coa_info.get_coa_info(project)
     doa_info_summary = doa_info.get_doa_info(project)
@@ -91,6 +93,7 @@ def connection_relation(network,project):
 
 #接入到汇聚互联/管理IP
     for doa in doa_info_summary:
+
         connection_dict['mgtip']['project'].append(project)
         connection_dict['mgtip']['floor'].append(doa['DDOA']['floor'])
         connection_dict['mgtip']['bdr'].append(doa['DDOA']['bdr'])
@@ -241,12 +244,19 @@ def connection_relation(network,project):
                     connection_dict['connect']['Z_ip'].append('Trunk')
 
     return connection_dict
+
+
+
+# n = (connection_relation(network,project)['mgtip'])
+# for i in n:
+#     print(i)
 #     for p,af,ab,ad,ap,ai,zf,zb,zd,zp,zi in zip(connection_dict['connect']['project'],connection_dict['connect']['A_floor'],connection_dict['connect']['A_bdr'],connection_dict['connect']['A_device'],connection_dict['connect']['A_port'],connection_dict['connect']['A_ip'],connection_dict['connect']['Z_floor'],connection_dict['connect']['Z_bdr'],connection_dict['connect']['Z_device'],connection_dict['connect']['Z_port'],connection_dict['connect']['Z_ip']):
 #         print(p,af,ab,ad,ap,ai,zf,zb,zd,zp,zi)
 #     #
 #
-#     for p,df,db,dd,di,dn,dg in zip(connection_dict['mgtip']['project'],connection_dict['mgtip']['floor'],connection_dict['mgtip']['bdr'],connection_dict['mgtip']['device_name'],connection_dict['mgtip']['mgtip'],connection_dict['mgtip']['mgtmask'],connection_dict['mgtip']['gateway']):
-#         print(p,df,db,dd,di,dn,dg)
-#     print(len(connection_dict['connect']['project']),len(connection_dict['connect']['A_floor']),len(connection_dict['connect']['A_bdr']),len(connection_dict['connect']['A_device']),len(connection_dict['connect']['A_port']),len(connection_dict['connect']['A_ip']),len(connection_dict['connect']['Z_floor']),len(connection_dict['connect']['Z_bdr']),len(connection_dict['connect']['Z_device']),len(connection_dict['connect']['Z_port']),len(connection_dict['connect']['Z_ip']))
-#     print(len(connection_dict['mgtip']['project']),len(connection_dict['mgtip']['floor']),len(connection_dict['mgtip']['bdr']),len(connection_dict['mgtip']['device_name']),len(connection_dict['mgtip']['mgtip']),len(connection_dict['mgtip']['mgtmask']),len(connection_dict['mgtip']['gateway']))
+    # print(connection_dict['mgtip']['device_name'],connection_dict['mgtip']['mgtip'],connection_dict['mgtip']['mgtmask'],connection_dict['mgtip']['gateway'])
+    # for p,df,db,dd,di,dn,dg in zip(connection_dict['mgtip']['project'],connection_dict['mgtip']['floor'],connection_dict['mgtip']['bdr'],connection_dict['mgtip']['device_name'],connection_dict['mgtip']['mgtip'],connection_dict['mgtip']['mgtmask'],connection_dict['mgtip']['gateway']):
+    #     print(p,df,db,dd,di,dn,dg)
+    # # print(len(connection_dict['connect']['project']),len(connection_dict['connect']['A_floor']),len(connection_dict['connect']['A_bdr']),len(connection_dict['connect']['A_device']),len(connection_dict['connect']['A_port']),len(connection_dict['connect']['A_ip']),len(connection_dict['connect']['Z_floor']),len(connection_dict['connect']['Z_bdr']),len(connection_dict['connect']['Z_device']),len(connection_dict['connect']['Z_port']),len(connection_dict['connect']['Z_ip']))
+    # print(len(connection_dict['mgtip']['project']),len(connection_dict['mgtip']['floor']),len(connection_dict['mgtip']['bdr']),len(connection_dict['mgtip']['device_name']),len(connection_dict['mgtip']['mgtip']),len(connection_dict['mgtip']['mgtmask']),len(connection_dict['mgtip']['gateway']))
 # connection_relation(network,project)

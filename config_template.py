@@ -561,9 +561,14 @@ vlan {{vlan_num}}
 #
 ''')
 
+    def gloabl_acl():
+        return Template('\n'+'''packet-filter name {{acl_name}} vlan-interface {{vlan_num}} inbound
+''')
+
+
     def vlan10_mater_interface_vlan_config():
         return Template('''
-interface {{interface_vlan}}
+interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} {{vrrp_ip}}
@@ -573,7 +578,7 @@ interface {{interface_vlan}}
 
     def vlan10_slaver_interface_vlan_config():
         return Template('''
-interface {{interface_vlan}}
+interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} {{vrrp_ip}}
@@ -582,7 +587,7 @@ interface {{interface_vlan}}
 
     def normal_mater_interface_vlan_config():
         return Template('''
-interface {{interface_vlan}}
+interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} {{vrrp_ip}}
@@ -593,7 +598,7 @@ interface {{interface_vlan}}
 
     def normal_slaver_interface_vlan_config():
         return Template('''
-interface {{interface_vlan}}
+interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} {{vrrp_ip}}
@@ -603,7 +608,7 @@ interface {{interface_vlan}}
 
     def voip_mater_interface_vlan_config():
         return Template('''
-interface {{interface_vlan}}
+interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} {{vrrp_ip}}
@@ -613,12 +618,50 @@ interface {{interface_vlan}}
 
     def voip_slaver_interface_vlan_config():
         return Template('''
-interface {{interface_vlan}}
+interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} {{vrrp_ip}}
  vrrp vrid {{vlan_num}} priority 120
  packet-filter name {{acl_name}} inbound
+ dhcp select relay
+''')
+
+    def global_normal_mater_interface_vlan_config():
+        return Template('''
+interface Vlan-interface{{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vlan_num}} priority 120
+ dhcp select relay
+''')
+
+    def global_normal_slaver_interface_vlan_config():
+        return Template('''
+interface Vlan-interface{{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ dhcp select relay
+''')
+
+    def global_voip_mater_interface_vlan_config():
+        return Template('''
+interface Vlan-interface{{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ dhcp select relay
+''')
+
+    def global_voip_slaver_interface_vlan_config():
+        return Template('''
+interface Vlan-interface{{interface_vlan}}
+ description {{vlan_des}}
+ ip address {{vlan_ipaddress}} {{vlan_netmask}}
+ vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vlan_num}} priority 120
  dhcp select relay
 ''')
     def dhcp_relay():

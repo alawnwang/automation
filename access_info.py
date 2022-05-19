@@ -53,11 +53,19 @@ def access_manage_ip(project):
                 mgt_ip_list.append((ip,ipaddress.IPv4Network(entry['network']).netmask))
         else:
             continue
-        default_gw = mgt_ip_list[1]
-        d_xoa_mgt = mgt_ip_list[4:18]
-        e_xoa_mgt = mgt_ip_list[18:32]
-        v_evp_mgt = mgt_ip_list[32:46]
-        w_ewl_mgt = mgt_ip_list[59:63]
+        if len(mgt_ip_list) == 64:
+            default_gw = mgt_ip_list[1]
+            d_xoa_mgt = mgt_ip_list[4:18]
+            e_xoa_mgt = mgt_ip_list[18:32]
+            v_evp_mgt = mgt_ip_list[32:46]
+            w_ewl_mgt = mgt_ip_list[59:63]
+        elif len(mgt_ip_list) == 32:
+            default_gw = mgt_ip_list[1]
+            d_xoa_mgt = mgt_ip_list[4:11]
+            e_xoa_mgt = mgt_ip_list[12:19]
+            v_evp_mgt = mgt_ip_list[20:27]
+            w_ewl_mgt = mgt_ip_list[28:31]
+
         all_mgt_list.append(
             {'floor': entry['floor'],'bdr':entry['bdr'],'gw':default_gw,'DXOA': d_xoa_mgt, 'EXOA': e_xoa_mgt,
              'VEVP': v_evp_mgt, 'VEWL': w_ewl_mgt})

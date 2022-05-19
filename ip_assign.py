@@ -1,5 +1,6 @@
 import itertools
 from math import ceil
+from math import floor
 import ipaddress
 import mysql_table_query
 
@@ -7,8 +8,8 @@ import mysql_table_query
 def num_of_network(project):
     num_network = []
     for network in mysql_table_query.endpoint(project):
-        floor_network_oa = ceil((network['dpoint'] + network['epoint']) / 240)
-        floor_network_ty = ceil(floor_network_oa * 0.5)
+        floor_network_oa = floor((network['dpoint'] + network['epoint']) / 240)
+        floor_network_ty = floor(floor_network_oa * 0.5)
         floor_network_voip = ceil(network['vpoint'] / 240)
         floor_network_num_dict = {'floor':network['floor'],'bdr':network['bdr'],'mgt':0.25,'ap_mgt':0.25,'video':0.25,
                                   'oa_device':0.25,'geli':0.25,'oa':floor_network_oa,'ty':floor_network_ty,
