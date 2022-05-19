@@ -32,7 +32,7 @@
 #         elif len(match) == len(standard_SG):
 #             new_dict['Result'].append('错误安全组:' + str(match))
 
-    
+    #
 # df = pd.DataFrame(new_dict)
 # df.to_excel('/Users/wanghaoyu/Desktop/test.xlsx',sheet_name='test',)
 

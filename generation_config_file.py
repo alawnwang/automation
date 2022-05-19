@@ -729,7 +729,7 @@ def global_generation_doa_config_file():
                 config.write(config_template.config_template.domain_lookup())
             config.close()
 
-
+#
 def generation_access_config_file(project):
     for a in access_device_config_info(project):
         with open('/Users/wanghaoyu/Desktop/config/'+config['device_name']+'cfg','a+') as config:
