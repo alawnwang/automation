@@ -108,13 +108,53 @@ def access_device_config_info(project):
         for ul in uplinkconnection_list:
             if ul['Z_device'] == entry['device_name']:
                 uplink['uplink'].append(ul)
-        print(uplink)
-        print(entry)
-    # for ip in manage_ip_list:
-    #     xoa_vlan = []
-    #     evp_vlan = []
-    #     ewl_vlan = []
+        entry.update(uplink)
+        # print(entry)
 
+    for ip in manage_ip_list:
+        xoa_vlan_list = {'vlan':[]}
+        evp_vlan_list = {'vlan':[]}
+        ewl_vlan_list = {'vlan':[]}
+        for n in network:
+            xoalay2vlan = {'vlan': None, 'desc': None}
+            if 'XOA' in ip['device_name'] and str(n['floor']) + str(n['bdr']) == str(ip['floor']) + str(ip['bdr']) \
+                    and n['func'] != 'VOIP网' and n['func'] != 'AP网':
+                print(n['vlan'])
+
+
+
+        # for n in network:
+        #
+        #     evplay2vlan = {'vlan': None, 'desc': None}
+        #     ewllay2vlan = {'vlan': None, 'desc': None}
+        #     if str(n['floor']) + str(n['bdr']) == str(ip['floor']) + str(ip['bdr']) \
+        #             and n['func'] != 'VOIP网' and n['func'] != 'AP网':
+        #         xoalay2vlan['vlan'] = n['vlan']
+        #         xoalay2vlan['desc'] = n['description']
+        #
+        #
+        #     elif str(n['floor']) + str(n['bdr']) == str(ip['floor']) + str(ip['bdr']) \
+        #             and n['func'] == '网络设备管理' and n['func'] == 'VOIP网':
+        #         evplay2vlan['vlan'] = n['vlan']
+        #         evplay2vlan['desc'] = n['description']
+        #
+        #
+        #     elif str(n['floor']) + str(n['bdr']) == str(ip['floor']) + str(ip['bdr']) \
+        #             and n['func'] == '网络设备管理' and n['func'] == 'AP网':
+        #         ewllay2vlan['vlan'] = n['vlan']
+        #         ewllay2vlan['desc'] = n['description']
+        #
+        #
+        #     xoa_vlan_list['vlan'].append(xoalay2vlan)
+        #     evp_vlan_list['vlan'].append(evplay2vlan)
+        #     ewl_vlan_list['vlan'].append(ewllay2vlan)
+        # if 'XOA' in ip['device_name']:
+        #     ip.update(xoa_vlan_list)
+        # elif 'EVP' in ip['device_name']:
+        #     ip.update(evp_vlan_list)
+        # elif 'EWL' in ip['device_name']:
+        #     ip.update(ewl_vlan_list)
+        # print(ip)
 access_device_config_info(project)
 
 
