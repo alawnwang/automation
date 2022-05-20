@@ -3,6 +3,12 @@ import config_template
 import ipaddress
 project = input('项目名称: ')
 
+manage_ip_list = mysql_table_query.deivce_ip(project)
+network = mysql_table_query.ip_planning(project)
+connect = mysql_table_query.connection(project)
+endpoint = mysql_table_query.endpoint(project)
+
+
 def basic_device_info_dict(project):
     doa_config_info = []
     manage_ip_list = mysql_table_query.deivce_ip(project)
@@ -85,68 +91,9 @@ def basic_device_info_dict(project):
 
 
 
-#
-def access_device_config_info(project):
-    access_config_list = []
-    manage_ip_list = mysql_table_query.deivce_ip(project)
-    network = mysql_table_query.ip_planning(project)
-    connect = mysql_table_query.connection(project)
-    uplinkconnection_list = []
 
-    for c in connect:
-        connection = {'floor': None, 'A_device': None, 'A_port': None, 'Z_device': None, 'Z_port': None}
-        if '-DOA-' not in c['Z_device'] and '-COA-' not in c['Z_device'] :
-            connection['floor'] = c['Z_floor']
-            connection['A_device'] = c['A_device']
-            connection['A_port'] = c['A_port']
-            connection['Z_device'] = c['Z_device']
-            connection['Z_port'] = c['Z_port']
-            uplinkconnection_list.append(connection)
-#
-#
-    for entry in manage_ip_list:
-        uplink = {'uplink': []}
-        for ul in uplinkconnection_list:
-            if ul['Z_device'] == entry['device_name']:
-                uplink['uplink'].append(ul)
-        entry.update(uplink)
 
-    for entry in manage_ip_list:
-        xoa_vlan_list = []
-        evp_vlan_list = []
-        ewl_vlan_list = []
 
-        for n in network:
-            interface_vlan = {'vlan': None,'desc':None}
-            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr']) and n['func'] != 'VOIP网' and n['func'] != 'AP网' and n['func'] != '核心网段':
-                interface_vlan['vlan'] = n['vlan']
-                interface_vlan['desc'] = n['description']
-                xoa_vlan_list.append(interface_vlan)
-
-            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr']) and (n['func'] == '网络设备管理' or n['func'] == 'VOIP网'):
-                interface_vlan['vlan'] = n['vlan']
-                interface_vlan['desc'] = n['description']
-                evp_vlan_list.append(interface_vlan)
-
-            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr'])  and (n['func'] == '网络设备管理' or n['func'] == 'AP网'):
-                interface_vlan['vlan'] = n['vlan']
-                interface_vlan['desc'] = n['description']
-                ewl_vlan_list.append(interface_vlan)
-
-        if 'XOA' in entry['device_name']:
-            # entry.update({'vlan':xoa_vlan_list})
-            print(entry['device_name'],xoa_vlan_list)
-
-        if 'EVP' in entry['device_name']:
-            # entry.update({'vlan':evp_vlan_list})
-            print(entry['device_name'],evp_vlan_list)
-        if 'EWL' in entry['device_name']:
-            # entry.update({'vlan':ewl_vlan_list})
-            print(entry['device_name'],ewl_vlan_list)
-        # access_config_list.append(entry)
-    # return  access_config_list
-
-access_device_config_info(project)
 
 
 
@@ -186,7 +133,7 @@ def convert_interface_name(portname):
 def generation_doa_config_file():
     for d in doa:
         if '-D-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -318,7 +265,7 @@ def generation_doa_config_file():
             config.close()
     #     #
         if '-E-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -448,7 +395,7 @@ def global_generation_doa_config_file():
     for d in doa:
         if '-D-' in d['device_name']:
             print(d)
-            with open('/Users/wanghaoyu/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -464,6 +411,7 @@ def global_generation_doa_config_file():
                 config.write(config_template.config_template.logging())
                 config.write('#')
                 config.write(config_template.config_template.ntp())
+                config.write(config_template.h3c_port_config_template.master_stp())
                 def geneneration_ospf():
                     unslicent = None
                     for n in d['network']:
@@ -592,7 +540,7 @@ def global_generation_doa_config_file():
             config.close()
     #     #
         if '-E-' in d['device_name']:
-            with open('/Users/wanghaoyu/Desktop/config/'+d['device_name']+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -608,6 +556,7 @@ def global_generation_doa_config_file():
                 config.write(config_template.config_template.logging())
                 config.write('#')
                 config.write(config_template.config_template.ntp())
+                config.write(config_template.h3c_port_config_template.slaver_stp())
                 def geneneration_ospf():
                     unslicent = None
                     for n in d['network']:
@@ -729,11 +678,136 @@ def global_generation_doa_config_file():
                 config.write(config_template.config_template.domain_lookup())
             config.close()
 
+
+def access_vlan():
+    access_vlan = {'oa_access_vlan':[],'evp_access_vlan':[]}
+    for i in endpoint:
+        oa_device_list = []
+        evp_device_list = []
+        oa_vlan_list=[]
+        evp_vlan_list =[]
+        for entry in manage_ip_list:
+            if str(entry['floor'])+str(entry['floor']) == str(i['floor'])+str(i['floor']) and 'XOA' in entry['device_name']:
+                oa_device_list.append(entry['device_name'])
+            if str(entry['floor']) + str(entry['floor']) == str(i['floor']) + str(i['floor']) and 'EVP' in entry['device_name']:
+                evp_device_list.append(entry['device_name'])
+        for entry in network:
+            if str(entry['floor']) + str(entry['floor']) == str(i['floor']) + str(i['floor']):
+                if entry['func'] == '有线办公网':
+                    oa_vlan_list.append(entry['vlan'])
+                if entry['func'] == 'VOIP网':
+                    evp_vlan_list.append(entry['vlan'])
+
+
+        n = len(oa_device_list)
+        while n != 0:
+            try:
+                n = n - 1
+                for i in oa_vlan_list:
+                    oa_access_vlan = {'device_name': oa_device_list.pop(0), 'access_vlan': i}
+                    access_vlan['oa_access_vlan'].append(oa_access_vlan)
+            except IndexError:
+                break
+
+
+
+        n = len(evp_device_list)
+        while n != 0:
+            try:
+                n = n - 1
+                for i in evp_vlan_list:
+                    evp_access_vlan = {'device_name': evp_device_list.pop(0), 'access_vlan': i}
+                    access_vlan['evp_access_vlan'].append(evp_access_vlan)
+            except IndexError:
+                break
+    return access_vlan
+
 #
-def generation_access_config_file(project):
-    for a in access_device_config_info(project):
-        with open('/Users/wanghaoyu/Desktop/config/'+config['device_name']+'cfg','a+') as config:
-            config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
+def access_device_config_info():
+
+    access_config_list = []
+    uplinkconnection_list = []
+
+    for c in connect:
+        connection = {'floor': None, 'A_device': None, 'A_port': None, 'Z_device': None, 'Z_port': None}
+        if '-DOA-' not in c['Z_device'] and '-COA-' not in c['Z_device'] :
+            connection['floor'] = c['Z_floor']
+            connection['A_device'] = c['A_device']
+            connection['A_port'] = c['A_port']
+            connection['Z_device'] = c['Z_device']
+            connection['Z_port'] = c['Z_port']
+            uplinkconnection_list.append(connection)
+#
+#
+    for entry in manage_ip_list:
+        uplink = {'uplink': []}
+        for ul in uplinkconnection_list:
+            if ul['Z_device'] == entry['device_name']:
+                uplink['uplink'].append(ul)
+        entry.update(uplink)
+
+    for entry in manage_ip_list:
+        xoa_vlan_list = []
+        evp_vlan_list = []
+        ewl_vlan_list = []
+
+        for n in network:
+            lay2vlan = {'vlan': None,'func':None,'desc':None}
+            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr']) and n['func'] != 'VOIP网' and n['func'] != 'AP网' and n['func'] != '核心网段':
+                lay2vlan['vlan'] = n['vlan']
+                lay2vlan['func'] = n['func']
+                lay2vlan['desc'] = n['description']
+                xoa_vlan_list.append(lay2vlan)
+
+
+            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr']) and (n['func'] == '网络设备管理' or n['func'] == 'VOIP网'):
+                lay2vlan['vlan'] = n['vlan']
+                lay2vlan['func'] = n['func']
+                lay2vlan['desc'] = n['description']
+                evp_vlan_list.append(lay2vlan)
+
+
+
+            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr'])  and (n['func'] == '网络设备管理' or n['func'] == 'AP网'):
+                lay2vlan['vlan'] = n['vlan']
+                lay2vlan['func'] = n['func']
+                lay2vlan['desc'] = n['description']
+                ewl_vlan_list.append(lay2vlan)
+
+
+
+
+        if 'XOA' in entry['device_name']:
+            entry.update({'vlan': xoa_vlan_list})
+            for access in access_vlan()['oa_access_vlan']:
+                if entry['device_name'] == access['device_name']:
+                    entry.update(access)
+
+
+        if 'EVP' in entry['device_name']:
+            entry.update({'vlan':evp_vlan_list})
+            for access in access_vlan()['evp_access_vlan']:
+                if entry['device_name'] == access['device_name']:
+                    entry.update(access)
+
+        if 'EWL' in entry['device_name']:
+            entry.update({'vlan':ewl_vlan_list})
+
+        if 'COA' in entry['device_name'] or 'DOA' in entry['device_name']:
+            pass
+        else:
+            access_config_list.append(entry)
+        print(entry)
+    return access_config_list
+
+
+
+
+def generation_access_config_file():
+    for a in access_device_config_info():
+        print(a)
+        with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+            config.write(config_template.config_template.sysname().render(sysname=a['device_name']))
             config.write('\n' + '#')
             config.write(config_template.config_template.time_zone())
             config.write('#')
@@ -748,18 +822,36 @@ def generation_access_config_file(project):
             config.write(config_template.config_template.logging())
             config.write('#')
             config.write(config_template.config_template.ntp())
+            config.write('#')
+            config.write(config_template.config_template.stp_config())
             for vlan in a['vlan']:
                 config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=vlan['vlan'],
                                                                                            vlan_des=vlan['desc']))
             config.write('#')
+
             for vlan in a['vlan']:
                 if vlan['desc'] == 'MGT':
-                    config.write(config_template.h3c_port_config_template.access_mgt_interface_vlan_config(vlan_num = vlan['vlan'],vlan_des=vlan['desc'],vlan_ipaddress=a['mgtip'],vlan_netmask=a['netmask']))
-            config.write('#')
-            config.write(config_template.h3c_port_config_template.access_default_gateway(gateway=a['gateway']))
-            config.write('#')
+                    config.write(config_template.h3c_port_config_template.access_mgt_interface_vlan_config().render(interface_vlan = vlan['vlan'],vlan_des=vlan['desc'],vlan_ipaddress=a['mgtip'],vlan_netmask=a['mgtmask']))
+            config.write('\n' + '#')
+            config.write(config_template.h3c_port_config_template.access_default_gateway().render(gateway=a['gateway']))
+            config.write('\n'+'#')
+            if 'XOA' in a['device_name']:
+                config.write(config_template.h3c_port_config_template.oa_access_interface().render(vlan_num=a['access_vlan']))
+                config.write('\n' + '#')
+                config.write(config_template.h3c_port_config_template.xoa_radius())
+            if 'EVP' in a['device_name']:
+                config.write(config_template.h3c_port_config_template.evp_access_interface().render(vlan_num=a['access_vlan']))
+                config.write('\n' + '#')
+                config.write(config_template.h3c_port_config_template.evp_radius())
+            if 'EWL' in a['device_name']:
+                config.write(
+                    config_template.h3c_port_config_template.ewl_access_interface())
+                config.write('\n' + '#')
+
+            for ul in a['uplink']:
+                config.write(config_template.h3c_port_config_template.access_uplink().render(port_num=ul['Z_port'],A_devicename=ul['A_device'],A_port=convert_interface_name(ul['A_port'])))
             config.write(
-                config_template.config_template.aaa_tacacs().render(nas_ip=str(ipaddress.ip_network(n['network'])[3])))
+                config_template.config_template.aaa_tacacs().render(nas_ip=str(a['mgtip'])))
             config.write('\n' + '#')
             config.write(config_template.config_template.snmp_acl())
             config.write('#')
@@ -771,4 +863,6 @@ def generation_access_config_file(project):
             config.write(config_template.config_template.domain_lookup())
         config.close()
 
-generation_access_config_file(project)
+
+generation_doa_config_file()
+generation_access_config_file()

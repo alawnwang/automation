@@ -1,23 +1,7 @@
 from jinja2 import Template
 class config_template:
 #
-#     def doa_uplink():
-#         DOA_UP_LINK_PORT = Template('''
-# interface {{port_num}}
-# description {{uplink_descr}}
-# ip address {{ip_address}} {{netmask}}
-# no ip redric
-# no ip unreachable
-#         ''')
-#         return DOA_UP_LINK_PORT
-#
-#     def doa_downlink():
-#         DOA_DOWN_LINK_PROT=Template('''
-# interface {{port_num}}
-# description {{downlink_descr}}
-# switchport mode trunk
-#         ''')
-#         return DOA_DOWN_LINK_PROT
+
     def sysname():
         return Template('''sysname {{sysname}}
 ''')
@@ -77,6 +61,14 @@ line vty 0 4
  ntp-service enable
  ntp-service unicast-server 10.28.0.20
  ntp-service unicast-server 10.14.198.20
+'''
+    def stp_config():
+        return '''
+stp region-configuration
+ region-name RG
+ instance 1 vlan 1 to 99 110 to 4094 
+ instance 2 vlan 100 to 109 
+ active region-configuration
 '''
 
     def advance_acl():
@@ -415,9 +407,9 @@ hwtacacs scheme tencent_scheme
  secondary authentication  10.14.160.75
  secondary authorization  10.14.160.75
  secondary accounting  10.14.160.75
- key authentication cipher tencent
- key authorization cipher tencent
- key accounting cipher tencent
+ key authentication simple tencent
+ key authorization simple tencent
+ key accounting simple tencent
  user-name-format without-domain
  nas-ip {{nas_ip}}
 ''')
@@ -556,14 +548,47 @@ interface Bridge-Aggregation1
 
     def vlan_config():
         return Template('''
+        
 vlan {{vlan_num}}
- name {{vlan_des}}
-#
-''')
+ description {{vlan_des}}
+#''')
+
+
 
     def gloabl_acl():
         return Template('\n'+'''packet-filter name {{acl_name}} vlan-interface {{vlan_num}} inbound
 ''')
+
+    def master_stp():
+        return '''
+#
+stp region-configuration
+ region-name RG
+ instance 1 vlan 1 to 99 110 to 679 690 to 4094 
+ instance 2 vlan 100 to 109 680 to 689 
+ active region-configuration
+#
+ stp instance 0 to 1 priority 8192
+ stp instance 2 priority 16384
+ stp bpdu-protection
+ stp global enable
+#'''
+
+
+    def slaver_stp():
+        return '''
+#
+stp region-configuration
+ region-name RG
+ instance 1 vlan 1 to 99 110 to 679 690 to 4094 
+ instance 2 vlan 100 to 109 680 to 689 
+ active region-configuration
+#
+ stp instance 0 to 1 priority 16384
+ stp instance 2 priority 8192
+ stp bpdu-protection
+ stp global enable
+#'''
 
 
     def vlan10_mater_interface_vlan_config():
@@ -676,8 +701,102 @@ interface Vlan-interface{{interface_vlan}}
 ''')
 
     def access_default_gateway():
-        return Template('''ip route-static 0.0.0.0 0 {{gateway}}''' )
+        return Template('''
+ip route-static 0.0.0.0 0 {{gateway}}
+''' )
 
+    def oa_access_interface():
+        return Template('''
+interface range GigabitEthernet1/0/1 to GigabitEthernet1/0/48
+ port link-type hybrid
+ undo port hybrid vlan 1
+ port hybrid vlan {{vlan_num}} untagged
+ port hybrid pvid vlan {{vlan_num}}
+ mac-vlan enable
+ storm-constrain broadcast pps 300 300
+ storm-constrain control block
+ stp edged-port
+ arp rate-limit 200
+ undo dot1x handshake
+ dot1x mandatory-domain tencent
+ dot1x max-user 1
+ undo dot1x multicast-trigger
+ dot1x unicast-trigger
+ dot1x guest-vlan 666
+ dot1x auth-fail vlan 666
+ dot1x critical vlan 666
+ port-security intrusion-mode blockmac
+ port-security max-mac-count 1
+ port-security port-mode mac-else-userlogin-secure
+ dhcp snooping rate-limit 300
+ dhcp snooping binding record
+ dhcp snooping check request-message
+''')
+
+    def evp_access_interface():
+        return Template('''
+interface range GigabitEthernet1/0/1 to GigabitEthernet1/0/48
+ port access vlan {{vlan_num}}
+ stp edged-port
+ poe enable
+ undo dot1x handshake
+ dot1x mandatory-domain tencent
+ dot1x max-user 1
+ undo dot1x multicast-trigger
+ dot1x unicast-trigger
+ port-security intrusion-mode blockmac
+ port-security max-mac-count 1
+ port-security port-mode userlogin-secure
+ ''')
+
+
+    def ewl_access_interface():
+        return '''
+interface range GigabitEthernet1/0/1 to GigabitEthernet1/0/48
+ port link-mode bridge
+ description To_AP
+ port access vlan 11
+ speed 1000 
+ duplex full
+ stp edged-port
+ poe enable
+'''
+    def access_uplink():
+        return Template('''
+interface {{port_num}}
+ description {{A_devicename}}-{{A_port}}
+ port link-type trunk
+ undo port trunk permit vlan 1
+ port trunk permit vlan 2 to 4094
+ speed 2500 
+ stp loop-protection
+ dldp enable   
+ arp detection trust
+ dhcp snooping trust
+#''')
+
+    def xoa_radius():
+        return '''
+radius scheme tencent
+ primary authentication 10.99.220.200 28882
+ secondary authentication 10.99.145.4 28882
+ key authentication simple 11111
+ user-name-format without-domain
+ attribute 31 mac-format section six separator - lowercase 
+'''
+
+    def evp_radius():
+        return '''
+radius scheme tencent
+ primary authentication 10.14.32.81
+ primary accounting 10.14.32.81
+ secondary authentication 10.14.160.81
+ secondary accounting 10.14.160.81
+ key authentication simple 11111
+ key accounting simple 11111
+ user-name-format without-domain
+ attribute 31 mac-format section six separator - lowercase 
+'''
 
 
 class route_config:
