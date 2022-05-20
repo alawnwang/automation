@@ -19,7 +19,7 @@ ip_planning_sheet.append(['vlan','network','function','desctiption','floor','bdr
 project = input('项目名称: ')
 #
 network = input('IP地址：')
-
+#
 # #
 # def ip_planning_intser_sql():
 #     for net in ip_assign.generation_ip_planning(network,project):

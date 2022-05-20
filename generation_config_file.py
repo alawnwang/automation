@@ -110,7 +110,7 @@ def login_acl():
         logacl = ' rule '+str(rule_num)+' permit soure '+str(ipaddress.IPv4Network(acl['network']).network_address)+' '+str(ipaddress.IPv4Network(acl['network']).hostmask)
         login_acl.append(logacl)
     return login_acl
-
+#
 
 ap_dhcp = str(mysql_table_query.dhcp(project)[0]['AP_dhcp']).split(';')
 video_dhcp = str(mysql_table_query.dhcp(project)[0]['Video_dhcp']).split(';')
