@@ -35,6 +35,6 @@ def connection_intser_sql():
     con.to_sql(con=mysql_table_query.link_db(), name='connection_relation', if_exists='append', index=False)
     mgtip = connection_relation.connection_relation(network,project)['mgtip']
     mgt = pd.DataFrame.from_dict(mgtip, orient='columns')
-    mgt.to_sql(con=mysql_table_query.link_db(), name='Manage_IP_assignments', if_exists='append', index=False)
+    mgt.to_sql(con=mysql_table_query.link_db(), name='manage_ip_assignments', if_exists='append', index=False)
 connection_intser_sql()
 print('链接关系已生成完毕')

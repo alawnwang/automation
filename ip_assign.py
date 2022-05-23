@@ -1,6 +1,5 @@
 import itertools
 from math import ceil
-from math import floor
 import ipaddress
 import mysql_table_query
 
@@ -162,12 +161,12 @@ def generation_ip_planning(network,project):
     core_network = len(core_ipaddress)
     core_bdr_floor = mysql_table_query.workplace_info(project).pop(0)['core_bdr_floor']
     if core_network <= 1:
-        ip_planning_list.append({'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':[core_bdr_floor],'bdr':[1],'type_of_workplace':None})
+        ip_planning_list.append({'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':[core_bdr_floor],'bdr':[1]})
     else:
         for n in core_ipaddress:
             core_ip_dict = {'network': [n], 'status': None, 'domain': None, 'vlan': None, 'func': ['核心网段'],
                             'description': ['interconnection'], 'acl': None, 'project': project, 'building_name': None,
-                            'floor': [core_bdr_floor], 'bdr': [1], 'type_of_workplace': None}
+                            'floor': [core_bdr_floor], 'bdr': [1]}
             ip_planning_list.append(core_ip_dict)
 
 
@@ -183,29 +182,25 @@ def generation_ip_planning(network,project):
         elif n['fun'] == '隔离VLAN':
             acl = 'GELI'
         n['network'] = str(m)
-        # ip_planning_sheet.append([n['vlan'],n['network'],n['fun'],n['desc'],n['floor'],n['bdr']])
-        public_ip = {'network':[ipaddress.ip_network(n['network'])],'status':None,'domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']],'type_of_workplace':None}
+        public_ip = {'network':[ipaddress.ip_network(n['network'])],'status':None,'domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']]}
         ip_planning_list.append(public_ip)
 
     network_list = network_class(network,project)['normal']
     for o in network_assign.oa_network_assign(network_list,project):
-        # ip_planning_sheet.append([o['vlan'], str(o['network']), o['fun'],o['desc'],o['floor'],o['bdr']])
         oa_ip = {'network': [o['network']], 'status': None, 'domain': None, 'vlan': [o['vlan']], 'func': [o['fun']],
                      'description': [o['desc']],'acl':'OA','project': project, 'building_name': None, 'floor': [o['floor']],
-                     'bdr': [o['bdr']], 'type_of_workplace': None}
+                     'bdr': [o['bdr']]}
         ip_planning_list.append(oa_ip)
 
     for t in network_assign.ty_network_assign(network_list,project):
-        # ip_planning_sheet.append([t['vlan'], str(t['network']), t['fun'], t['desc'],t['floor'],t['bdr']])
         ty_ip = {'network': [t['network']], 'status': None, 'domain': None, 'vlan': [t['vlan']], 'func': [t['fun']],
                      'description': [t['desc']],'acl':'TY','project': project, 'building_name': None, 'floor': [t['floor']],
-                     'bdr': [t['bdr']], 'type_of_workplace': None}
+                     'bdr': [t['bdr']]}
         ip_planning_list.append(ty_ip)
 
     for v in network_assign.voip_network_assign(network_list,project):
-        # ip_planning_sheet.append([v['vlan'], str(v['network']), v['fun'], v['desc'],v['floor'],v['bdr']])
         voip_ip = {'network': [v['network']], 'status': None, 'domain': None, 'vlan': [v['vlan']], 'func': [v['fun']],
                      'description': [v['desc']],'acl':'VOIP','project': project, 'building_name': None, 'floor': [v['floor']],
-                     'bdr': [v['bdr']], 'type_of_workplace': None}
+                     'bdr': [v['bdr']]}
         ip_planning_list.append(voip_ip)
     return ip_planning_list

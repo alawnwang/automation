@@ -1,5 +1,3 @@
-import ipaddress
-
 import coa_info
 import doa_info
 import access_info
