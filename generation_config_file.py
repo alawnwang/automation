@@ -93,12 +93,6 @@ def basic_device_info_dict(project):
 
 
 
-
-
-
-
-
-
 doa = basic_device_info_dict(project)
 core_network = mysql_table_query.core_ip(project)
 ospf_area = ipaddress.IPv4Network(core_network[0]['network']).network_address
@@ -403,7 +397,7 @@ def generation_doa_config_file():
 def global_generation_doa_config_file():
     for d in doa:
         if '-D-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('C:/Users/Alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -437,12 +431,10 @@ def global_generation_doa_config_file():
                     return vrrp
 
                 for n in d['network']:
-                    print(n)
                     # if n['desc'] == 'interconnection':
                     #     pass
                     # else:
                     config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
-                    print(n['vlan'],n['desc'])
                 for n in d['network']:
                     if n['desc'] == 'MGT':
                         config.write(config_template.h3c_port_config_template.vlan10_mater_interface_vlan_config().render(
@@ -557,7 +549,7 @@ def global_generation_doa_config_file():
             config.close()
     #     #
         if '-E-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('C:/Users/Alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -827,7 +819,7 @@ def access_device_config_info():
 
 def generation_access_config_file():
     for a in access_device_config_info():
-        with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+        with open('C:/Users/Alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
             config.write(config_template.config_template.sysname().render(sysname=a['device_name']))
             config.write('\n' + '#')
             config.write(config_template.config_template.time_zone())

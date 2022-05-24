@@ -3,6 +3,7 @@ import doa_info
 import access_info
 import openpyxl
 import time
+import test
 import ip_assign
 import pandas as pd
 import mysql_table_query
@@ -22,13 +23,22 @@ project = input('项目名称: ')
 network = input('IP地址：')
 #
 # #
-def ip_planning_intser_sql():
-    for net in ip_assign.generation_ip_planning(network,project):
-        ip = pd.DataFrame.from_dict(net, orient='columns')
-        ip.to_sql(con=mysql_table_query.link_db(), name='ip_planning', if_exists='append', index=False)
 
-ip_planning_intser_sql()
-print('IP规划已生成完毕')
+# def ip_planning_intser_sql():
+#     for net in test.generation_ip_planning(network,project):
+#         ip = pd.DataFrame.from_dict(net, orient='columns')
+#         ip.to_sql(con=mysql_table_query.link_db(), name='ip_planning', if_exists='append', index=False)
+#
+# ip_planning_intser_sql()
+# print('IP规划已生成完毕')
+
+# def ip_planning_intser_sql():
+#     for net in ip_assign.generation_ip_planning(network,project):
+#         ip = pd.DataFrame.from_dict(net, orient='columns')
+#         ip.to_sql(con=mysql_table_query.link_db(), name='ip_planning', if_exists='append', index=False)
+#
+# ip_planning_intser_sql()
+# print('IP规划已生成完毕')
 
 def connection_intser_sql():
     connect = connection_relation.connection_relation(network,project)['connect']
