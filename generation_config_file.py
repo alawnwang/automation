@@ -159,7 +159,10 @@ def generation_doa_config_file():
                                 mgt_vlan_num='vlan' + str(n['vlan']))
                     return unslicent
                 for n in d['network']:
-                    config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
+                    if n['desc'] == 'interconnect':
+                        pass
+                    else:
+                        config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
 
                 for n in d['network']:
                     if n['desc'] == 'MGT':
@@ -235,7 +238,8 @@ def generation_doa_config_file():
                         for dhcp in voip_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
-
+                    else:
+                        pass
 
                 for i in d['interconnect']:
                     config.write(config_template.h3c_port_config_template.interconnect_phy_interface_config().render(phy_interface=i['A_port'],description=(i['Z_device']+'-'+convert_interface_name(i['Z_port']))))
@@ -433,8 +437,12 @@ def global_generation_doa_config_file():
                     return vrrp
 
                 for n in d['network']:
+                    print(n)
+                    # if n['desc'] == 'interconnection':
+                    #     pass
+                    # else:
                     config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
-
+                    print(n['vlan'],n['desc'])
                 for n in d['network']:
                     if n['desc'] == 'MGT':
                         config.write(config_template.h3c_port_config_template.vlan10_mater_interface_vlan_config().render(
@@ -505,6 +513,7 @@ def global_generation_doa_config_file():
                         for dhcp in voip_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
+                    else:pass
 
                 for n in d['network']:
                     if n['vlan'] == '10' or n['acl'] == '' or n['acl'] == 'None':
@@ -526,7 +535,7 @@ def global_generation_doa_config_file():
                     description=d['layer3connection']['A_device'] + '-' + convert_interface_name(d['layer3connection']['A_port']),
                     ipaddress=(d['layer3connection']['Z_ipaddress']).split('/')[0], netmask=' 255.255.255.252'))
 
-                config.write(config_template.route_config.ospf_config())
+                config.write(config_template.route_config.ospf_config().render(mgt_ip=d['mgtip']))
                 config.write(geneneration_ospf())
                 config.write(config_template.route_config.network_area().render(core_network=str(ospf_area)))
                 for n in d['network']:
@@ -576,7 +585,10 @@ def global_generation_doa_config_file():
 
 
                 for n in d['network']:
-                    config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
+                    if n['desc'] == 'interconnection':
+                        pass
+                    else:
+                        config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
 
                 for n in d['network']:
                     if n['desc'] == 'MGT':
@@ -648,6 +660,7 @@ def global_generation_doa_config_file():
                         for dhcp in voip_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
+                    else:pass
 
                 for n in d['network']:
                     if n['vlan'] == '10' or n['acl'] == '' or n['acl'] == 'None':
@@ -666,7 +679,7 @@ def global_generation_doa_config_file():
                 for c in d['downlinkconnect']:
                     config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+convert_interface_name(c['Z_port']))))
                 config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(phy_interface=d['layer3connection']['Z_port'],description=d['layer3connection']['A_device']+'-'+convert_interface_name(d['layer3connection']['A_port']),ipaddress=(d['layer3connection']['Z_ipaddress']).split('/')[0],netmask=' 255.255.255.252'))
-                config.write(config_template.route_config.ospf_config())
+                config.write(config_template.route_config.ospf_config().render(mgt_ip=d['mgtip']))
                 config.write(geneneration_ospf())
                 config.write(config_template.route_config.network_area().render(core_network=str(ospf_area)))
                 for n in d['network']:
@@ -871,3 +884,5 @@ def generation_access_config_file():
             config.write(config_template.config_template.domain_lookup())
         config.close()
 
+global_generation_doa_config_file()
+generation_access_config_file()

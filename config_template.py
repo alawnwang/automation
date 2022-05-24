@@ -550,7 +550,7 @@ interface Bridge-Aggregation1
         return Template('''
         
 vlan {{vlan_num}}
- description {{vlan_des}}
+ name {{vlan_des}}
 #''')
 
 
@@ -801,7 +801,7 @@ radius scheme tencent
 
 class route_config:
     def ospf_config():
-        return ('\n'+'''router ospf 100
+        return Template('\n'+''' ospf 100 route-id {{mgt_ip}}
  silent-interface all'''+'\n')
     def undo_silcent():
         return Template(''' undo silent-interface {{interconnect_interface}}
