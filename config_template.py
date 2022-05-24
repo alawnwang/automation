@@ -538,7 +538,7 @@ interface {{phy_interface}}
     def port_channel_interface_config():
         return Template('''
 interface Bridge-Aggregation1
- description {{description}}-Po1
+ description {{description}}-Agg1
  port link-type trunk
  undo port trunk permit vlan 1
  port trunk permit vlan 2 to 4094
@@ -596,7 +596,7 @@ stp region-configuration
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vlan_num}} virtual-ip  {{vrrp_ip}}
  vrrp vrid {{vlan_num}} priority 120
 #
 ''')
@@ -606,7 +606,7 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vlan_num}} virtual-ip {{vrrp_ip}}
 #
 ''')
 
@@ -615,8 +615,8 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
- vrrp vrid {{vlan_num}} priority 120
+ vrrp vrid {{vrrp_num}} virtual-ip  {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} priority 120
  packet-filter name {{acl_name}} inbound
  dhcp select relay
 ''')
@@ -626,7 +626,7 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} virtual-ip {{vrrp_ip}}
  packet-filter name {{acl_name}} inbound
  dhcp select relay
 ''')
@@ -636,7 +636,7 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} virtual-ip  {{vrrp_ip}}
  packet-filter name {{acl_name}} inbound
  dhcp select relay
 ''')
@@ -646,8 +646,8 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
- vrrp vrid {{vlan_num}} priority 120
+ vrrp vrid {{vlan_num}} virtual-ip {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} priority 120
  packet-filter name {{acl_name}} inbound
  dhcp select relay
 ''')
@@ -657,8 +657,8 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
- vrrp vrid {{vlan_num}} priority 120
+ vrrp vrid {{vrrp_num}} virtual-ip {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} priority 120
  dhcp select relay
 ''')
 
@@ -667,7 +667,7 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} virtual-ip {{vrrp_ip}}
  dhcp select relay
 ''')
 
@@ -676,7 +676,7 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} virtual-ip  {{vrrp_ip}}
  dhcp select relay
 ''')
 
@@ -685,8 +685,8 @@ interface Vlan-interface{{interface_vlan}}
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
- vrrp vrid {{vlan_num}} {{vrrp_ip}}
- vrrp vrid {{vlan_num}} priority 120
+ vrrp vrid {{vrrp_num}} virtual-ip  {{vrrp_ip}}
+ vrrp vrid {{vrrp_num}} priority 120
  dhcp select relay
 ''')
     def dhcp_relay():

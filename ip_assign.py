@@ -182,24 +182,44 @@ def generation_ip_planning(network,project):
         elif n['fun'] == '隔离VLAN':
             acl = 'GELI'
         n['network'] = str(m)
-        public_ip = {'network':[ipaddress.ip_network(n['network'])],'status':None,'domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']]}
+        public_ip = {'network':[ipaddress.ip_network(n['network'])],'status':'启用','domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']]}
         ip_planning_list.append(public_ip)
+
+    public_network_list = network_class(network, project)['normal']
+    for n, in (mgt_num(project), network_class(network, project)['public']):
+        acl = ''
+        if n['fun'] == 'AP网':
+            acl = 'AP'
+        elif n['fun'] == '会议设备网':
+            acl = 'Video'
+        elif n['fun'] == '行政设备网':
+            acl = 'OA-Device'
+        elif n['fun'] == '隔离VLAN':
+            acl = 'GELI'
+        n['network'] = str(m)
+        public_ip = {'network': [ipaddress.ip_network(n['network'])], 'status': '启用', 'domain': None, 'vlan': [n['vlan']],
+                     'func': [n['fun']], 'description': [n['desc']], 'acl': acl, 'project': project, 'building_name': None,
+                     'floor': [n['floor']], 'bdr': [n['bdr']]}
+        ip_planning_list.append(public_ip)
+
+
+
 
     network_list = network_class(network,project)['normal']
     for o in network_assign.oa_network_assign(network_list,project):
-        oa_ip = {'network': [o['network']], 'status': None, 'domain': None, 'vlan': [o['vlan']], 'func': [o['fun']],
+        oa_ip = {'network': [o['network']], 'status': '启用', 'domain': None, 'vlan': [o['vlan']], 'func': [o['fun']],
                      'description': [o['desc']],'acl':'OA','project': project, 'building_name': None, 'floor': [o['floor']],
                      'bdr': [o['bdr']]}
         ip_planning_list.append(oa_ip)
 
     for t in network_assign.ty_network_assign(network_list,project):
-        ty_ip = {'network': [t['network']], 'status': None, 'domain': None, 'vlan': [t['vlan']], 'func': [t['fun']],
+        ty_ip = {'network': [t['network']], 'status': '启用', 'domain': None, 'vlan': [t['vlan']], 'func': [t['fun']],
                      'description': [t['desc']],'acl':'TY','project': project, 'building_name': None, 'floor': [t['floor']],
                      'bdr': [t['bdr']]}
         ip_planning_list.append(ty_ip)
 
     for v in network_assign.voip_network_assign(network_list,project):
-        voip_ip = {'network': [v['network']], 'status': None, 'domain': None, 'vlan': [v['vlan']], 'func': [v['fun']],
+        voip_ip = {'network': [v['network']], 'status': '启用', 'domain': None, 'vlan': [v['vlan']], 'func': [v['fun']],
                      'description': [v['desc']],'acl':'VOIP','project': project, 'building_name': None, 'floor': [v['floor']],
                      'bdr': [v['bdr']]}
         ip_planning_list.append(voip_ip)

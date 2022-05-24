@@ -1,6 +1,7 @@
 import mysql_table_query
 import config_template
 import ipaddress
+
 project = input('项目名称: ')
 
 manage_ip_list = mysql_table_query.deivce_ip(project)
@@ -186,11 +187,15 @@ def generation_doa_config_file():
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
                     elif 'OA_Device' in n['desc']:
+                        if int(n['vlan']) > 254:
+                            vrrp_num = n['vlan'][0:2]
+                        else:
+                            vrrp_num = n['vlan']
                         config.write(config_template.h3c_port_config_template.normal_mater_interface_vlan_config().render(
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
+                            vlan_num=n['vlan'], vrrp_num=vrrp_num,vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl']))
                         for dhcp in oadevice_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -394,7 +399,6 @@ def generation_doa_config_file():
 def global_generation_doa_config_file():
     for d in doa:
         if '-D-' in d['device_name']:
-            print(d)
             with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
@@ -420,6 +424,14 @@ def global_generation_doa_config_file():
                                 interconnect_interface=d['layer3connection']['Z_port'],
                                 mgt_vlan_num='vlan' + str(n['vlan']))
                     return unslicent
+
+                def vrrp(vlan):
+                    if int(vlan) > 254:
+                        vrrp = vlan[0:2]
+                    else:
+                        vrrp = vlan
+                    return vrrp
+
                 for n in d['network']:
                     config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
 
@@ -435,7 +447,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in ap_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -444,7 +456,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in video_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -453,7 +465,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']),  vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in oadevice_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -462,7 +474,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']),  vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in geli_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -471,7 +483,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']),  vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in oa_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -480,7 +492,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']),  vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in ty_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -489,7 +501,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']),  vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in voip_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n'+'#')
@@ -504,19 +516,15 @@ def global_generation_doa_config_file():
                     config.write(config_template.h3c_port_config_template.interconnect_phy_interface_config().render(phy_interface=i['A_port'],description=(i['Z_device']+'-'+convert_interface_name(i['Z_port']))))
                 config.write('\n'+'#')
 
-
                 config.write(config_template.h3c_port_config_template.port_channel_interface_config().render(description=d['interconnect'][0]['Z_device']))
                 config.write('\n' + '#')
-                # for i in d['interconnect']:
-                #
-                #     config.write(config_template.h3c_port_config_template.port_channel_interface_config().render(description=i['Z_device']))
-                # config.write('\n' + '#')
+
                 for c in d['downlinkconnect']:
                     config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+convert_interface_name(c['Z_port']))))
                 config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(
                     phy_interface=d['layer3connection']['Z_port'],
                     description=d['layer3connection']['A_device'] + '-' + convert_interface_name(d['layer3connection']['A_port']),
-                    ipaddress=d['layer3connection']['Z_ipaddress'], netmask=' 255.255.255.252'))
+                    ipaddress=(d['layer3connection']['Z_ipaddress']).split('/')[0], netmask=' 255.255.255.252'))
 
                 config.write(config_template.route_config.ospf_config())
                 config.write(geneneration_ospf())
@@ -565,6 +573,8 @@ def global_generation_doa_config_file():
                                 interconnect_interface=d['layer3connection']['Z_port'],
                                 mgt_vlan_num='vlan' + str(n['vlan']))
                     return unslicent
+
+
                 for n in d['network']:
                     config.write(config_template.h3c_port_config_template.vlan_config().render(vlan_num=n['vlan'],vlan_des=n['desc']))
 
@@ -580,7 +590,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in ap_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
@@ -589,7 +599,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in video_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
@@ -598,7 +608,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in oadevice_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
@@ -607,7 +617,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in geli_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
@@ -616,7 +626,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in oa_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
@@ -625,7 +635,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in ty_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
@@ -634,7 +644,7 @@ def global_generation_doa_config_file():
                             interface_vlan=n['vlan'], vlan_des=n['desc'],
                             vlan_ipaddress=ipaddress.ip_network(n['network'])[3],
                             vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                            vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1]))
+                            vrrp_num=vrrp(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1]))
                         for dhcp in voip_dhcp:
                             config.write(config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp))
                         config.write('\n' + '#')
@@ -655,7 +665,7 @@ def global_generation_doa_config_file():
 
                 for c in d['downlinkconnect']:
                     config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+convert_interface_name(c['Z_port']))))
-                config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(phy_interface=d['layer3connection']['Z_port'],description=d['layer3connection']['A_device']+'-'+convert_interface_name(d['layer3connection']['A_port']),ipaddress=d['layer3connection']['Z_ipaddress'],netmask=' 255.255.255.252'))
+                config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(phy_interface=d['layer3connection']['Z_port'],description=d['layer3connection']['A_device']+'-'+convert_interface_name(d['layer3connection']['A_port']),ipaddress=(d['layer3connection']['Z_ipaddress']).split('/')[0],netmask=' 255.255.255.252'))
                 config.write(config_template.route_config.ospf_config())
                 config.write(geneneration_ospf())
                 config.write(config_template.route_config.network_area().render(core_network=str(ospf_area)))
@@ -797,7 +807,6 @@ def access_device_config_info():
             pass
         else:
             access_config_list.append(entry)
-        print(entry)
     return access_config_list
 
 
@@ -805,7 +814,6 @@ def access_device_config_info():
 
 def generation_access_config_file():
     for a in access_device_config_info():
-        print(a)
         with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
             config.write(config_template.config_template.sysname().render(sysname=a['device_name']))
             config.write('\n' + '#')
@@ -863,6 +871,3 @@ def generation_access_config_file():
             config.write(config_template.config_template.domain_lookup())
         config.close()
 
-
-generation_doa_config_file()
-generation_access_config_file()
