@@ -156,7 +156,7 @@ class network_assign:
 
 def generation_ip_planning(network,project):
     ip_planning_list = []
-    # #IP规划
+    #IP规划
     core_ipaddress = network_class(network,project)['mgt']
     core_network = len(core_ipaddress)
     core_bdr_floor = mysql_table_query.workplace_info(project).pop(0)['core_bdr_floor']

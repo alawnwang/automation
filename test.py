@@ -199,11 +199,13 @@ def generation_ip_planning(network,project):
     #     public_ip = {'network':[ipaddress.ip_network(n['network'])],'status':'启用','domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']]}
     #     ip_planning_list.append(public_ip)
 
-
+    public_dic = mgt_num(project)
     public_network_list = network_class(network, project)['public']
+    for i in public_network_list:
+        print(i,public_dic.__next__())
     # lenpub = len(list(public_network_list))
 
-    print(public_network_list.__next__())
+    # print(public_network_list.__next__())
     # print(public_network_list.__next__())
     # print(type(public_network_list))
 
