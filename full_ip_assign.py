@@ -11,13 +11,29 @@ project = input('项目名称: ')
 
 
 def calc_mgt_netwok(dpoint,epoint,vpoint,area):
+    mgtip_num = {'wired':None,'wireless':None}
     d_xoa = ceil(dpoint/44)
     e_xoa = ceil(epoint/44)
     v_evp = ceil(vpoint/44)
     v_ewl = ceil(area/62*0.85/44)
     wire_mgt_ip_num = d_xoa+e_xoa+v_evp+v_ewl
+    if wire_mgt_ip_num < 58:
+        mgtip_num['wired'] = 0.25
+    elif 58 < wire_mgt_ip_num < 123:
+        mgtip_num['wired'] = 0.5
+    elif wire_mgt_ip_num > 123:
+        mgtip_num['wired'] = 1
 
 
+
+    ap_num = ceil(area/62*0.85)
+    if ap_num < 58:
+        mgtip_num['wireless'] = 0.25
+    elif 58 < ap_num < 123:
+        mgtip_num['wireless'] = 0.5
+    elif ap_num > 123:
+        mgtip_num['wireless'] = 1
+    return mgtip_num
 
 def num_of_network(project):
     full_num_network_dict = {'wired':[],'wireless':{'officewifi':None,'staffwifi':None,'guestwifi':None,'labwifi':None,'staffv6only':1,'staffv6daul':1},'iot':{'mgt':None,'server':0.25,'camera':1}}
@@ -29,14 +45,15 @@ def num_of_network(project):
             convergence_floor.append(network)
         else:
             access_floor.append(network)
-
+    print(convergence_floor)
+    print(access_floor)
     full_area = 0
     for e in convergence_floor:
         new_d = int(e['dpoint'])
         new_e = int(e['epoint'])
         new_v = int(e['vpoint'])
         new_iot = int(e['iot'])
-        new_area = int(e['area'])
+        new_area = float(e['area'])
         full_area = full_area+new_area
         for f in access_floor:
             if f['uplink_floor']+f['uplink_bdr'] == e['floor'] + e['bdr']:
@@ -44,41 +61,42 @@ def num_of_network(project):
                 new_e = new_e+int(f['epoint'])
                 new_v = new_v+int(f['vpoint'])
                 new_iot = new_iot+int(f['iot'])
-                new_area = new_area+int(f['area'])
+                new_area = new_area+float(f['area'])
 
-        # print(e['floor'],e['bdr'],e['dpoint'],e['epoint'],e['vpoint'],e['iot'], e['area'])
-
-        # if network['convergence'] == 'N' :
-        #     uplink = network['uplink_floor']+network['uplink_bdr']
-        #     print(uplink)
+        wired_mgt = calc_mgt_netwok(new_d,new_e,new_v,new_area)['wired']
+        wireless_mgt = calc_mgt_netwok(new_d,new_e,new_v,new_area)['wireless']
 
         floor_network_oa = ceil((e['dpoint'] + e['epoint']) / 240)
         floor_network_ty = ceil(floor_network_oa * 0.5)
         floor_network_voip = ceil(e['vpoint'] / 240)
         full_area = full_area+e['area']
 
-        floor_network_num_dict = {'floor': e['floor'], 'bdr': e['bdr'], 'mgt': 0.25, 'ap_mgt': 0.25,
+#
+        floor_network_num_dict = {'floor': e['floor'], 'bdr': e['bdr'], 'mgt': wired_mgt, 'ap_mgt': wireless_mgt,
                                   'video': 0.25,
                                   'oa_device': 0.25, 'geli': 0.25, 'oa': floor_network_oa, 'ty': floor_network_ty,
                                   'voip': floor_network_voip}
         full_num_network_dict['wired'].append(floor_network_num_dict)
-#         else:pass
 #
+    for i in full_num_network_dict['wired']:
+        print(i)
+# #         else:pass
+num_of_network(project)
 #无线网段计算公式
 #职场人数 = 职场面积/13  人均面积13平
 #Office-WiFi   职场人数*2
 #Staff-WiFi    职场人数*3
 #Guest-WiFi    职场人数*0.25
 #
-    office = ceil(full_area/13*2/240)
-    staff = ceil(full_area/13*3/240)
-    guest = ceil(full_area/13*0.25/240)
-    lab = ceil(full_area/13*0.04/240)
-    full_num_network_dict['wireless']['officewifi'] = office
-    full_num_network_dict['wireless']['staffwifi'] = staff
-    full_num_network_dict['wireless']['guestwifi'] = guest
-    full_num_network_dict['wireless']['labwifi'] = lab
-    return full_num_network_dict
+    # office = ceil(full_area/13*2/240)
+    # staff = ceil(full_area/13*3/240)
+    # guest = ceil(full_area/13*0.25/240)
+    # lab = ceil(full_area/13*0.04/240)
+    # full_num_network_dict['wireless']['officewifi'] = office
+    # full_num_network_dict['wireless']['staffwifi'] = staff
+    # full_num_network_dict['wireless']['guestwifi'] = guest
+    # full_num_network_dict['wireless']['labwifi'] = lab
+    # return full_num_network_dict
 #
 #
 # def cacl_public(project):

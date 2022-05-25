@@ -128,7 +128,7 @@ def convert_interface_name(portname):
 def generation_doa_config_file():
     for d in doa:
         if '-D-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('/Users/wanghaoyu/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -268,7 +268,7 @@ def generation_doa_config_file():
             config.close()
     #     #
         if '-E-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('/Users/wanghaoyu/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -397,7 +397,7 @@ def generation_doa_config_file():
 def global_generation_doa_config_file():
     for d in doa:
         if '-D-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('/Users/wanghaoyu/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -533,10 +533,12 @@ def global_generation_doa_config_file():
                 for n in d['network']:
                     network = config_template.route_config.network().render(ipaddress=str(ipaddress.ip_network(n['network'])[2]))
                     config.write(network)
+                config.write(config_template.route_config.network().render(
+                    ipaddress=str(d['layer3connection']['Z_ipaddress']).split('/')[0]))
                 config.write('\n'+'  stub')
                 config.write('\n'+'#')
                 config.write(config_template.config_template.advance_acl())
-                config.write(config_template.config_template.aaa_tacacs().render(nas_ip=str(ipaddress.ip_network(n['network'])[2])))
+                config.write(config_template.config_template.aaa_tacacs().render(nas_ip=str(d['mgtip'])))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.snmp_acl())
                 config.write('#')
@@ -549,7 +551,7 @@ def global_generation_doa_config_file():
             config.close()
     #     #
         if '-E-' in d['device_name']:
-            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('/Users/wanghaoyu/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -669,19 +671,27 @@ def global_generation_doa_config_file():
                 config.write('\n' + '#')
 
                 for c in d['downlinkconnect']:
-                    config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+convert_interface_name(c['Z_port']))))
+                    if 'XOA' in c['Z_device']:
+                        config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(phy_interface=c['A_port'],description=(c['Z_device']+'-'+convert_interface_name(c['Z_port'])),speed='speed 2500'))
+                    else:
+                        config.write(config_template.h3c_port_config_template.lay2_phy_interface_config().render(
+                            phy_interface=c['A_port'],
+                            description=(c['Z_device'] + '-' + convert_interface_name(c['Z_port'])),
+                            speed=''))
                 config.write(config_template.h3c_port_config_template.lay3_phy_interface_config().render(phy_interface=d['layer3connection']['Z_port'],description=d['layer3connection']['A_device']+'-'+convert_interface_name(d['layer3connection']['A_port']),ipaddress=(d['layer3connection']['Z_ipaddress']).split('/')[0],netmask=' 255.255.255.252'))
                 config.write(config_template.route_config.ospf_config().render(mgt_ip=d['mgtip']))
                 config.write(geneneration_ospf())
                 config.write(config_template.route_config.network_area().render(core_network=str(ospf_area)))
                 for n in d['network']:
+                    print(n)
                     network = config_template.route_config.network().render(ipaddress=str(ipaddress.ip_network(n['network'])[3]))
                     config.write(network)
+                config.write(config_template.route_config.network().render(ipaddress=str(d['layer3connection']['Z_ipaddress']).split('/')[0]))
                 config.write('\n'+'  stub')
                 config.write('\n' + '#')
                 config.write(config_template.config_template.advance_acl())
                 config.write(
-                    config_template.config_template.aaa_tacacs().render(nas_ip=str(ipaddress.ip_network(n['network'])[3])))
+                    config_template.config_template.aaa_tacacs().render(nas_ip=str(d['mgtip'])))
                 config.write('\n' + '#')
                 config.write(config_template.config_template.snmp_acl())
                 config.write('#')
@@ -819,7 +829,7 @@ def access_device_config_info():
 
 def generation_access_config_file():
     for a in access_device_config_info():
-        with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+        with open('/Users/wanghaoyu/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
             config.write(config_template.config_template.sysname().render(sysname=a['device_name']))
             config.write('\n' + '#')
             config.write(config_template.config_template.time_zone())

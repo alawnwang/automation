@@ -5,20 +5,22 @@ import mysql_table_query
 
 
 # project = input('项目名称: ')
-# #
+# # #
 # network = input('IP地址：')
 
 def num_of_network(project):
     num_network = []
     for network in mysql_table_query.endpoint(project):
-        if network['']
-        floor_network_oa = ceil((network['dpoint'] + network['epoint']) / 240)
-        floor_network_ty = ceil(floor_network_oa * 0.5)
-        floor_network_voip = ceil(network['vpoint'] / 240)
-        floor_network_num_dict = {'floor':network['floor'],'bdr':network['bdr'],'mgt':0.25,'ap_mgt':0.25,'video':0.25,
-                                  'oa_device':0.25,'geli':0.25,'oa':floor_network_oa,'ty':floor_network_ty,
-                                  'voip':floor_network_voip}
-        num_network.append(floor_network_num_dict)
+        if network['convergence'] =='N':
+            pass
+        else:
+            floor_network_oa = ceil((network['dpoint'] + network['epoint']) / 240)
+            floor_network_ty = ceil(floor_network_oa * 0.5)
+            floor_network_voip = ceil(network['vpoint'] / 240)
+            floor_network_num_dict = {'floor':network['floor'],'bdr':network['bdr'],'mgt':0.25,'ap_mgt':0.25,'video':0.25,
+                                      'oa_device':0.25,'geli':0.25,'oa':floor_network_oa,'ty':floor_network_ty,
+                                      'voip':floor_network_voip}
+            num_network.append(floor_network_num_dict)
     return num_network
 
 def cacl_public(project):
@@ -52,6 +54,39 @@ def cacl_voip(project):
         num_voip += voip['voip']
     return ceil(num_voip)
 
+def wire_network_num(project):
+    wire_network_num = cacl_public(project)+cacl_oa(project)+cacl_ty(project)+cacl_voip(project)
+    return wire_network_num
+
+
+def building_area(project):
+    area = 0.00
+    for n in mysql_table_query.endpoint(project):
+        area = area+n['area']
+    return area
+
+def calc_wifi_network_num(project):
+    area = building_area(project)
+    officewifi_network = ceil(area/13/240)*2
+    staffwifi_network = ceil(area/13/240)*3
+    guestwifi_network = ceil(area/13/240/4)
+    labwifi_network = ceil(area/13/240/25)
+    return {'office-wifi':officewifi_network,'staff-wifi':staffwifi_network,'guest-wifi':guestwifi_network,'lab-wifi':labwifi_network,'staffv6-only':1,'staffv6-daul':1}
+
+def all_network_num(project,network):
+    all_network_num = (wire_network_num(project)+calc_wifi_network_num(project)['office-wifi']+calc_wifi_network_num(project)['staff-wifi']
+          +calc_wifi_network_num(project)['guest-wifi']+calc_wifi_network_num(project)['lab-wifi']+
+          calc_wifi_network_num(project)['staffv6-only']+calc_wifi_network_num(project)['staffv6-daul'])
+    new_networks = ipaddress.ip_network(network).subnets(new_prefix=24)
+    assign = [ip for ip in new_networks]
+    if all_network_num > len(assign):
+        print('IP地址分配不足')
+    else:
+        print('IP地址分配充足,利用率'+'{:.2%}'.format(all_network_num/len(assign)))
+
+
+
+
 def network_class(network,project):
     pubilc_network_list = []
     pubilc_subnetwork_list = []
@@ -60,7 +95,6 @@ def network_class(network,project):
     mgt_network = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
     connect_ip = (len(cacl_floor_bdr_num(project)))*8/224
-    print(connect_ip)
     if connect_ip < 1:
         core_network = ip_address.__next__()
         mgt_network.append(core_network)
@@ -80,7 +114,6 @@ def network_class(network,project):
         loopback.append(core_ip.__next__())
         loopbackip = loopbackip + 1
     network_class_dict = {'mgt':mgt_network,'connection_ip':core_ip,'public':None,'normal':None}
-    print(network_class_dict)
     n = cacl_public(project)
     while n != 0:
         n = n - 1
@@ -153,8 +186,52 @@ def network_assign(project):
             normal_network_list.append(
                 {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': None, 'fun': 'VOIP网','desc':('VOIP-'+str(num))})
 
+    normal_network_list.append({'vlan': 0, 'floor': None, 'bdr': None, 'network': None, 'fun': 'xzjk',
+                                'desc': 'xzjk-mgt'})
+
+    wifi_start_vlan = 19
+    all_wifi_network_num = (
+                calc_wifi_network_num(project)['office-wifi'] + calc_wifi_network_num(project)['staff-wifi']
+                + calc_wifi_network_num(project)['guest-wifi'] + calc_wifi_network_num(project)['lab-wifi'] +
+                calc_wifi_network_num(project)['staffv6-only'] + calc_wifi_network_num(project)['staffv6-daul'])
+    office_range = (office for office in range(calc_wifi_network_num(project)['office-wifi']))
+    staff_range = (staff for staff in range(calc_wifi_network_num(project)['staff-wifi']))
+    guest_range = (guest for guest in range(calc_wifi_network_num(project)['guest-wifi']))
+    normal_network_list.append({'vlan': 10, 'floor': None, 'bdr': None, 'network': None, 'fun': 'wifi-mgt',
+                                'desc': 'mgt'})
+    while all_wifi_network_num != 0:
+        wifi_start_vlan = wifi_start_vlan + 1
+        all_wifi_network_num = all_wifi_network_num - 1
+        try:
+            office = {'vlan': wifi_start_vlan, 'floor': None, 'bdr': None, 'network': None, 'fun': 'office',
+                      'desc': ('Office-WiFi-' + str(int(office_range.__next__()) + 1))}
+            normal_network_list.append(office)
+        except StopIteration:
+            try:
+                staff = {'vlan': wifi_start_vlan, 'floor': None, 'bdr': None, 'network': None, 'fun': 'staff',
+                         'desc': ('Staff-WiFi-' + str(int(staff_range.__next__()) + 1))}
+                normal_network_list.append(staff)
+            except StopIteration:
+                try:
+                    guest = {'vlan': wifi_start_vlan, 'floor': None, 'bdr': None, 'network': None, 'fun': 'guest',
+                             'desc': ('Guest-WiFi-' + str(int(guest_range.__next__()) + 1))}
+                    normal_network_list.append(guest)
+                except StopIteration:
+                    try:
+                        normal_network_list.append({'vlan': wifi_start_vlan, 'floor': None, 'bdr': None, 'network': None, 'fun': 'lab',
+                             'desc': 'Lab-WiFi-1'})
+                    except EOFError:
+                        pass
+    normal_network_list.append({'vlan': 900, 'floor': None, 'bdr': None, 'network': None, 'fun': 'staffv6only',
+                                'desc': 'staffv6only'})
+    normal_network_list.append({'vlan': 901, 'floor': None, 'bdr': None, 'network': None, 'fun': 'staffv6daul',
+                                'desc': 'staffv6daul'})
+
     normal_network_info = (i for i in normal_network_list)
     return normal_network_info
+
+
+
 
 
 
@@ -222,5 +299,11 @@ def generation_ip_planning(network,project):
                          'project': project, 'building_name': None, 'floor':None, 'bdr': None}
 
             ip_planning_list.append(normal_ip)
+
+
     return ip_planning_list
 
+
+# generation_ip_planning(network,project)
+# for i in generation_ip_planning(network,project):
+#     print(i)

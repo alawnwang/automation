@@ -11,7 +11,6 @@ def connection_relation(network,project):
     coa_info_summary = coa_info.get_coa_info(project)
     doa_info_summary = doa_info.get_doa_info(project)
     access_info_summary = access_info.get_access_info(project)
-    print(access_info_summary)
 
     connection_dict ={'mgtip':{'project':[],'floor':[],'bdr':[],'device_name':[],'mgtip':[],'mgtmask':[],'gateway':[]},'connect':{'project':[],'A_floor':[],'A_bdr':[],'A_device':[],'A_port':[],'A_ip':[],'Z_floor':[],'Z_bdr':[],'Z_device':[],'Z_port':[],'Z_ip':[]}}
 #
@@ -47,7 +46,6 @@ def connection_relation(network,project):
     for coa,doa in zip(coa_info_summary['port_assign']['downlink'],doa_info_summary):
         try:
             d_a_z_ip = connect_ip.__next__()[0]
-            print(d_a_z_ip)
             connection_dict['connect']['project'].append(project)
             connection_dict['connect']['A_floor'].append(coa_info_summary['floor'])
             connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
@@ -61,7 +59,6 @@ def connection_relation(network,project):
             connection_dict['connect']['Z_ip'].append(str(d_a_z_ip[2])+'/'+str(d_a_z_ip.prefixlen))
 
             e_a_z_ip = connect_ip.__next__()[0]
-            print(e_a_z_ip)
             connection_dict['connect']['project'].append(project)
             connection_dict['connect']['A_floor'].append(coa_info_summary['floor'])
             connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])

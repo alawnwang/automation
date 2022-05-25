@@ -32,7 +32,7 @@ dldp global enable
  line aux 0
  authentication-mode password
  user-role network-admin
- set authentication password 11111
+ set authentication password simple 11111
 '''
 
     def vty():
@@ -518,6 +518,7 @@ interface {{phy_interface}}
  port link-type trunk
  undo port trunk permit vlan 1
  port trunk permit vlan 2 to 4094
+ {{speed}}
  dldp enable
 #
 ''')
@@ -556,7 +557,7 @@ vlan {{vlan_num}}
 
 
     def gloabl_acl():
-        return Template('\n'+'''packet-filter name {{acl_name}} vlan-interface {{vlan_num}} inbound
+        return Template('\n'+''' packet-filter name {{acl_name}} vlan-interface {{vlan_num}} inbound
 ''')
 
     def master_stp():

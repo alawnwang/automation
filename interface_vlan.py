@@ -48,18 +48,6 @@ no passive-interface $vlan10
 '''
 
 
-# class Ip_dict:
-#     def __init__(self,vlan,description,hsrpip,masterip,backupip,netmask,acl,function,floor_bdr):
-#         self.floor = floor_bdr
-#         self.vlan = vlan
-#         self.description = description
-#         self.hsrpip = hsrpip
-#         self.masterip = masterip
-#         self.backupip = backupip
-#         self.netmask = netmask
-#         self.acl = acl
-#         self.function = function
-
 def get_dict(excel,row):
     dict_list = []
     for r in range (2,row+1):

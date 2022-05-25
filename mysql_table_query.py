@@ -9,7 +9,7 @@ def link_db():
     password = 'uz8954UZN'
     host = '119.91.102.106'
     port = '3306'
-    dbname = 'automation'
+    dbname = 'building_information'
     engine = create_engine(f'mysql+pymysql://{username}:{urlquote(password)}@{host}:{port}/{dbname}')
     return engine
 #

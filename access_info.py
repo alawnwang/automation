@@ -155,7 +155,7 @@ def get_access_info(project):
             if access_dict['floor'] == vevp['floor']:
                 access_dict['VEVP'].append(vevp)
         for name in n['VEWL']:
-            print(name,m)
+
             ip_address = m['VEWL'].pop(0)
             vewl = {'floor': n['floor'],'bdr':n['bdr'],'name': name, 'ip': str(ip_address[0]),
                     'netmask': str(ip_address[1]),'gateway':str(m['gw'][0]), 'port_assign':get_ewl_type(project)['port_assign']}
