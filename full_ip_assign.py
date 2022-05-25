@@ -14,15 +14,17 @@ def num_of_network(project):
     full_area = 0
 
     for network in mysql_table_query.endpoint(project):
-        floor_network_oa = ceil((network['dpoint'] + network['epoint']) / 240)
-        floor_network_ty = ceil(floor_network_oa * 0.5)
-        floor_network_voip = ceil(network['vpoint'] / 240)
-        full_area = full_area+network['area']
-        floor_network_num_dict = {'floor': network['floor'], 'bdr': network['bdr'], 'mgt': 0.25, 'ap_mgt': 0.25,
-                                  'video': 0.25,
-                                  'oa_device': 0.25, 'geli': 0.25, 'oa': floor_network_oa, 'ty': floor_network_ty,
-                                  'voip': floor_network_voip}
-        full_num_network_dict['wired'].append(floor_network_num_dict)
+        if network['convergence'] == 'Y':
+            floor_network_oa = ceil((network['dpoint'] + network['epoint']) / 240)
+            floor_network_ty = ceil(floor_network_oa * 0.5)
+            floor_network_voip = ceil(network['vpoint'] / 240)
+            full_area = full_area+network['area']
+            floor_network_num_dict = {'floor': network['floor'], 'bdr': network['bdr'], 'mgt': 0.25, 'ap_mgt': 0.25,
+                                      'video': 0.25,
+                                      'oa_device': 0.25, 'geli': 0.25, 'oa': floor_network_oa, 'ty': floor_network_ty,
+                                      'voip': floor_network_voip}
+            full_num_network_dict['wired'].append(floor_network_num_dict)
+        else:pass
 
 #无线网段计算公式
 #职场人数 = 职场面积/13  人均面积13平
@@ -33,13 +35,11 @@ def num_of_network(project):
     office = ceil(full_area/13*2/240)
     staff = ceil(full_area/13*3/240)
     guest = ceil(full_area/13*0.25/240)
-    lab = ceil(full_area/13*0.125/240)
+    lab = ceil(full_area/13*0.04/240)
     full_num_network_dict['wireless']['officewifi'] = office
     full_num_network_dict['wireless']['staffwifi'] = staff
     full_num_network_dict['wireless']['guestwifi'] = guest
     full_num_network_dict['wireless']['labwifi'] = lab
-
-
 
     return full_num_network_dict
 
@@ -85,7 +85,7 @@ def calc_wifi(project):
     print(num_wifi)
     return num_wifi
 
-def calc
+
 #
 # def network_class(network, project):
 #     pubilc_network_list = []

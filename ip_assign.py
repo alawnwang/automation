@@ -11,6 +11,7 @@ import mysql_table_query
 def num_of_network(project):
     num_network = []
     for network in mysql_table_query.endpoint(project):
+        if network['']
         floor_network_oa = ceil((network['dpoint'] + network['epoint']) / 240)
         floor_network_ty = ceil(floor_network_oa * 0.5)
         floor_network_voip = ceil(network['vpoint'] / 240)
