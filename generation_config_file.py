@@ -397,7 +397,7 @@ def generation_doa_config_file():
 def global_generation_doa_config_file():
     for d in doa:
         if '-D-' in d['device_name']:
-            with open('C:/Users/Alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -549,7 +549,7 @@ def global_generation_doa_config_file():
             config.close()
     #     #
         if '-E-' in d['device_name']:
-            with open('C:/Users/Alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(d['mgtip']+'_'+d['device_name'])+'.cfg','a+') as config:
                 config.write(config_template.config_template.sysname().render(sysname=d['device_name']))
                 config.write('\n'+'#')
                 config.write(config_template.config_template.time_zone())
@@ -819,7 +819,7 @@ def access_device_config_info():
 
 def generation_access_config_file():
     for a in access_device_config_info():
-        with open('C:/Users/Alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+        with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
             config.write(config_template.config_template.sysname().render(sysname=a['device_name']))
             config.write('\n' + '#')
             config.write(config_template.config_template.time_zone())

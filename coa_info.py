@@ -25,6 +25,7 @@ def get_coa_type(project):
 
 def get_coa_info(project):
     entry = (mysql_table_query.core_ip(project))[0]
+    print(entry)
     mgt_network = ipaddress.IPv4Network(entry['network'])
     mcoa_ip = mgt_network[1]
     scoa_ip = mgt_network[2]
@@ -35,3 +36,4 @@ def get_coa_info(project):
                 'SMGTIP': {'ip': scoa_ip, 'netmask': '255.255.255.255'},
                 'port_assign': get_coa_type(project)['port_assign']}
     return mgt_dict
+

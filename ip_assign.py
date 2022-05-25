@@ -4,6 +4,10 @@ import ipaddress
 import mysql_table_query
 
 
+# project = input('项目名称: ')
+# #
+# network = input('IP地址：')
+
 def num_of_network(project):
     num_network = []
     for network in mysql_table_query.endpoint(project):
@@ -49,11 +53,13 @@ def cacl_voip(project):
 
 def network_class(network,project):
     pubilc_network_list = []
+    pubilc_subnetwork_list = []
     core_ip_list = []
     loopback = []
     mgt_network = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
-    connect_ip = (len(cacl_floor_bdr_num(project)))*8/256
+    connect_ip = (len(cacl_floor_bdr_num(project)))*8/224
+    print(connect_ip)
     if connect_ip < 1:
         core_network = ip_address.__next__()
         mgt_network.append(core_network)
@@ -72,19 +78,20 @@ def network_class(network,project):
     while loopbackip <= 7:
         loopback.append(core_ip.__next__())
         loopbackip = loopbackip + 1
-    network_class_dict = {'mgt':mgt_network,'connection_ip':core_ip,'public':[],'normal':None}
+    network_class_dict = {'mgt':mgt_network,'connection_ip':core_ip,'public':None,'normal':None}
+    print(network_class_dict)
     n = cacl_public(project)
     while n != 0:
         n = n - 1
         pubilc_network_list.append(ip_address.__next__())
+
     for pu in pubilc_network_list:
         for ip in ipaddress.ip_network(pu).subnets(new_prefix=26):
-            network_class_dict['public'].append(ip)
+            pubilc_subnetwork_list.append(ip)
+    network_class_dict['public'] = (publicip for publicip in pubilc_subnetwork_list)
     normal_network_list = []
-    m = cacl_oa(project) + cacl_oa(project) + cacl_voip(project)
-    while m != 0:
-        m = m - 1
-        normal_network_list.append(ip_address.__next__())
+    for i in ip_address:
+        normal_network_list.append(i)
     network_class_dict['normal'] = (ip for ip in normal_network_list)
     return network_class_dict
 #
@@ -107,101 +114,112 @@ def mgt_num(project):
             floor_bdr_split = floor_bdr.split('-')
             public_dict = {'vlan': vlan, 'floor': str(floor_bdr_split[0]),'bdr':str(floor_bdr_split[1]),'network':'','fun':fun,'desc':des}
             public_dict_list.append(public_dict)
-    return public_dict_list
-
+    public_dict_generation = (p for p in public_dict_list)
+    return public_dict_generation
 
 def generation_netwrok_dict(project):
     return {'public': cacl_public(project), 'oa': cacl_oa(project), 'ty': cacl_ty(project), 'voip': cacl_voip(project)}
 
-class network_assign:
-    def oa_network_assign(func,project):
-        oa_dict_list = []
-        for floor in num_of_network(project):
-            vlan_oa = 19
-            num = 0
-            while floor['oa'] != 0:
-                floor['oa'] = floor['oa'] - 1
-                vlan_oa = vlan_oa + 1
-                num = num + 1
-                oa_dict_list.append(
-                    {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': func.__next__(), 'fun': '有线办公网','desc':('OA-'+str(num))})
-        return oa_dict_list
+def network_assign(project):
+    normal_network_list = []
+    for floor in num_of_network(project):
+        vlan_oa = 19
+        num = 0
+        while floor['oa'] != 0:
+            floor['oa'] = floor['oa'] - 1
+            vlan_oa = vlan_oa + 1
+            num = num + 1
+            normal_network_list.append(
+                {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network':None, 'fun': '有线办公网','desc':('OA-'+str(num))})
 
-    def ty_network_assign(func,project):
-        ty_dict_list = []
-        for floor in num_of_network(project):
-            vlan_oa = 29
-            num = 0
-            while floor['ty'] != 0:
-                floor['ty'] = floor['ty'] - 1
-                vlan_oa = vlan_oa + 1
-                num = num + 1
-                ty_dict_list.append(
-                    {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': func.__next__(), 'fun': '有线体验网','desc':('TY-'+str(num))})
-        return ty_dict_list
+    for floor in num_of_network(project):
+        vlan_oa = 29
+        num = 0
+        while floor['ty'] != 0:
+            floor['ty'] = floor['ty'] - 1
+            vlan_oa = vlan_oa + 1
+            num = num + 1
+            normal_network_list.append(
+                {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': None, 'fun': '有线体验网','desc':('TY-'+str(num))})
 
-    def voip_network_assign(func,project):
-        ty_dict_list = []
-        for floor in num_of_network(project):
-            vlan_oa = 99
-            num = 0
-            while floor['voip'] != 0:
-                floor['voip'] = floor['voip'] - 1
-                vlan_oa = vlan_oa + 1
-                num = num + 1
-                ty_dict_list.append(
-                    {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': func.__next__(), 'fun': 'VOIP网','desc':('VOIP-'+str(num))})
-        return ty_dict_list
+    for floor in num_of_network(project):
+        vlan_oa = 99
+        num = 0
+        while floor['voip'] != 0:
+            floor['voip'] = floor['voip'] - 1
+            vlan_oa = vlan_oa + 1
+            num = num + 1
+            normal_network_list.append(
+                {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': None, 'fun': 'VOIP网','desc':('VOIP-'+str(num))})
+
+    normal_network_info = (i for i in normal_network_list)
+    return normal_network_info
 
 
+
+def acl(ipinfo):
+    acl = ''
+    if ipinfo == 'AP网':
+        acl = 'AP'
+    elif ipinfo == '会议设备网':
+        acl = 'Video'
+    elif ipinfo == '行政设备网':
+        acl = 'OA-Device'
+    elif ipinfo == '隔离VLAN':
+        acl = 'GELI'
+    elif ipinfo == '有线办公网':
+        acl = 'OA'
+    elif ipinfo == '有线体验网':
+        acl = 'TY'
+    elif ipinfo == 'VOIP网':
+        acl = 'VOIP'
+    return acl
+#
 def generation_ip_planning(network,project):
     ip_planning_list = []
-    #IP规划
+    # #IP规划
     core_ipaddress = network_class(network,project)['mgt']
     core_network = len(core_ipaddress)
     core_bdr_floor = mysql_table_query.workplace_info(project).pop(0)['core_bdr_floor']
     if core_network <= 1:
-        ip_planning_list.append({'network':[core_ipaddress],'status':None,'domain':None,'vlan':None,'func':'核心网段','description':'interconnection','acl':None,'project':project,'building_name':None,'floor':[core_bdr_floor],'bdr':[1]})
+        ip_planning_list.append({'network':[core_ipaddress],'status':'启用','domain':None,'vlan':None,'func':['核心网段'],'description':['interconnection'],'acl':None,'project':project,'building_name':None,'floor':[core_bdr_floor],'bdr':[1]})
     else:
         for n in core_ipaddress:
-            core_ip_dict = {'network': [n], 'status': None, 'domain': None, 'vlan': None, 'func': ['核心网段'],
+            core_ip_dict = {'network': [n], 'status': '启用', 'domain': None, 'vlan': None, 'func': ['核心网段'],
                             'description': ['interconnection'], 'acl': None, 'project': project, 'building_name': None,
                             'floor': [core_bdr_floor], 'bdr': [1]}
             ip_planning_list.append(core_ip_dict)
 
 
+    public_dic = mgt_num(project)
+    public_network_list = network_class(network, project)['public']
+    for n in public_network_list:
+        try:
+            public_network_basic_info = public_dic.__next__()
+            public_ip = {'network': [ipaddress.ip_network(n)], 'status': '启用', 'domain': None,
+                         'vlan': [public_network_basic_info['vlan']], 'func': [public_network_basic_info['fun']], 'description': [public_network_basic_info['desc']], 'acl': acl(public_network_basic_info['fun']),
+                         'project': project, 'building_name': None, 'floor': [public_network_basic_info['floor']], 'bdr': [public_network_basic_info['bdr']]}
+            ip_planning_list.append(public_ip)
+        except StopIteration:
+            public_ip = {'network': [ipaddress.ip_network(n)], 'status': '未启用', 'domain': None,
+                         'vlan': None, 'func': None, 'description':None, 'acl': None,
+                         'project': project, 'building_name': None, 'floor':None, 'bdr': None}
+            ip_planning_list.append(public_ip)
+    normal_dic = network_assign(project)
+    normal_network_list = network_class(network,project)['normal']
+    for norip in normal_network_list:
+        try:
+            normal_network_basic_info = normal_dic.__next__()
+            normal_ip = {'network': [ipaddress.ip_network(norip)], 'status': '启用', 'domain': None, 'vlan': [normal_network_basic_info['vlan']], 'func': [normal_network_basic_info['fun']],
+                         'description': [normal_network_basic_info['desc']],'acl':acl(normal_network_basic_info['fun']),'project': project, 'building_name': None, 'floor': [normal_network_basic_info['floor']],
+                         'bdr': [normal_network_basic_info['bdr']]}
+            ip_planning_list.append(normal_ip)
+        except StopIteration:
+            pass
+            normal_ip = {'network': [ipaddress.ip_network(norip)], 'status': '未启用', 'domain': None,
+                         'vlan': None, 'func': None, 'description':None, 'acl': None,
+                         'project': project, 'building_name': None, 'floor':None, 'bdr': None}
 
-    for n, m in zip(mgt_num(project),network_class(network,project)['public']):
-        acl = ''
-        if n['fun'] == 'AP网':
-            acl = 'AP'
-        elif n['fun'] == '会议设备网':
-            acl = 'Video'
-        elif n['fun'] == '行政设备网':
-            acl = 'OA-Device'
-        elif n['fun'] == '隔离VLAN':
-            acl = 'GELI'
-        n['network'] = str(m)
-        public_ip = {'network':[ipaddress.ip_network(n['network'])],'status':'启用','domain':None,'vlan':[n['vlan']],'func':[n['fun']],'description':[n['desc']],'acl':acl,'project':project,'building_name':None,'floor':[n['floor']],'bdr':[n['bdr']]}
-        ip_planning_list.append(public_ip)
-
-
-    network_list = network_class(network,project)['normal']
-    for o in network_assign.oa_network_assign(network_list,project):
-        oa_ip = {'network': [o['network']], 'status': '启用', 'domain': None, 'vlan': [o['vlan']], 'func': [o['fun']],
-                     'description': [o['desc']],'acl':'OA','project': project, 'building_name': None, 'floor': [o['floor']],
-                     'bdr': [o['bdr']]}
-        ip_planning_list.append(oa_ip)
-
-    for t in network_assign.ty_network_assign(network_list,project):
-        ty_ip = {'network': [t['network']], 'status': '启用', 'domain': None, 'vlan': [t['vlan']], 'func': [t['fun']],
-                     'description': [t['desc']],'acl':'TY','project': project, 'building_name': None, 'floor': [t['floor']],
-                     'bdr': [t['bdr']]}
-        ip_planning_list.append(ty_ip)
-
-    for v in network_assign.voip_network_assign(network_list,project):
-        voip_ip = {'network': [v['network']], 'status': '启用', 'domain': None, 'vlan': [v['vlan']], 'func': [v['fun']],
-                     'description': [v['desc']],'acl':'VOIP','project': project, 'building_name': None, 'floor': [v['floor']],
-                     'bdr': [v['bdr']]}
-        ip_planning_list.append(voip_ip)
+            ip_planning_list.append(normal_ip)
     return ip_planning_list
+

@@ -804,7 +804,7 @@ class route_config:
         return Template('\n'+''' ospf 100 route-id {{mgt_ip}}
  silent-interface all'''+'\n')
     def undo_silcent():
-        return Template(''' undo silent-interface {{interconnect_interface}}
+        return Template('\n'+''' undo silent-interface {{interconnect_interface}}
  undo silent-interface {{mgt_vlan_num}}'''+'\n')
     def network_area():
         return Template('\n'+''' area {{core_network}}'''+'\n')

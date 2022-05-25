@@ -43,11 +43,11 @@ def cisco(type):
 
 def h3c(type):
     if type == '9850_4c':
-        down_link = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (1,41)]
+        down_link = ['Ten-GigabitEthernet1/1/1', 'Ten-GigabitEthernet1/1/2', 'Ten-GigabitEthernet1/1/3', 'Ten-GigabitEthernet1/1/4', 'Ten-GigabitEthernet1/1/5', 'Ten-GigabitEthernet1/1/6', 'Ten-GigabitEthernet1/1/7', 'Ten-GigabitEthernet1/1/8', 'Ten-GigabitEthernet1/1/9', 'Ten-GigabitEthernet1/1/10', 'Ten-GigabitEthernet1/1/11', 'Ten-GigabitEthernet1/1/12', 'Ten-GigabitEthernet1/1/13', 'Ten-GigabitEthernet1/1/14', 'Ten-GigabitEthernet1/1/15', 'Ten-GigabitEthernet1/1/16', 'Ten-GigabitEthernet1/1/17', 'Ten-GigabitEthernet1/1/18', 'Ten-GigabitEthernet1/1/19', 'Ten-GigabitEthernet1/1/20', 'Ten-GigabitEthernet1/1/21', 'Ten-GigabitEthernet1/1/22', 'Ten-GigabitEthernet1/1/23', 'Ten-GigabitEthernet1/1/24', 'Ten-GigabitEthernet1/2/1', 'Ten-GigabitEthernet1/2/2', 'Ten-GigabitEthernet1/2/3', 'Ten-GigabitEthernet1/2/4', 'Ten-GigabitEthernet1/2/5', 'Ten-GigabitEthernet1/2/6', 'Ten-GigabitEthernet1/2/7', 'Ten-GigabitEthernet1/2/8', 'Ten-GigabitEthernet1/2/9', 'Ten-GigabitEthernet1/2/10', 'Ten-GigabitEthernet1/2/11', 'Ten-GigabitEthernet1/2/12', 'Ten-GigabitEthernet1/2/13', 'Ten-GigabitEthernet1/2/14', 'Ten-GigabitEthernet1/2/15', 'Ten-GigabitEthernet1/2/16', 'Ten-GigabitEthernet1/2/17', 'Ten-GigabitEthernet1/2/18', 'Ten-GigabitEthernet1/2/19', 'Ten-GigabitEthernet1/2/20', 'Ten-GigabitEthernet1/2/21', 'Ten-GigabitEthernet1/2/22', 'Ten-GigabitEthernet1/2/23', 'Ten-GigabitEthernet1/2/24']
         cvp = 'Ten-GigabitEthernet1/0/44'
-        up_link = 'Ten-GigabitEthernet1/0/43'
-        cwl = ['Ten-GigabitEthernet1/0/45', 'Ten-GigabitEthernet1/0/46']
-        interconnect = ['Ten-GigabitEthernet1/0/47','Ten-GigabitEthernet1/0/48']
+        up_link = 'Ten-GigabitEthernet1/4/1'
+        cwl = ['Ten-GigabitEthernet1/3/1', 'Ten-GigabitEthernet1/3/2']
+        interconnect = ['Ten-GigabitEthernet1/1/25','Ten-GigabitEthernet1/2/25']
         return {'downlink': down_link,'uplink': up_link,'cvp':cvp,'cwl':cwl,'interconnect': interconnect}
     elif type == '6520_54qc':
         down_link = ['Ten-GigabitEthernet1/0'+str(portnum) for portnum in range (1,41)]

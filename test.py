@@ -58,7 +58,8 @@ def network_class(network,project):
     loopback = []
     mgt_network = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
-    connect_ip = (len(cacl_floor_bdr_num(project)))*8/256
+    connect_ip = (len(cacl_floor_bdr_num(project)))*8/224
+    print(connect_ip)
     if connect_ip < 1:
         core_network = ip_address.__next__()
         mgt_network.append(core_network)
@@ -78,6 +79,7 @@ def network_class(network,project):
         loopback.append(core_ip.__next__())
         loopbackip = loopbackip + 1
     network_class_dict = {'mgt':mgt_network,'connection_ip':core_ip,'public':None,'normal':None}
+    print(network_class_dict)
     n = cacl_public(project)
     while n != 0:
         n = n - 1
