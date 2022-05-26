@@ -5,6 +5,7 @@ import ip_assign
 import device_port
 
 
+
 def generation_cwl_name(project):
     coa_prefix = '-'.join((device_name_prefix.device_prefix(mysql_table_query.workplace_info(project)[0]['city'],mysql_table_query.workplace_info(project)[0]['building_name']),'BDR'+str(mysql_table_query.workplace_info(project)[0]['core_bdr_floor'])+'01'))
     return coa_prefix
@@ -27,10 +28,11 @@ def get_cwl_info(network,project):
     mgt_ip = ipaddress.IPv4Network((entry)['network'])
     connect_ip = ip_assign.network_class(network, project)['loopback']
     mgt_dict = {'floor': entry['floor'],'bdr':entry['bdr'],'MCW': ('-'.join((generation_cwl_name(project), 'A01', str(get_cwl_type(project)['name']), 'CWL', '01')))
-        , 'MMGTIP': {'vlan':entry['vlan'],'ip': mgt_ip[2],'uplink':connect_ip[3][0][2]}, 'SCW': (
+        , 'MMGTIP': {'vlan':entry['vlan'],'ip': mgt_ip[2],'uplink':str(connect_ip[3][0][2])+'/'+str((connect_ip[3][0]).prefixlen)}, 'SCW': (
             '-'.join((generation_cwl_name(project), 'A02', get_cwl_type(project)['name'], 'CWL', '01'))),
-                'SMGTIP': {'vlan':entry['vlan'],'ip': mgt_ip[3],'uplink':connect_ip[4][0][2]},
+                'SMGTIP': {'vlan':entry['vlan'],'ip': mgt_ip[3],'uplink':str(connect_ip[4][0][2])+'/'+str((connect_ip[4][0]).prefixlen)},
                 'port_assign': get_cwl_type(project)['port_assign']}
+    # print(connect_ip[3][0][2],str((connect_ip[3][0]).prefixlen),connect_ip[4][0][2],str((connect_ip[4][0]).prefixlen))
     return mgt_dict
 
 

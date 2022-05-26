@@ -34,8 +34,8 @@ def get_coa_info(network,project):
                 'MMGTIP': {'ip': mgt_ip[0][0][1], 'netmask': '255.255.255.255','area0_ip':str(mgt_ip[1][0][1])+'/'+str((mgt_ip[1][0]).prefixlen),'localarea':str(mgt_ip[2][0][1])+'/'+str((mgt_ip[1][0]).prefixlen),
                      'cwl':str(mgt_ip[3][0][1])+'/'+str((mgt_ip[1][0]).prefixlen),'ccsvlan':'550','ccsip':str(ccs_connect_ip[0][1])+'/'+str((mgt_ip[1][0]).prefixlen),'vlan_gateway':str(ccs_connect_ip[0][3])+'/'+str((mgt_ip[1][0]).prefixlen)},'SCOA': (
             '-'.join((generation_coa_name(project), 'A02', get_coa_type(project)['name'], 'COA', '01'))),
-                'SMGTIP': {'ip':str(mgt_ip[0][0][2])+'/'+str((mgt_ip[1][0]).prefixlen), 'netmask': '255.255.255.255','area0_ip':str(mgt_ip[1][0][2])+'/'+str((mgt_ip[1][0]).prefixlen),'localarea':str(mgt_ip[2][0][2])+'/'+str((mgt_ip[1][0]).prefixlen),
-                     'cwl':str(mgt_ip[4][0][2])+'/'+str((mgt_ip[1][0]).prefixlen),'ccsvlan':'550','ccsip':str(ccs_connect_ip[0][2])+'/'+str((mgt_ip[1][0]).prefixlen),'vlan_gateway':str(ccs_connect_ip[0][3])+'/'+str((mgt_ip[1][0]).prefixlen)},
+                'SMGTIP': {'ip':str(mgt_ip[0][0][2])+'/'+str((mgt_ip[0][0]).prefixlen), 'netmask': '255.255.255.255','area0_ip':str(mgt_ip[1][0][2])+'/'+str((mgt_ip[1][0]).prefixlen),'localarea':str(mgt_ip[2][0][2])+'/'+str((mgt_ip[2][0]).prefixlen),
+                     'cwl':str(mgt_ip[4][0][1])+'/'+str((mgt_ip[4][0]).prefixlen),'ccsvlan':'550','ccsip':str(ccs_connect_ip[0][2])+'/'+str((mgt_ip[0][0]).prefixlen),'vlan_gateway':str(ccs_connect_ip[0][3])+'/'+str((mgt_ip[0][0]).prefixlen)},
                 'port_assign': get_coa_type(project)['port_assign']}
     return mgt_dict
 
