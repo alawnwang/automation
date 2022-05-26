@@ -1,5 +1,6 @@
 import itertools
 from math import ceil
+from math import floor
 import ipaddress
 import mysql_table_query
 
@@ -8,17 +9,48 @@ import mysql_table_query
 # # #
 # network = input('IP地址：')
 
+def calc_num_oa(num_oa_point):
+    num_oa_network = None
+    num = num_oa_point / 240
+    if num < 1:
+        num_oa_network = 1
+    else:
+        numsplit = '{:.2}'.format(num_oa_point / 240)
+        decimals = numsplit.split('.')
+        if int(decimals[1]) < 2:
+            num_oa_network = floor(num)
+        if int(decimals[1]) > 2:
+            num_oa_network = ceil(num)
+    return num_oa_network
+
+def calc_num_ty(num_oa_point):
+    num_oa_network = None
+    num = num_oa_point / 240 * 0.5
+    if num < 1:
+        num_oa_network = 1
+    else:
+        numsplit = '{:.2}'.format(num_oa_point / 240)
+        decimals = numsplit.split('.')
+        if int(decimals[1]) < 2:
+            num_oa_network = floor(num)
+        if int(decimals[1]) > 2:
+            num_oa_network = ceil(num)
+    return num_oa_network
+
+
 def num_of_network(project):
     num_network = []
     for network in mysql_table_query.endpoint(project):
         if network['convergence'] =='N':
             pass
         else:
-            floor_network_oa = ceil((network['dpoint'] + network['epoint']) / 240)
-            floor_network_ty = ceil(floor_network_oa * 0.5)
+            floor_network_oa = (network['dpoint'] + network['epoint'])
+            floor_network_ty = floor_network_oa * 0.5
             floor_network_voip = ceil(network['vpoint'] / 240)
+
+
             floor_network_num_dict = {'floor':network['floor'],'bdr':network['bdr'],'mgt':0.25,'ap_mgt':0.25,'video':0.25,
-                                      'oa_device':0.25,'geli':0.25,'oa':floor_network_oa,'ty':floor_network_ty,
+                                      'oa_device':0.25,'geli':0.25,'oa':calc_num_oa(floor_network_oa),'ty':calc_num_ty(floor_network_ty),
                                       'voip':floor_network_voip}
             num_network.append(floor_network_num_dict)
     return num_network
@@ -73,16 +105,7 @@ def calc_wifi_network_num(project):
     labwifi_network = ceil(area/13/240/25)
     return {'office-wifi':officewifi_network,'staff-wifi':staffwifi_network,'guest-wifi':guestwifi_network,'lab-wifi':labwifi_network,'staffv6-only':1,'staffv6-daul':1}
 
-def all_network_num(project,network):
-    all_network_num = (wire_network_num(project)+calc_wifi_network_num(project)['office-wifi']+calc_wifi_network_num(project)['staff-wifi']
-          +calc_wifi_network_num(project)['guest-wifi']+calc_wifi_network_num(project)['lab-wifi']+
-          calc_wifi_network_num(project)['staffv6-only']+calc_wifi_network_num(project)['staffv6-daul'])
-    new_networks = ipaddress.ip_network(network).subnets(new_prefix=24)
-    assign = [ip for ip in new_networks]
-    if all_network_num > len(assign):
-        print('IP地址分配不足')
-    else:
-        print('IP地址分配充足,利用率'+'{:.2%}'.format(all_network_num/len(assign)))
+
 
 
 
@@ -110,10 +133,10 @@ def network_class(network,project):
             numbers_of_connect_ip = numbers_of_connect_ip - 1
     core_ip = itertools.product(core_ip_list)
     loopbackip = 0
-    while loopbackip <= 7:
+    while loopbackip <= 15:
         loopback.append(core_ip.__next__())
         loopbackip = loopbackip + 1
-    network_class_dict = {'mgt':mgt_network,'connection_ip':core_ip,'public':None,'normal':None}
+    network_class_dict = {'mgt':mgt_network,'loopback':loopback,'connection_ip':core_ip,'public':None,'normal':None}
     n = cacl_public(project)
     while n != 0:
         n = n - 1
@@ -197,7 +220,7 @@ def network_assign(project):
     office_range = (office for office in range(calc_wifi_network_num(project)['office-wifi']))
     staff_range = (staff for staff in range(calc_wifi_network_num(project)['staff-wifi']))
     guest_range = (guest for guest in range(calc_wifi_network_num(project)['guest-wifi']))
-    normal_network_list.append({'vlan': 10, 'floor': None, 'bdr': None, 'network': None, 'fun': 'wifi-mgt',
+    normal_network_list.append({'vlan': 10, 'floor': None, 'bdr': None, 'network': None, 'fun': '无线核心管理段',
                                 'desc': 'mgt'})
     while all_wifi_network_num != 0:
         wifi_start_vlan = wifi_start_vlan + 1
@@ -253,6 +276,20 @@ def acl(ipinfo):
         acl = 'VOIP'
     return acl
 #
+
+
+def all_network_num(project,network):
+    all_network_num = (wire_network_num(project)+calc_wifi_network_num(project)['office-wifi']+calc_wifi_network_num(project)['staff-wifi']
+          +calc_wifi_network_num(project)['guest-wifi']+calc_wifi_network_num(project)['lab-wifi']+
+          calc_wifi_network_num(project)['staffv6-only']+calc_wifi_network_num(project)['staffv6-daul'])
+    new_networks = ipaddress.ip_network(network).subnets(new_prefix=24)
+    assign = [ip for ip in new_networks]
+    if all_network_num > len(assign):
+        print('IP地址分配不足')
+    else:
+        print('IP地址分配充足,利用率'+'{:.2%}'.format(all_network_num/len(assign)))
+
+
 def generation_ip_planning(network,project):
     ip_planning_list = []
     # #IP规划
