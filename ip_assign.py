@@ -5,10 +5,6 @@ import ipaddress
 import mysql_table_query
 
 
-# project = input('项目名称: ')
-# # #
-# network = input('IP地址：')
-
 def calc_num_oa(num_oa_point):
     num_oa_network = None
     num = num_oa_point / 240
@@ -209,9 +205,8 @@ def network_assign(project):
             normal_network_list.append(
                 {'vlan': vlan_oa, 'floor': str(floor['floor']),'bdr':str(floor['bdr']), 'network': None, 'fun': 'VOIP网','desc':('VOIP-'+str(num))})
 
-    normal_network_list.append({'vlan': 0, 'floor': None, 'bdr': None, 'network': None, 'fun': 'xzjk',
-                                'desc': 'xzjk-mgt'})
-
+    normal_network_list.append({'vlan': 0, 'floor': None, 'bdr': None, 'network': None, 'fun': '智能控制网',
+                                'desc': None})
     wifi_start_vlan = 19
     all_wifi_network_num = (
                 calc_wifi_network_num(project)['office-wifi'] + calc_wifi_network_num(project)['staff-wifi']
@@ -322,13 +317,34 @@ def generation_ip_planning(network,project):
             ip_planning_list.append(public_ip)
     normal_dic = network_assign(project)
     normal_network_list = network_class(network,project)['normal']
+    xzjk = (i for i in [{'vlan': 10, 'floor': None, 'bdr': None, 'network': None, 'fun': '智能控制管理网','desc': 'XZJK-MGT'},{'vlan': 90, 'floor': None, 'bdr': None, 'network': None, 'fun': '智能控制网','desc': 'XZJK_SERVER'}])
     for norip in normal_network_list:
         try:
             normal_network_basic_info = normal_dic.__next__()
-            normal_ip = {'network': [ipaddress.ip_network(norip)], 'status': '启用', 'domain': None, 'vlan': [normal_network_basic_info['vlan']], 'func': [normal_network_basic_info['fun']],
-                         'description': [normal_network_basic_info['desc']],'acl':acl(normal_network_basic_info['fun']),'project': project, 'building_name': None, 'floor': [normal_network_basic_info['floor']],
-                         'bdr': [normal_network_basic_info['bdr']]}
-            ip_planning_list.append(normal_ip)
+            if normal_network_basic_info['fun'] != '智能控制网':
+                normal_ip = {'network': [ipaddress.ip_network(norip)], 'status': '启用', 'domain': None, 'vlan': [normal_network_basic_info['vlan']], 'func': [normal_network_basic_info['fun']],
+                             'description': [normal_network_basic_info['desc']],'acl':acl(normal_network_basic_info['fun']),'project': project, 'building_name': None, 'floor': [normal_network_basic_info['floor']],
+                             'bdr': [normal_network_basic_info['bdr']]}
+                ip_planning_list.append(normal_ip)
+            else:
+                xzjk_network = ipaddress.ip_network(norip).subnets(new_prefix=26)
+
+                for n in xzjk_network:
+                    try:
+                        xzjk_info = xzjk.__next__()
+                        normal_ip = {'network': [ipaddress.ip_network(n)], 'status': '启用', 'domain': None,
+                                     'vlan': [xzjk_info['vlan']], 'func': [xzjk_info['fun']],
+                                     'description': [xzjk_info['desc']],
+                                     'acl': acl(xzjk_info['fun']), 'project': project, 'building_name': None,
+                                     'floor': [xzjk_info['floor']],
+                                     'bdr': [xzjk_info['bdr']]}
+                        ip_planning_list.append(normal_ip)
+                    except StopIteration:
+                        pass
+                        normal_ip = {'network': [ipaddress.ip_network(n)], 'status': '未启用', 'domain': None,
+                                     'vlan': None, 'func': None, 'description': None, 'acl': None,
+                                     'project': project, 'building_name': None, 'floor': None, 'bdr': None}
+                        ip_planning_list.append(normal_ip)
         except StopIteration:
             pass
             normal_ip = {'network': [ipaddress.ip_network(norip)], 'status': '未启用', 'domain': None,
@@ -341,6 +357,6 @@ def generation_ip_planning(network,project):
     return ip_planning_list
 
 
-# generation_ip_planning(network,project)
+
 # for i in generation_ip_planning(network,project):
 #     print(i)

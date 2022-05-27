@@ -2,8 +2,11 @@ import coa_info
 import doa_info
 import cwl_info
 import access_info
+import ccs_info
+import ccs_fw
+import xl_info
 import ip_assign
-
+#
 # project = input('项目名称: ')
 # #
 # network = input('IP地址：')
@@ -18,7 +21,7 @@ def connection_relation(network,project):
 #
 #核心链接关系
 
-
+    #核心互联-1
     connection_dict['connect']['project'].append(project)
     connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
     connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
@@ -30,6 +33,7 @@ def connection_relation(network,project):
     connection_dict['connect']['Z_device'].append(coa_info_summary['SCOA'])
     connection_dict['connect']['Z_port'].append(coa_info_summary['port_assign']['interconnect'][0])
     connection_dict['connect']['Z_ip'].append('Trunk')
+    #核心互联-2
     connection_dict['connect']['project'].append(project)
     connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
     connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
@@ -41,6 +45,7 @@ def connection_relation(network,project):
     connection_dict['connect']['Z_device'].append(coa_info_summary['SCOA'])
     connection_dict['connect']['Z_port'].append(coa_info_summary['port_assign']['interconnect'][1])
     connection_dict['connect']['Z_ip'].append('Trunk')
+
     connection_dict['connect']['project'].append(project)
     connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
     connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
@@ -52,6 +57,7 @@ def connection_relation(network,project):
     connection_dict['connect']['Z_device'].append(coa_info_summary['SCOA'])
     connection_dict['connect']['Z_port'].append(coa_info_summary['port_assign']['interconnect'][1])
     connection_dict['connect']['Z_ip'].append('Trunk')
+    #核心area0
     connection_dict['connect']['project'].append(project)
     connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
     connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
@@ -63,6 +69,7 @@ def connection_relation(network,project):
     connection_dict['connect']['Z_device'].append(coa_info_summary['SCOA'])
     connection_dict['connect']['Z_port'].append('500')
     connection_dict['connect']['Z_ip'].append(coa_info_summary['SMGTIP']['area0_ip'])
+    #核心localarea
     connection_dict['connect']['project'].append(project)
     connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
     connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
@@ -74,6 +81,79 @@ def connection_relation(network,project):
     connection_dict['connect']['Z_device'].append(coa_info_summary['SCOA'])
     connection_dict['connect']['Z_port'].append('501')
     connection_dict['connect']['Z_ip'].append(coa_info_summary['SMGTIP']['localarea'])
+    #无线核心互联-1
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
+    connection_dict['connect']['A_port'].append(coa_info_summary['port_assign']['cwl'][0])
+    connection_dict['connect']['A_ip'].append('Bridge-Aggregation6')
+    connection_dict['connect']['Z_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['Z_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['Z_device'].append(cwl_info_summary['MCW'])
+    connection_dict['connect']['Z_port'].append(cwl_info_summary['port_assign']['uplink'][0])
+    connection_dict['connect']['Z_ip'].append('Bridge-Aggregation6')
+    #无线核心互联-2
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
+    connection_dict['connect']['A_port'].append(coa_info_summary['port_assign']['cwl'][0])
+    connection_dict['connect']['A_ip'].append('Bridge-Aggregation6')
+    connection_dict['connect']['Z_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['Z_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['Z_device'].append(cwl_info_summary['MCW'])
+    connection_dict['connect']['Z_port'].append(cwl_info_summary['port_assign']['uplink'][0])
+    connection_dict['connect']['Z_ip'].append('Bridge-Aggregation6')
+    #大厦核心-无线核心-1
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
+    connection_dict['connect']['A_port'].append(coa_info_summary['port_assign']['cwl'][0])
+    connection_dict['connect']['A_ip'].append('Bridge-Aggregation6')
+    connection_dict['connect']['Z_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['Z_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['Z_device'].append(cwl_info_summary['MCW'])
+    connection_dict['connect']['Z_port'].append(cwl_info_summary['port_assign']['uplink'][0])
+    connection_dict['connect']['Z_ip'].append('Bridge-Aggregation6')
+    #大厦核心-无线核心-2
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
+    connection_dict['connect']['A_port'].append(coa_info_summary['port_assign']['cwl'][1])
+    connection_dict['connect']['A_ip'].append('Bridge-Aggregation6')
+    connection_dict['connect']['Z_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['Z_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['Z_device'].append(cwl_info_summary['MCW'])
+    connection_dict['connect']['Z_port'].append(cwl_info_summary['port_assign']['uplink'][1])
+    connection_dict['connect']['Z_ip'].append('Bridge-Aggregation6')
+
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
+    connection_dict['connect']['A_port'].append(coa_info_summary['port_assign']['cwl'][0])
+    connection_dict['connect']['A_ip'].append('Bridge-Aggregation6')
+    connection_dict['connect']['Z_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['Z_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['Z_device'].append(cwl_info_summary['MCW'])
+    connection_dict['connect']['Z_port'].append(cwl_info_summary['port_assign']['uplink'][0])
+    connection_dict['connect']['Z_ip'].append('Bridge-Aggregation6')
+
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
+    connection_dict['connect']['A_port'].append(coa_info_summary['port_assign']['cwl'][1])
+    connection_dict['connect']['A_ip'].append('Bridge-Aggregation6')
+    connection_dict['connect']['Z_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['Z_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['Z_device'].append(cwl_info_summary['MCW'])
+    connection_dict['connect']['Z_port'].append(cwl_info_summary['port_assign']['uplink'][1])
+    connection_dict['connect']['Z_ip'].append('Bridge-Aggregation6')
+
     connection_dict['connect']['project'].append(project)
     connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
     connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
@@ -140,7 +220,22 @@ def connection_relation(network,project):
     connection_dict['connect']['Z_device'].append(cwl_info_summary['MCW'])
     connection_dict['connect']['Z_port'].append('Bridge-Aggregation6')
     connection_dict['connect']['Z_ip'].append(cwl_info_summary['SMGTIP']['uplink'])
-
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['A_floor'].append(str(coa_info_summary['floor']))
+    connection_dict['connect']['A_bdr'].append(coa_info_summary['bdr'])
+    connection_dict['connect']['A_device'].append(coa_info_summary['MCOA'])
+    connection_dict['connect']['A_port'].append(coa_info_summary['port_assign']['ccs'])
+    connection_dict['connect']['A_ip'].append(coa_info_summary['MMGTIP']['ccsip'])
+    connection_dict['connect']['Z_floor'].append(str(ccs_fw['floor']))
+    connection_dict['connect']['Z_bdr'].append(ccs_fw['bdr'])
+    connection_dict['connect']['Z_device'].append(ccs_fw['MCW'])
+    connection_dict['connect']['Z_port'].append('Bridge-Aggregation6')
+    connection_dict['connect']['Z_ip'].append(cwl_info_summary['SMGTIP']['uplink'])
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['project'].append(project)
+    connection_dict['connect']['project'].append(project)
     func = ip_assign.network_class(network,project)
 
     connect_ip = (i for i in func['connection_ip'])
@@ -358,13 +453,13 @@ def connection_relation(network,project):
 # n = (connection_relation(network,project)['mgtip'])
 # for i in n:
 #     print(i)
-#     for p,af,ab,ad,ap,ai,zf,zb,zd,zp,zi in zip(connection_dict['connect']['project'],connection_dict['connect']['A_floor'],connection_dict['connect']['A_bdr'],connection_dict['connect']['A_device'],connection_dict['connect']['A_port'],connection_dict['connect']['A_ip'],connection_dict['connect']['Z_floor'],connection_dict['connect']['Z_bdr'],connection_dict['connect']['Z_device'],connection_dict['connect']['Z_port'],connection_dict['connect']['Z_ip']):
-#         print(p,af,ab,ad,ap,ai,zf,zb,zd,zp,zi)
-#     #
-#
-#     print(connection_dict['mgtip']['device_name'],connection_dict['mgtip']['mgtip'],connection_dict['mgtip']['mgtmask'],connection_dict['mgtip']['gateway'])
-#     for p,df,db,dd,di,dn,dg in zip(connection_dict['mgtip']['project'],connection_dict['mgtip']['floor'],connection_dict['mgtip']['bdr'],connection_dict['mgtip']['device_name'],connection_dict['mgtip']['mgtip'],connection_dict['mgtip']['mgtmask'],connection_dict['mgtip']['gateway']):
-#         print(p,df,db,dd,di,dn,dg)
-#     # print(len(connection_dict['connect']['project']),len(connection_dict['connect']['A_floor']),len(connection_dict['connect']['A_bdr']),len(connection_dict['connect']['A_device']),len(connection_dict['connect']['A_port']),len(connection_dict['connect']['A_ip']),len(connection_dict['connect']['Z_floor']),len(connection_dict['connect']['Z_bdr']),len(connection_dict['connect']['Z_device']),len(connection_dict['connect']['Z_port']),len(connection_dict['connect']['Z_ip']))
-#     print(len(connection_dict['mgtip']['project']),len(connection_dict['mgtip']['floor']),len(connection_dict['mgtip']['bdr']),len(connection_dict['mgtip']['device_name']),len(connection_dict['mgtip']['mgtip']),len(connection_dict['mgtip']['mgtmask']),len(connection_dict['mgtip']['gateway']))
+    for p,af,ab,ad,ap,ai,zf,zb,zd,zp,zi in zip(connection_dict['connect']['project'],connection_dict['connect']['A_floor'],connection_dict['connect']['A_bdr'],connection_dict['connect']['A_device'],connection_dict['connect']['A_port'],connection_dict['connect']['A_ip'],connection_dict['connect']['Z_floor'],connection_dict['connect']['Z_bdr'],connection_dict['connect']['Z_device'],connection_dict['connect']['Z_port'],connection_dict['connect']['Z_ip']):
+        print(p,af,ab,ad,ap,ai,zf,zb,zd,zp,zi)
+    #
+
+    print(connection_dict['mgtip']['device_name'],connection_dict['mgtip']['mgtip'],connection_dict['mgtip']['mgtmask'],connection_dict['mgtip']['gateway'])
+    for p,df,db,dd,di,dn,dg in zip(connection_dict['mgtip']['project'],connection_dict['mgtip']['floor'],connection_dict['mgtip']['bdr'],connection_dict['mgtip']['device_name'],connection_dict['mgtip']['mgtip'],connection_dict['mgtip']['mgtmask'],connection_dict['mgtip']['gateway']):
+        print(p,df,db,dd,di,dn,dg)
+    # print(len(connection_dict['connect']['project']),len(connection_dict['connect']['A_floor']),len(connection_dict['connect']['A_bdr']),len(connection_dict['connect']['A_device']),len(connection_dict['connect']['A_port']),len(connection_dict['connect']['A_ip']),len(connection_dict['connect']['Z_floor']),len(connection_dict['connect']['Z_bdr']),len(connection_dict['connect']['Z_device']),len(connection_dict['connect']['Z_port']),len(connection_dict['connect']['Z_ip']))
+    print(len(connection_dict['mgtip']['project']),len(connection_dict['mgtip']['floor']),len(connection_dict['mgtip']['bdr']),len(connection_dict['mgtip']['device_name']),len(connection_dict['mgtip']['mgtip']),len(connection_dict['mgtip']['mgtmask']),len(connection_dict['mgtip']['gateway']))
 # connection_relation(network,project)

@@ -47,8 +47,9 @@ def h3c(type):
         cvp = 'Ten-GigabitEthernet1/0/44'
         up_link = 'Ten-GigabitEthernet1/4/1'
         cwl = ['Ten-GigabitEthernet1/3/1', 'Ten-GigabitEthernet1/3/2','Ten-GigabitEthernet1/3/3','Ten-GigabitEthernet1/3/4']
+        ccs = 'Ten-GigabitEthernet1/3/5'
         interconnect = ['Ten-GigabitEthernet1/1/25','Ten-GigabitEthernet1/2/25']
-        return {'downlink': down_link,'uplink': up_link,'cvp':cvp,'cwl':cwl,'interconnect': interconnect}
+        return {'downlink': down_link,'uplink': up_link,'cvp':cvp,'cwl':cwl,'ccs':ccs,'interconnect': interconnect}
     elif type == '6520_54qc':
         down_link = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (1,41)]
         cvp = 'Ten-GigabitEthernet1/0/44'
@@ -85,3 +86,10 @@ def h3c(type):
         return uplink
 
 
+
+def hillstone(type):
+    if type == '1700':
+        down_link = 'ethernet0/2'
+        up_link = 'ethernet0/1'
+        interconnect = ['ethernet0/7','ethernet0/8']
+        return {'downlink': down_link,'uplink': up_link,'interconnect': interconnect}
