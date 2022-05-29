@@ -5,7 +5,7 @@ import device_port
 from math import ceil
 
 
-project = input('项目名称: ')
+# project = input('项目名称: ')
 #
 #计算每层楼接入设备数量
 def device_number(iot):
@@ -94,5 +94,5 @@ def get_access_info(project):
     return xl_list
 
 
-for i in get_access_info(project):
-    print(i)
+# for i in get_access_info(project):
+#     print(i)
