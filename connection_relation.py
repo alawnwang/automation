@@ -11,6 +11,7 @@ project = input('项目名称: ')
 #
 network = input('IP地址：')
 
+1
 def connection_relation(network,project):
     coa_info_summary = coa_info.get_coa_info(network,project)
     cwl_info_summary = cwl_info.get_cwl_info(network,project)
