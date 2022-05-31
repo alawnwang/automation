@@ -88,7 +88,7 @@ def h3c(type):
 
 
 def hillstone(type):
-    if type == '1700':
+    if type == 'E1700':
         down_link = 'ethernet0/2'
         up_link = 'ethernet0/1'
         interconnect = ['ethernet0/7','ethernet0/8']

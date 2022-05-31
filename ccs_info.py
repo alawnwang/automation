@@ -29,7 +29,7 @@ def get_ccs_info(network,project):
     ccs_fw_connect_ip = [ip for ip in ipaddress.collapse_addresses([connect_ip[6][0],connect_ip[7][0]])][0]
     ccs_connect_ip = [ip for ip in ipaddress.collapse_addresses([connect_ip[8][0],connect_ip[9][0]])][0]
     mgt_dict = {'floor': entry['floor'],'bdr':entry['bdr'],'MCCS': ('-'.join((generation_ccs_name(project), 'A01', str(get_ccs_type(project)['name']), 'CCS', '01')))
-        , 'MMGTIP': {'vlan':entry['vlan'],'ip': mgt_ip[2],'hsrp':mgt_ip[1],'uplink':str(ccs_connect_ip[5])+'/'+str(ccs_connect_ip.prefixlen),'vlan_gateway':str(ccs_connect_ip[4])+'/'+str(ccs_connect_ip.prefixlen)}, 'SCW': (
+        , 'MMGTIP': {'vlan':entry['vlan'],'ip': mgt_ip[2],'hsrp':mgt_ip[1],'uplink':str(ccs_connect_ip[5])+'/'+str(ccs_connect_ip.prefixlen),'vlan_gateway':str(ccs_connect_ip[4])+'/'+str(ccs_connect_ip.prefixlen)}, 'SCCS': (
             '-'.join((generation_ccs_name(project), 'A02', get_ccs_type(project)['name'], 'CCS', '01'))),
                 'SMGTIP': {'vlan':entry['vlan'],'ip': mgt_ip[3],'hsrp':mgt_ip[1],'uplink':str(ccs_connect_ip[6])+'/'+str(ccs_connect_ip.prefixlen),'vlan_gateway':str(ccs_connect_ip[4])+'/'+str(ccs_connect_ip.prefixlen)},'port_assign': get_ccs_type(project)['port_assign']}
 
