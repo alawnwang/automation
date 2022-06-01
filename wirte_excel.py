@@ -6,10 +6,11 @@ project = input('项目名称：')
 
 
 
+
 def link_db():
     username = 'root'
-    password = 'uz8954UZN'
-    host = '119.91.102.106'
+    password = 'admin@Workxcsdwe!321'
+    host = '9.134.73.87'
     port = '3306'
     dbname = 'building_information'
     engine = create_engine(f'mysql+pymysql://{username}:{urlquote(password)}@{host}:{port}/{dbname}')
@@ -29,7 +30,7 @@ def mysql_inquire(sql_statement,engine):
     return sql_res
 
 def write_excel():
-    excel_file = pd.ExcelWriter('/Users/wanghaoyu/Desktop/config/' + project + '规划.xlsx')
+    excel_file = pd.ExcelWriter('/Users/alawn/Desktop/config/' + project + '规划.xlsx')
     ip_planning = mysql_inquire(ip_planning_tables(project), link_db())
     ip_planning.to_excel(excel_file,sheet_name='ip_planning_sheet')
     connect = mysql_inquire(connection(project), link_db())

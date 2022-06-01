@@ -2,6 +2,8 @@ import itertools
 from math import ceil
 from math import floor
 import ipaddress
+
+import coa_info
 import mysql_table_query
 
 
@@ -173,7 +175,7 @@ def mgt_num(project):
 def generation_netwrok_dict(project):
     return {'public': cacl_public(project), 'oa': cacl_oa(project), 'ty': cacl_ty(project), 'voip': cacl_voip(project)}
 
-def network_assign(project):
+def network_assign(network,project):
     normal_network_list = []
     for floor in num_of_network(project):
         vlan_oa = 19
@@ -215,8 +217,8 @@ def network_assign(project):
     office_range = (office for office in range(calc_wifi_network_num(project)['office-wifi']))
     staff_range = (staff for staff in range(calc_wifi_network_num(project)['staff-wifi']))
     guest_range = (guest for guest in range(calc_wifi_network_num(project)['guest-wifi']))
-    normal_network_list.append({'vlan': 10, 'floor': None, 'bdr': None, 'network': None, 'fun': '无线核心管理段',
-                                'desc': 'mgt'})
+    normal_network_list.append({'vlan': 10, 'floor':mysql_table_query.workplace_info(project)[0]['core_floor'], 'bdr': mysql_table_query.workplace_info(project)[0]['core_bdr'], 'network': None, 'fun': '无线核心管理段','desc': 'mgt'})
+
     while all_wifi_network_num != 0:
         wifi_start_vlan = wifi_start_vlan + 1
         all_wifi_network_num = all_wifi_network_num - 1
@@ -290,7 +292,7 @@ def generation_ip_planning(network,project):
     # #IP规划
     core_ipaddress = network_class(network,project)['mgt']
     core_network = len(core_ipaddress)
-    core_bdr_floor = mysql_table_query.workplace_info(project).pop(0)['core_bdr_floor']
+    core_bdr_floor = mysql_table_query.workplace_info(project).pop(0)['core_floor']
     if core_network <= 1:
         ip_planning_list.append({'network':[core_ipaddress],'status':'启用','domain':None,'vlan':None,'func':['核心网段'],'description':['interconnection'],'acl':None,'project':project,'building_name':None,'floor':[core_bdr_floor],'bdr':[1]})
     else:
@@ -315,9 +317,9 @@ def generation_ip_planning(network,project):
                          'vlan': None, 'func': None, 'description':None, 'acl': None,
                          'project': project, 'building_name': None, 'floor':None, 'bdr': None}
             ip_planning_list.append(public_ip)
-    normal_dic = network_assign(project)
+    normal_dic = network_assign(network,project)
     normal_network_list = network_class(network,project)['normal']
-    xzjk = (i for i in [{'vlan': 10, 'floor': None, 'bdr': None, 'network': None, 'fun': '智能控制管理网','desc': 'XZJK-MGT'},{'vlan': 90, 'floor': None, 'bdr': None, 'network': None, 'fun': '智能控制网','desc': 'XZJK_SERVER'}])
+    xzjk = (i for i in [{'vlan': 10, 'floor':mysql_table_query.workplace_info(project)[0]['core_floor'], 'bdr':mysql_table_query.workplace_info(project)[0]['core_bdr'], 'network': None, 'fun': '智能控制管理网','desc': 'XZJK-MGT'},{'vlan': 90, 'floor':mysql_table_query.workplace_info(project)[0]['core_floor'], 'bdr':mysql_table_query.workplace_info(project)[0]['core_bdr'], 'network': None, 'fun': '智能控制网','desc': 'XZJK_SERVER'}])
     for norip in normal_network_list:
         try:
             normal_network_basic_info = normal_dic.__next__()

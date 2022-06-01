@@ -5,8 +5,6 @@ import device_port
 from math import ceil
 
 
-# project = input('项目名称: ')
-#
 #计算每层楼接入设备数量
 def device_number(iot):
     if iot > 48:
@@ -80,19 +78,16 @@ def get_xl_type(project):
                 port_assign['port_assign'] = device_port.h3c(access_type['type'])
     return port_assign
 
-def get_access_info(project):
+def get_xl_info(project):
     xl_list = []
     ccs_mgt_ip = ipaddress.IPv4Network(mysql_table_query.ccs_ip(project)[0]['network'])
     xl_mgt_ip = (ip for ip in list(ccs_mgt_ip)[4:-2])
     for n in generation_floor_device_name(project):
         access_dict = {'floor':n['floor'],'bdr':n['bdr'],'xl':[]}
         for name in n['xl']:
-            xl = {'floor':n['floor'],'bdr':n['bdr'],'name':name,'ip':xl_mgt_ip.__next__(),'netmask':ccs_mgt_ip.prefixlen,'gateway':ccs_mgt_ip[1],'port_assign':get_xl_type(project)['port_assign']}
+            xl = {'floor':n['floor'],'bdr':n['bdr'],'name':name,'ip':xl_mgt_ip.__next__(),'netmask':ccs_mgt_ip.netmask,'gateway':ccs_mgt_ip[1],'port_assign':get_xl_type(project)['port_assign']}
             if access_dict['floor'] == xl['floor']:
                 access_dict['xl'].append(xl)
         xl_list.append(access_dict)
     return xl_list
 
-
-# for i in get_access_info(project):
-#     print(i)

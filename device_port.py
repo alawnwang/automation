@@ -63,7 +63,7 @@ def h3c(type):
         interconnect = ['Ten-GigabitEthernet1/0/47','Ten-GigabitEthernet1/0/48']
         return {'downlink': down_link,'uplink': up_link,'interconnect': interconnect}
     elif type == '6520_54qc_ccs':
-        down_link = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (1,46)]
+        down_link = ('Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (1,46))
         up_link = ['Ten-GigabitEthernet1/0/46']
         interconnect = ['Ten-GigabitEthernet1/0/47','Ten-GigabitEthernet1/0/48']
         return {'downlink': down_link,'uplink': up_link,'interconnect': interconnect}

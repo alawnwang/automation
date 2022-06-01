@@ -23,14 +23,14 @@ def ip_planning_intser_sql(network,project):
 ip_planning_intser_sql(network,project)
 print('IP规划已生成完毕')
 
-# def connection_intser_sql(network,project):
-#     connect = connection_relation.connection_relation(network,project)['connect']
-#     con = pd.DataFrame.from_dict(connect, orient='columns')
-#     con.to_sql(con=mysql_table_query.link_db(), name='connection_relation', if_exists='append', index=False)
-#     mgtip = connection_relation.connection_relation(network,project)['mgtip']
-#     mgt = pd.DataFrame.from_dict(mgtip, orient='columns')
-#     mgt.to_sql(con=mysql_table_query.link_db(), name='manage_ip_assignments', if_exists='append', index=False)
-# connection_intser_sql(network,project)
-# print('链接关系已生成完毕')
+def connection_intser_sql(network,project):
+    connect = connection_relation.connection_relation(network,project)['connect']
+    con = pd.DataFrame.from_dict(connect, orient='columns')
+    con.to_sql(con=mysql_table_query.link_db(), name='connection_relation', if_exists='append', index=False)
+    mgtip = connection_relation.connection_relation(network,project)['mgtip']
+    mgt = pd.DataFrame.from_dict(mgtip, orient='columns')
+    mgt.to_sql(con=mysql_table_query.link_db(), name='manage_ip_assignments', if_exists='append', index=False)
+connection_intser_sql(network,project)
+print('链接关系已生成完毕')
 
 
