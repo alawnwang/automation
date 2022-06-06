@@ -2,7 +2,6 @@ import itertools
 from math import ceil
 from math import floor
 import ipaddress
-
 import coa_info
 import mysql_table_query
 

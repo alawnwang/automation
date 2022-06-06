@@ -9,8 +9,8 @@ project = input('项目名称：')
 
 def link_db():
     username = 'root'
-    password = '1122334455'
-    host = '1122334455'
+    password = 'ipaddress'
+    host = 'password'
     port = '3306'
     dbname = 'building_information'
     engine = create_engine(f'mysql+pymysql://{username}:{urlquote(password)}@{host}:{port}/{dbname}')
