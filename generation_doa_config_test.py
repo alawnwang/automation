@@ -387,6 +387,6 @@ def generation_doa_config(project):
                             #     d_down_link_config.append(interface)
                     return ''.join(d_down_link_config).lstrip()
                 layer2_interface()
-                print(entry['device_name'])
+                print(entry['device_name'])1
                 print(layer2_interface())
 generation_doa_config(project)
