@@ -36,8 +36,7 @@ ospf 100 router-id {{router_id}}
 #
  password-recovery enable
 #
-{{lay2_vlan}}
-#
+{{layer2_vlan}}
 stp region-configuration
  region-name RG
  instance 1 vlan 1 to 99 110 to 679 690 to 4094
@@ -57,228 +56,16 @@ interface Bridge-Aggregation1
  link-aggregation mode dynamic
 #
 interface NULL0
-#
-{{lay3_interface_vlan}}
-
+{{layer3_interface_vlan}}
 #
 interface M-GigabitEthernet0/0/0
 #
 interface Ten-GigabitEthernet1/0/49:1
  port link-mode route
- description SZ-TF-ODC0701-A02-H6520XE-COA-01-T1/0/1
- ip address 10.39.0.22 255.255.255.252
- ospfv3 200 area 10.39.0.0
- ipv6 address 2402:4E00:D006:8001::1/127
+ description {{uplink_device_name}}-{{uplink_port_num}}
+ ip address {{uplink_address}} {{uplink_netmask}}
 #
-interface Ten-GigabitEthernet1/0/1
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/2
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/3
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/4
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/5
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/6
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/7
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/8
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/9
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/10
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/11
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/12
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/13
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/14
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/15
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/16
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/17
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/18
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/19
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/20
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/21
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/22
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/23
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/24
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/25
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/26
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/27
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/28
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/29
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/30
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/31
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/32
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/33
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/34
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/35
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/36
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/37
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/38
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/39
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/40
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/41
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/42
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/43
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/44
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/45
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/46
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/47
-{{interconnect_port_config}}
-#
-interface Ten-GigabitEthernet1/0/48
-{{interconnect_port_config}}
-#
-interface Ten-GigabitEthernet1/0/49:2
-{{downlink_port_config}}
-#              
-interface Ten-GigabitEthernet1/0/49:3
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/49:4
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/50:1
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/50:2
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/50:3
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/50:4
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/51:1
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/51:2
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/51:3
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/51:4
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/52:1
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/52:2
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/52:3
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/0/52:4
-{{downlink_port_config}}
-#
-interface Ten-GigabitEthernet1/1/2
- port link-mode bridge
-#
-interface Ten-GigabitEthernet1/1/3
- port link-mode bridge
-#
-interface Ten-GigabitEthernet1/1/4
- port link-mode bridge
-#
-interface Ten-GigabitEthernet1/1/5
- port link-mode bridge
-#
-interface Ten-GigabitEthernet1/1/6
- port link-mode bridge
-#
-interface Ten-GigabitEthernet1/1/7
- port link-mode bridge
-#
-interface Ten-GigabitEthernet1/1/8
- port link-mode bridge
+
 #
  scheduler logfile size 16
 #

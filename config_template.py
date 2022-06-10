@@ -549,7 +549,6 @@ interface Bridge-Aggregation1
 
     def vlan_config():
         return Template('''
-        
 vlan {{vlan_num}}
  name {{vlan_des}}
 #''')
@@ -557,7 +556,8 @@ vlan {{vlan_num}}
 
 
     def gloabl_acl():
-        return Template('\n'+''' packet-filter name {{acl_name}} vlan-interface {{vlan_num}} inbound
+        return Template(
+'\n'+''' packet-filter name {{acl_name}} vlan-interface {{vlan_num}} inbound
 ''')
 
     def master_stp():
@@ -593,13 +593,12 @@ stp region-configuration
 
 
     def vlan10_mater_interface_vlan_config():
-        return Template('''
+        return Template('''#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} virtual-ip  {{vrrp_ip}}
  vrrp vrid {{vlan_num}} priority 120
-#
 ''')
 
     def vlan10_slaver_interface_vlan_config():
@@ -608,11 +607,11 @@ interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
  vrrp vrid {{vlan_num}} virtual-ip {{vrrp_ip}}
-#
 ''')
 
     def normal_mater_interface_vlan_config():
         return Template('''
+#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
@@ -623,7 +622,7 @@ interface Vlan-interface{{interface_vlan}}
 ''')
 
     def normal_slaver_interface_vlan_config():
-        return Template('''
+        return Template('''#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
@@ -633,7 +632,7 @@ interface Vlan-interface{{interface_vlan}}
 ''')
 
     def voip_mater_interface_vlan_config():
-        return Template('''
+        return Template('''#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
@@ -643,7 +642,7 @@ interface Vlan-interface{{interface_vlan}}
 ''')
 
     def voip_slaver_interface_vlan_config():
-        return Template('''
+        return Template('''#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
@@ -655,6 +654,7 @@ interface Vlan-interface{{interface_vlan}}
 
     def global_normal_mater_interface_vlan_config():
         return Template('''
+#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
@@ -665,6 +665,7 @@ interface Vlan-interface{{interface_vlan}}
 
     def global_normal_slaver_interface_vlan_config():
         return Template('''
+#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
@@ -674,6 +675,7 @@ interface Vlan-interface{{interface_vlan}}
 
     def global_voip_mater_interface_vlan_config():
         return Template('''
+#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
@@ -683,6 +685,7 @@ interface Vlan-interface{{interface_vlan}}
 
     def global_voip_slaver_interface_vlan_config():
         return Template('''
+#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}

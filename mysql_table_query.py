@@ -35,10 +35,13 @@ def ip_planning(project):
     db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')
 
     cursor1 = db.cursor(cursor=pymysql.cursors.DictCursor, )
-    ip_planning = "select * from ip_planning where project = '%s' ORDER BY floor*1" %project
+    ip_planning = "select * from ip_planning where project = '%s' ORDER BY vlan*1" %project
     cursor1.execute(ip_planning)
     ip_data = cursor1.fetchall()
     return ip_data
+
+for i in ip_planning('深圳光启未来'):
+    print(i)
 
 def endpoint(project):
     db = pymysql.connect(host='119.91.102.106', user='root', password='uz8954UZN', database='building_information')

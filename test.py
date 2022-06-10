@@ -189,8 +189,8 @@ import openpyxl
 
 
 import itertools
-from math import ceil
-from math import floor
+# from math import ceil
+# from math import floor
 # import ipaddress
 # import mysql_table_query
 #
@@ -676,92 +676,94 @@ from math import floor
 # for i in get_access_info(project):
 #     print(i)
 
-project = input('项目名称: ')
+# project = input('项目名称: ')
+# #
+# # network = input('IP地址：')
 #
-# network = input('IP地址：')
-
-import mysql_table_query
-
-
-def special_floor(project):
-    special_floor = mysql_table_query.special_floor(project)
-    normal_floor = mysql_table_query.normal_floor(project)
-    new_floor_info_dict = []
-    for nor in normal_floor:
-        for spe in special_floor:
-            if nor['floor']+nor['bdr'] == spe['uplink_floor']+spe['uplink_bdr']:
-                nor['dpoint'] +=  spe['dpoint']
-                nor['epoint'] += spe['epoint']
-                nor['vpoint'] += spe['vpoint']
-                nor['area'] += spe['area']
-        new_floor_info_dict.append(nor)
-    return new_floor_info_dict
-
-
-
-def oa_calc_network(dpoint,epoint):
-    oa_num = None
-    oa = (dpoint+epoint)/240
-    if oa < 1:
-        oa_num = 1
-    else:
-        numsplit = '{:.2}'.format(oa/240)
-        decimals = numsplit.split('.')
-        if int(decimals[1]) < 2:
-            oa_num = floor(oa)
-        if int(decimals[1]) > 2:
-            oa_num = ceil(oa)
-    return oa_num
-
-def ty_calc_network(dpoint,epoint):
-    ty_num = None
-    ty = (dpoint+epoint)/240*0.5
-    if ty < 1:
-        ty_num = 1
-    else:
-        numsplit = '{:.2}'.format(ty/240*0.85)
-        decimals = numsplit.split('.')
-        if int(decimals[1]) < 2:
-            ty_num = floor(ty)
-        if int(decimals[1]) > 2:
-            ty_num = ceil(ty)
-    return ty_num
-
-def voip_calc_network(vpoint):
-    voip_num = None
-    voip = vpoint/240
-    if voip < 1:
-        voip_num = 1
-    else:
-        numsplit = '{:.2}'.format(voip/240)
-        decimals = numsplit.split('.')
-        if int(decimals[1]) < 2:
-            voip_num = floor(voip)
-        if int(decimals[1]) > 2:
-            voip_num = ceil(voip)
-    return voip_num
-
-def ap_calc_network(area):
-    ap_num = None
-    ap = ceil(area/62*0.85)
-    if ap < 60 :
-        ap_num = 0.25
-    elif 61<ap<124:
-        ap_num = 0.5
-    elif 125 <ap<240:
-        ap_num = 1
-    return ap_num
-
-def num_of_switch(dpoint,epoint,vpoint,area):
-    rack_d = ceil(dpoint/44)
-    rack_e = ceil(epoint/44)
-    rack_v = ceil(vpoint/44)
-    rack_k = ceil(area/62*0.85/48)
-    num_of_switch = rack_d+rack_e+rack_v+rack_k
-    return num_of_switch
-
-
-for i in special_floor(project):
-    print(('BDR'+str(i['floor']).rjust(2,'0')+str(i['bdr']).rjust(2,'0')),oa_calc_network(i['dpoint'],i['epoint']),ty_calc_network(i['dpoint'],i['epoint']),voip_calc_network(i['vpoint']),ap_calc_network(i['area']))
-
-    print(num_of_switch(i['dpoint'],i['epoint'],i['vpoint'],i['area']))
+# import mysql_table_query
+#
+#
+# def special_floor(project):
+#     special_floor = mysql_table_query.special_floor(project)
+#     normal_floor = mysql_table_query.normal_floor(project)
+#     new_floor_info_dict = []
+#     for nor in normal_floor:
+#         for spe in special_floor:
+#             if nor['floor']+nor['bdr'] == spe['uplink_floor']+spe['uplink_bdr']:
+#                 nor['dpoint'] +=  spe['dpoint']
+#                 nor['epoint'] += spe['epoint']
+#                 nor['vpoint'] += spe['vpoint']
+#                 nor['area'] += spe['area']
+#         new_floor_info_dict.append(nor)
+#     return new_floor_info_dict
+#
+#
+#
+# def oa_calc_network(dpoint,epoint):
+#     oa_num = None
+#     oa = (dpoint+epoint)/240
+#     if oa < 1:
+#         oa_num = 1
+#     else:
+#         numsplit = '{:.2}'.format(oa/240)
+#         decimals = numsplit.split('.')
+#         if int(decimals[1]) < 2:
+#             oa_num = floor(oa)
+#         if int(decimals[1]) > 2:
+#             oa_num = ceil(oa)
+#     return oa_num
+#
+# def ty_calc_network(dpoint,epoint):
+#     ty_num = None
+#     ty = (dpoint+epoint)/240*0.5
+#     if ty < 1:
+#         ty_num = 1
+#     else:
+#         numsplit = '{:.2}'.format(ty/240*0.85)
+#         decimals = numsplit.split('.')
+#         if int(decimals[1]) < 2:
+#             ty_num = floor(ty)
+#         if int(decimals[1]) > 2:
+#             ty_num = ceil(ty)
+#     return ty_num
+#
+# def voip_calc_network(vpoint):
+#     voip_num = None
+#     voip = vpoint/240
+#     if voip < 1:
+#         voip_num = 1
+#     else:
+#         numsplit = '{:.2}'.format(voip/240)
+#         decimals = numsplit.split('.')
+#         if int(decimals[1]) < 2:
+#             voip_num = floor(voip)
+#         if int(decimals[1]) > 2:
+#             voip_num = ceil(voip)
+#     return voip_num
+#
+# def ap_calc_network(area):
+#     ap_num = None
+#     ap = ceil(area/62*0.85)
+#     if ap < 60 :
+#         ap_num = 0.25
+#     elif 61<ap<124:
+#         ap_num = 0.5
+#     elif 125 <ap<240:
+#         ap_num = 1
+#     return ap_num
+#
+# def num_of_switch(dpoint,epoint,vpoint,area):
+#     rack_d = ceil(dpoint/44)
+#     rack_e = ceil(epoint/44)
+#     rack_v = ceil(vpoint/44)
+#     rack_k = ceil(area/62*0.85/48)
+#     num_of_switch = rack_d+rack_e+rack_v+rack_k
+#     return num_of_switch
+#
+#
+# for i in special_floor(project):
+#     print(('BDR'+str(i['floor']).rjust(2,'0')+str(i['bdr']).rjust(2,'0')),oa_calc_network(i['dpoint'],i['epoint']),ty_calc_network(i['dpoint'],i['epoint']),voip_calc_network(i['vpoint']),ap_calc_network(i['area']))
+#
+#     print(num_of_switch(i['dpoint'],i['epoint'],i['vpoint'],i['area']))
+import ipaddress
+print(ipaddress.IPv4Interface('30.20.0.65/30').ip)
