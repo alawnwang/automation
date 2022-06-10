@@ -2,6 +2,7 @@ import itertools
 from math import ceil
 from math import floor
 import ipaddress
+
 import coa_info
 import mysql_table_query
 
@@ -95,12 +96,11 @@ def building_area(project):
     return area
 
 def calc_wifi_network_num(project):
-    area = building_area(project)
-    officewifi_network = ceil(area/13/240)*2
-    staffwifi_network = ceil(area/13/240)*3
-    guestwifi_network = ceil(area/13/240/4)
-    labwifi_network = ceil(area/13/240/25)
-    return {'office-wifi':officewifi_network,'staff-wifi':staffwifi_network,'guest-wifi':guestwifi_network,'lab-wifi':labwifi_network,'staffv6-only':1,'staffv6-daul':1}
+    num_of_employee = mysql_table_query.workplace_info(project)[0]['number_of_employees']
+    officewifi_network = ceil(num_of_employee*2/240)
+    staffwifi_network = ceil(num_of_employee*3/240)
+    guestwifi_network = ceil(num_of_employee/4/240)
+    return {'office-wifi':officewifi_network,'staff-wifi':staffwifi_network,'guest-wifi':guestwifi_network,'lab-wifi':1,'staffv6-only':1,'staffv6-daul':1}
 
 
 
@@ -114,7 +114,7 @@ def network_class(network,project):
     loopback = []
     mgt_network = []
     ip_address = ipaddress.ip_network(network).subnets(new_prefix=24)
-    connect_ip = (len(cacl_floor_bdr_num(project)))*8/224
+    connect_ip = (len(cacl_floor_bdr_num(project)))*8/192
     if connect_ip < 1:
         core_network = ip_address.__next__()
         mgt_network.append(core_network)

@@ -117,19 +117,17 @@ def generation_doa_config(project):
     ospf_area = ipaddress.IPv4Network(core_network[0]['network']).network_address
     for entry in basic_device_info_dict(project):
         if '-D-' in entry['device_name']:
-            with open('/Users/wanghaoyu/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
+            with open('/Users/alawn/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
                       'a+') as config:
                 def packet_filter():
                     packet_filter=[]
                     for n in entry['network']:
-                        print(n)
                         if n['func'] == '核心网段' or n['vlan'] == '10' or n['acl'] == '' or n['acl'] == 'None':
                             pass
                         else:
                             packet_filter.append(config_template.h3c_port_config_template.gloabl_acl().render(acl_name=n['acl'],
                                                                                                       vlan_num=n['vlan']))
                     return ''.join(packet_filter).lstrip()
-
                 def undo_slicent_interface():
                     undo_slicent_interface = []
                     for n in entry['network']:
@@ -260,17 +258,135 @@ def generation_doa_config(project):
                         else:
                             pass
                     return ''.join(layer3_vlan).lstrip()
+                # def downlink_d_port(entry):
+                #     h6520x_d_down_link_port_list = ['Ten-GigabitEthernet1/0/1', 'Ten-GigabitEthernet1/0/2',
+                #                                     'Ten-GigabitEthernet1/0/3', 'Ten-GigabitEthernet1/0/4',
+                #                                     'Ten-GigabitEthernet1/0/5', 'Ten-GigabitEthernet1/0/6',
+                #                                     'Ten-GigabitEthernet1/0/7', 'Ten-GigabitEthernet1/0/8',
+                #                                     'Ten-GigabitEthernet1/0/9', 'Ten-GigabitEthernet1/0/10',
+                #                                     'Ten-GigabitEthernet1/0/11', 'Ten-GigabitEthernet1/0/12',
+                #                                     'Ten-GigabitEthernet1/0/13', 'Ten-GigabitEthernet1/0/14']
+                #     d_layer2_interface = []
+                #     print(entry['device_name'])
+                #     for adp in entry['downlinkconnect']:
+                #         print(adp)
+                #         for dp in h6520x_d_down_link_port_list:
+                #             if adp['A_port'] == dp and '-XOA-' in adp['Z_device']:
+                #                 pass
+                                # interface = config_template.h3c_port_config_template.oa_lay2_phy_interface_config().render(phy_interface=adp['A_port'],description= adp['Z_device']+'-'+convert_interface_name(adp['Z_port']))
+                                # d_layer2_interface.append(interface)
 
-                def downlink_port():
-                    h6520x_down_link_port_list = ['Ten-GigabitEthernet1/0/1','Ten-GigabitEthernet1/0/2','Ten-GigabitEthernet1/0/3','Ten-GigabitEthernet1/0/4','Ten-GigabitEthernet1/0/5','Ten-GigabitEthernet1/0/6','Ten-GigabitEthernet1/0/7','Ten-GigabitEthernet1/0/8','Ten-GigabitEthernet1/0/9','Ten-GigabitEthernet1/0/10','Ten-GigabitEthernet1/0/11','Ten-GigabitEthernet1/0/12','Ten-GigabitEthernet1/0/13','Ten-GigabitEthernet1/0/14','Ten-GigabitEthernet1/0/15','Ten-GigabitEthernet1/0/16','Ten-GigabitEthernet1/0/17','Ten-GigabitEthernet1/0/18','Ten-GigabitEthernet1/0/19','Ten-GigabitEthernet1/0/20','Ten-GigabitEthernet1/0/21','Ten-GigabitEthernet1/0/22','Ten-GigabitEthernet1/0/23','Ten-GigabitEthernet1/0/24','Ten-GigabitEthernet1/0/25','Ten-GigabitEthernet1/0/26','Ten-GigabitEthernet1/0/27','Ten-GigabitEthernet1/0/28','Ten-GigabitEthernet1/0/29','Ten-GigabitEthernet1/0/30','Ten-GigabitEthernet1/0/31','Ten-GigabitEthernet1/0/32','Ten-GigabitEthernet1/0/33','Ten-GigabitEthernet1/0/34','Ten-GigabitEthernet1/0/35','Ten-GigabitEthernet1/0/36','Ten-GigabitEthernet1/0/37','Ten-GigabitEthernet1/0/38','Ten-GigabitEthernet1/0/39','Ten-GigabitEthernet1/0/40','Ten-GigabitEthernet1/0/41','Ten-GigabitEthernet1/0/42','Ten-GigabitEthernet1/0/43','Ten-GigabitEthernet1/0/44','Ten-GigabitEthernet1/0/45','Ten-GigabitEthernet1/0/46','Ten-GigabitEthernet1/0/47','Ten-GigabitEthernet1/0/49:2','Ten-GigabitEthernet1/0/49:3','Ten-GigabitEthernet1/0/49:4','Ten-GigabitEthernet1/0/50:1','Ten-GigabitEthernet1/0/50:2','Ten-GigabitEthernet1/0/50:3','Ten-GigabitEthernet1/0/50:4','Ten-GigabitEthernet1/0/51:1','Ten-GigabitEthernet1/0/51:2','Ten-GigabitEthernet1/0/51:3','Ten-GigabitEthernet1/0/51:4','Ten-GigabitEthernet1/0/52:1','Ten-GigabitEthernet1/0/52:2','Ten-GigabitEthernet1/0/52:3','Ten-GigabitEthernet1/0/52:4']
-                    for dp in h6520x_down_link_port_list:
-                        for adp in entry['downlinkconnect']['A_port']:
-                            if adp == dp:
-                                downlink = config_template.h3c_port_config_template.lay2_phy_interface_config()
+                            # else:
+                            #     print(dp)
+                                # interface = config_template.h3c_port_config_template.normal_lay2_phy_interface_config().render(phy_interface=dp)
+                                # d_layer2_interface.append(interface)
 
-                print(entry['layer3connection']['A_ipaddress'],convert_interface_name(entry['layer3connection']['A_port']))
-                config.write(h3c_6520x_master_doa.h3c_6520x_master_doa().render(sysname=entry['device_name'],packet_filter=packet_filter(),router_id=entry['mgtip'],undo_silent_interface=undo_slicent_interface(),area_id=ospf_area,
-                                                                                ospf_network=ospf_network(),layer2_vlan=layer2_vlan(),interconnect_device=entry['interconnect'][0]['Z_device'],interconnect_bagg_port=convert_interface_name(interconnect_port()[0]),layer3_interface_vlan=layer3_interface_vlan(),
-                                                                                uplink_device_name=entry['layer3connection']['A_device'],uplink_port_num=convert_interface_name(entry['layer3connection']['A_port']),uplink_address=ipaddress.IPv4Interface(entry['layer3connection']['Z_ipaddress']).ip,uplink_netmask=ipaddress.IPv4Interface(entry['layer3connection']['Z_ipaddress']).netmask))
 
+                #     return ''.join(d_layer2_interface).lstrip()
+                # downlink_d_port(entry)
+                # def downlink_e_port(entry):
+                #     h6520x_e_down_link_port_list = ['Ten-GigabitEthernet1/0/15', 'Ten-GigabitEthernet1/0/16',
+                #                                     'Ten-GigabitEthernet1/0/17', 'Ten-GigabitEthernet1/0/18',
+                #                                     'Ten-GigabitEthernet1/0/19', 'Ten-GigabitEthernet1/0/20',
+                #                                     'Ten-GigabitEthernet1/0/21', 'Ten-GigabitEthernet1/0/22',
+                #                                     'Ten-GigabitEthernet1/0/23', 'Ten-GigabitEthernet1/0/24',
+                #                                     'Ten-GigabitEthernet1/0/25', 'Ten-GigabitEthernet1/0/26',
+                #                                     'Ten-GigabitEthernet1/0/27', 'Ten-GigabitEthernet1/0/28']
+                #     e_layer2_interface = []
+                #     for adp in entry['downlinkconnect']:
+                #         for dp in h6520x_e_down_link_port_list:
+                #             if adp['A_port'] == dp and '-XOA-' in adp['Z_device']:
+                #                 interface = config_template.h3c_port_config_template.oa_lay2_phy_interface_config().render(
+                #                     phy_interface=adp['A_port'],
+                #                     description=adp['Z_device'] + '-' + convert_interface_name(adp['Z_port']))
+                #                 e_layer2_interface.append(interface)
+                #             else:
+                #                 interface = config_template.h3c_port_config_template.normal_lay2_phy_interface_config().render(
+                #                     phy_interface=dp)
+                #                 e_layer2_interface.append(interface)
+                #
+                #     return ''.join(e_layer2_interface).lstrip()
+                #
+                # def downlink_v_port(entry):
+                #     h6520x_v_down_link_port_list = ['Ten-GigabitEthernet1/0/29', 'Ten-GigabitEthernet1/0/30',
+                #                                     'Ten-GigabitEthernet1/0/31', 'Ten-GigabitEthernet1/0/32',
+                #                                     'Ten-GigabitEthernet1/0/33', 'Ten-GigabitEthernet1/0/34',
+                #                                     'Ten-GigabitEthernet1/0/35', 'Ten-GigabitEthernet1/0/36',
+                #                                     'Ten-GigabitEthernet1/0/37', 'Ten-GigabitEthernet1/0/38',
+                #                                     'Ten-GigabitEthernet1/0/39', 'Ten-GigabitEthernet1/0/40',
+                #                                     'Ten-GigabitEthernet1/0/41', 'Ten-GigabitEthernet1/0/42']
+                #     v_layer2_interface = []
+                #     for adp in entry['downlinkconnect']:
+                #         for dp in h6520x_v_down_link_port_list:
+                #             if adp['A_port'] == dp and '-XOA-' in adp['Z_device']:
+                #                 interface = config_template.h3c_port_config_template.oa_lay2_phy_interface_config().render(
+                #                     phy_interface=adp['A_port'],
+                #                     description=adp['Z_device'] + '-' + convert_interface_name(adp['Z_port']))
+                #                 v_layer2_interface.append(interface)
+                #             else:
+                #                 interface = config_template.h3c_port_config_template.normal_lay2_phy_interface_config().render(
+                #                     phy_interface=dp)
+                #                 v_layer2_interface.append(interface)
+                #
+                #     return ''.join(v_layer2_interface).lstrip()
+                #
+                # def downlink_w_port(entry):
+                #     h6520x_w_down_link_port_list = ['Ten-GigabitEthernet1/0/49:2', 'Ten-GigabitEthernet1/0/49:3',
+                #                                     'Ten-GigabitEthernet1/0/49:4', 'Ten-GigabitEthernet1/0/50:1',
+                #                                     'Ten-GigabitEthernet1/0/50:2', 'Ten-GigabitEthernet1/0/50:3',
+                #                                     'Ten-GigabitEthernet1/0/50:4', 'Ten-GigabitEthernet1/0/51:1',
+                #                                     'Ten-GigabitEthernet1/0/51:2', 'Ten-GigabitEthernet1/0/51:3',
+                #                                     'Ten-GigabitEthernet1/0/51:4', 'Ten-GigabitEthernet1/0/52:1',
+                #                                     'Ten-GigabitEthernet1/0/52:2', 'Ten-GigabitEthernet1/0/52:3',
+                #                                     'Ten-GigabitEthernet1/0/52:4']
+                #     w_layer2_interface = []
+                #     for adp in entry['downlinkconnect']:
+                #         for dp in h6520x_w_down_link_port_list:
+                #             if adp['A_port'] == dp and '-XOA-' in adp['Z_device']:
+                #                 interface = config_template.h3c_port_config_template.oa_lay2_phy_interface_config().render(
+                #                     phy_interface=adp['A_port'],
+                #                     description=adp['Z_device'] + '-' + convert_interface_name(adp['Z_port']))
+                #                 w_layer2_interface.append(interface)
+                #
+                #             else:
+                #                 interface = config_template.h3c_port_config_template.normal_lay2_phy_interface_config().render(
+                #                     phy_interface=dp)
+                #                 w_layer2_interface.append(interface)
+                #
+                #     return ''.join(w_layer2_interface).lstrip()
+                # print(entry['layer3connection']['A_ipaddress'],convert_interface_name(entry['layer3connection']['A_port']))
+                # config.write(h3c_6520x_master_doa.h3c_6520x_master_doa().render(sysname=entry['device_name'],packet_filter=packet_filter(),router_id=entry['mgtip'],undo_silent_interface=undo_slicent_interface(),area_id=ospf_area,
+                #                                                                 ospf_network=ospf_network(),layer2_vlan=layer2_vlan(),interconnect_device=entry['interconnect'][0]['Z_device'],interconnect_bagg_port=convert_interface_name(interconnect_port()[0]),layer3_interface_vlan=layer3_interface_vlan(),
+                #                                                                 uplink_device_name=entry['layer3connection']['A_device'],uplink_port_num=convert_interface_name(entry['layer3connection']['A_port']),uplink_address=ipaddress.IPv4Interface(entry['layer3connection']['Z_ipaddress']).ip,uplink_netmask=ipaddress.IPv4Interface(entry['layer3connection']['Z_ipaddress']).netmask))
+                def layer2_interface():
+                    h6520x_d_down_link_port_list = ['Ten-GigabitEthernet1/0/1', 'Ten-GigabitEthernet1/0/2',
+                                                    'Ten-GigabitEthernet1/0/3', 'Ten-GigabitEthernet1/0/4',
+                                                    'Ten-GigabitEthernet1/0/5', 'Ten-GigabitEthernet1/0/6',
+                                                    'Ten-GigabitEthernet1/0/7', 'Ten-GigabitEthernet1/0/8',
+                                                    'Ten-GigabitEthernet1/0/9', 'Ten-GigabitEthernet1/0/10',
+                                                    'Ten-GigabitEthernet1/0/11', 'Ten-GigabitEthernet1/0/12',
+                                                    'Ten-GigabitEthernet1/0/13', 'Ten-GigabitEthernet1/0/14']
+
+                    downlink_list = []
+                    Z_device = []
+                    Z_port = []
+                    Z_device_gener = (g for g in Z_device)
+                    Z_port_gener = (p for p in Z_port)
+                    d_down_link_config = []
+                    for n in entry['downlinkconnect']:
+                        downlink_list.append(n['A_port'])
+                        Z_device.append(n['Z_device'])
+                        Z_port.append(n['Z_port'])
+                    for i in h6520x_d_down_link_port_list:
+                        if i in downlink_list:
+                            # try:
+                            interface = config_template.h3c_port_config_template.oa_lay2_phy_interface_config().render(phy_interface=i,description=str(Z_device_gener.__next__())+'-'+convert_interface_name(str(Z_port_gener.__next__())))
+                            d_down_link_config.append(interface)
+                            # except InterruptedError:
+                            #     interface = config_template.h3c_port_config_template.normal_lay2_phy_interface_config().render(phy_interface=i)
+                            #     d_down_link_config.append(interface)
+                    return ''.join(d_down_link_config).lstrip()
+                layer2_interface()
+                print(entry['device_name'])
+                print(layer2_interface())
 generation_doa_config(project)

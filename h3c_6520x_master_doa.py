@@ -5,7 +5,7 @@ def h3c_6520x_master_doa():
  version 7.1.070, Release 6533
 #
  sysname {{sysname}}
- #
+#
  clock timezone CST add 08:00:00
 #
  telnet server enable
@@ -36,6 +36,7 @@ ospf 100 router-id {{router_id}}
 #
  password-recovery enable
 #
+vlan 1
 {{layer2_vlan}}
 stp region-configuration
  region-name RG
@@ -65,7 +66,23 @@ interface Ten-GigabitEthernet1/0/49:1
  description {{uplink_device_name}}-{{uplink_port_num}}
  ip address {{uplink_address}} {{uplink_netmask}}
 #
-
+interface Ten-GigabitEthernet1/0/47
+ port link-mode bridge
+ description {{interconnect_device}}-{{interconnect_phyical_port1}}
+ port link-type trunk
+ undo port trunk permit vlan 1
+ port trunk permit vlan 2 to 4094
+ dldp enable
+ port link-aggregation group 1
+#
+interface Ten-GigabitEthernet1/0/48
+ port link-mode bridge
+ description {{interconnect_device}}-{{interconnect_phyical_port2}}
+ port link-type trunk
+ undo port trunk permit vlan 1
+ port trunk permit vlan 2 to 4094
+ dldp enable
+ port link-aggregation group 1
 #
  scheduler logfile size 16
 #
@@ -129,7 +146,6 @@ acl number 2000 name CL
  rule permit source 10.76.1.0 0.0.0.3
  rule permit source 10.6.3.0 0.0.0.3
  {{local_manage_network}}
-
 #
 acl basic 2010
  rule permit source 10.14.0.0 0.0.0.255

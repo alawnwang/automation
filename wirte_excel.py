@@ -1,3 +1,6 @@
+import socket
+
+import sqlalchemy.exc
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus as urlquote
 import pandas as pd
@@ -8,13 +11,16 @@ project = input('项目名称：')
 
 
 def link_db():
-    username = 'root'
-    password = 'ipaddress'
-    host = 'password'
-    port = '3306'
-    dbname = 'building_information'
-    engine = create_engine(f'mysql+pymysql://{username}:{urlquote(password)}@{host}:{port}/{dbname}')
-    return engine
+    try:
+        username = 'root'
+        password = 'admin@Workxcsdwe!321'
+        host = '9.134.73.87'
+        port = '3306'
+        dbname = 'building_information'
+        engine = create_engine(f'mysql+pymysql://{username}:{urlquote(password)}@{host}:{port}/{dbname}')
+        return engine
+    except socket.gaierror:
+        print('数据库无法连接')
 
 def ip_planning_tables(project):
     return "select * from ip_planning where project = '%s' ORDER BY network*1" %project

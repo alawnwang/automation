@@ -16,12 +16,12 @@ network = input('IP地址：')
 
 
 
-def ip_planning_intser_sql(network,project):
-    for net in ip_assign.generation_ip_planning(network,project):
-        ip = pd.DataFrame.from_dict(net, orient='columns')
-        ip.to_sql(con=mysql_table_query.link_db(), name='ip_planning', if_exists='append', index=False)
-ip_planning_intser_sql(network,project)
-print('IP规划已生成完毕')
+# def ip_planning_intser_sql(network,project):
+#     for net in ip_assign.generation_ip_planning(network,project):
+#         ip = pd.DataFrame.from_dict(net, orient='columns')
+#         ip.to_sql(con=mysql_table_query.link_db(), name='ip_planning', if_exists='append', index=False)
+# ip_planning_intser_sql(network,project)
+# print('IP规划已生成完毕')
 
 def connection_intser_sql(network,project):
     connect = connection_relation.connection_relation(network,project)['connect']
