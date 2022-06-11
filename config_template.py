@@ -683,7 +683,8 @@ interface Vlan-interface{{interface_vlan}}
 ''')
 
     def global_normal_slaver_interface_vlan_config():
-        return Template('''#
+        return Template('''
+#
 interface Vlan-interface{{interface_vlan}}
  description {{vlan_des}}
  ip address {{vlan_ipaddress}} {{vlan_netmask}}
