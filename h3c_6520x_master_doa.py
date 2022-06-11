@@ -38,6 +38,7 @@ ospf 100 router-id {{router_id}}
 #
 vlan 1
 {{layer2_vlan}}
+#
 stp region-configuration
  region-name RG
  instance 1 vlan 1 to 99 110 to 679 690 to 4094
@@ -66,6 +67,21 @@ interface Ten-GigabitEthernet1/0/49:1
  description {{uplink_device_name}}-{{uplink_port_num}}
  ip address {{uplink_address}} {{uplink_netmask}}
 #
+{{d_downlink_layer2_interface}}
+{{e_downlink_layer2_interafce}}
+{{v_downlink_layer2_interafce}}
+interface Ten-GigabitEthernet1/0/43
+ port link-mode bridge
+#
+interface Ten-GigabitEthernet1/0/44
+ port link-mode bridge
+#
+interface Ten-GigabitEthernet1/0/45
+ port link-mode bridge
+#
+interface Ten-GigabitEthernet1/0/46
+ port link-mode bridge
+#
 interface Ten-GigabitEthernet1/0/47
  port link-mode bridge
  description {{interconnect_device}}-{{interconnect_phyical_port1}}
@@ -84,6 +100,7 @@ interface Ten-GigabitEthernet1/0/48
  dldp enable
  port link-aggregation group 1
 #
+{{w_downlink_layer2_interafce}}
  scheduler logfile size 16
 #
 line class aux
