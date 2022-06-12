@@ -1,12 +1,18 @@
 import mysql_table_query
 import ipaddress
 import h3c_6520x_master_doa
+import h3c_5130_xoa
+import h3c_5130_evp
+import h3c_5560_ewl
 import config_template
 
 project = '深圳光启未来'
 #
 # network = input('IP地址：')
-
+manage_ip_list = mysql_table_query.deivce_ip(project)
+network = mysql_table_query.ip_planning(project)
+connect = mysql_table_query.connection(project)
+endpoint = mysql_table_query.endpoint(project)
 
 def convert_interface_name(portname):
     interface_name = None
@@ -99,14 +105,14 @@ def basic_device_info_dict(project):
 
 
 
-def ip_planning(project):
-    return mysql_table_query.ip_planning(project)
-
-def connect(project):
-    return mysql_table_query.connection(project)
-
-def mgtip(project):
-    return mysql_table_query.mgtip(project)
+# doa_config_infodef ip_planning(project):
+#     return mysql_table_query.ip_planning(project)
+#
+# def connect(project):
+#     return mysql_table_query.connection(project)
+#
+# def mgtip(project):
+#     return mysql_table_query.mgtip(project)
 
 
 def generation_doa_config(project):
@@ -271,7 +277,6 @@ def generation_doa_config(project):
                                                     'Ten-GigabitEthernet1/0/9', 'Ten-GigabitEthernet1/0/10',
                                                     'Ten-GigabitEthernet1/0/11', 'Ten-GigabitEthernet1/0/12',
                                                     'Ten-GigabitEthernet1/0/13', 'Ten-GigabitEthernet1/0/14']
-
                     downlink_list = []
                     Z_device = []
                     Z_port = []
@@ -302,7 +307,6 @@ def generation_doa_config(project):
                                                     'Ten-GigabitEthernet1/0/23', 'Ten-GigabitEthernet1/0/24',
                                                     'Ten-GigabitEthernet1/0/25', 'Ten-GigabitEthernet1/0/26',
                                                     'Ten-GigabitEthernet1/0/27', 'Ten-GigabitEthernet1/0/28']
-
                     downlink_list = []
                     Z_device = []
                     Z_port = []
@@ -333,7 +337,7 @@ def generation_doa_config(project):
                                                     'Ten-GigabitEthernet1/0/33', 'Ten-GigabitEthernet1/0/34',
                                                     'Ten-GigabitEthernet1/0/35', 'Ten-GigabitEthernet1/0/36',
                                                     'Ten-GigabitEthernet1/0/37', 'Ten-GigabitEthernet1/0/38',
-                                                    'Ten-GigabitEthernet1/0/39', 'Ten-GigabitEthernet1/0/40',
+                                                    'maTen-GigabitEthernet1/0/39', 'Ten-GigabitEthernet1/0/40',
                                                     'Ten-GigabitEthernet1/0/41', 'Ten-GigabitEthernet1/0/42']
 
                     downlink_list = []
@@ -612,7 +616,6 @@ def generation_doa_config(project):
                                                     'Ten-GigabitEthernet1/0/23', 'Ten-GigabitEthernet1/0/24',
                                                     'Ten-GigabitEthernet1/0/25', 'Ten-GigabitEthernet1/0/26',
                                                     'Ten-GigabitEthernet1/0/27', 'Ten-GigabitEthernet1/0/28']
-
                     downlink_list = []
                     Z_device = []
                     Z_port = []
@@ -645,7 +648,6 @@ def generation_doa_config(project):
                                                     'Ten-GigabitEthernet1/0/37', 'Ten-GigabitEthernet1/0/38',
                                                     'Ten-GigabitEthernet1/0/39', 'Ten-GigabitEthernet1/0/40',
                                                     'Ten-GigabitEthernet1/0/41', 'Ten-GigabitEthernet1/0/42']
-
                     downlink_list = []
                     Z_device = []
                     Z_port = []
@@ -736,4 +738,176 @@ def generation_doa_config(project):
                                                                                 console_password='123456',local_manage_network=login_acl(project),
                                                                                 manage_ip=entry['mgtip'],local_user_password='123456'))
 
-generation_doa_config(project)
+
+
+def access_vlan():
+    access_vlan = {'oa_access_vlan':[],'evp_access_vlan':[]}
+    for i in endpoint:
+        oa_device_list = []
+        evp_device_list = []
+        oa_vlan_list=[]
+        evp_vlan_list =[]
+        for entry in manage_ip_list:
+            if str(entry['floor'])+str(entry['floor']) == str(i['floor'])+str(i['floor']) and 'XOA' in entry['device_name']:
+                oa_device_list.append(entry['device_name'])
+            if str(entry['floor']) + str(entry['floor']) == str(i['floor']) + str(i['floor']) and 'EVP' in entry['device_name']:
+                evp_device_list.append(entry['device_name'])
+        for entry in network:
+            if str(entry['floor']) + str(entry['floor']) == str(i['floor']) + str(i['floor']):
+                if entry['func'] == '有线办公网':
+                    oa_vlan_list.append(entry['vlan'])
+                if entry['func'] == 'VOIP网':
+                    evp_vlan_list.append(entry['vlan'])
+
+
+        n = len(oa_device_list)
+        while n != 0:
+            try:
+                n = n - 1
+                for i in oa_vlan_list:
+                    oa_access_vlan = {'device_name': oa_device_list.pop(0), 'access_vlan': i}
+                    access_vlan['oa_access_vlan'].append(oa_access_vlan)
+            except IndexError:
+                break
+
+
+
+        n = len(evp_device_list)
+        while n != 0:
+            try:
+                n = n - 1
+                for i in evp_vlan_list:
+                    evp_access_vlan = {'device_name': evp_device_list.pop(0), 'access_vlan': i}
+                    access_vlan['evp_access_vlan'].append(evp_access_vlan)
+            except IndexError:
+                break
+    return access_vlan
+
+def access_device_config_info():
+
+    access_config_list = []
+    uplinkconnection_list = []
+
+    for c in connect:
+        connection = {'floor': None, 'A_device': None, 'A_port': None, 'Z_device': None, 'Z_port': None}
+        if '-DOA-' not in c['Z_device'] and '-COA-' not in c['Z_device'] :
+            connection['floor'] = c['Z_floor']
+            connection['A_device'] = c['A_device']
+            connection['A_port'] = c['A_port']
+            connection['Z_device'] = c['Z_device']
+            connection['Z_port'] = c['Z_port']
+            uplinkconnection_list.append(connection)
+#
+    for entry in manage_ip_list:
+        uplink = {'uplink': []}
+        for ul in uplinkconnection_list:
+            if ul['Z_device'] == entry['device_name']:
+                uplink['uplink'].append(ul)
+        entry.update(uplink)
+
+    for entry in manage_ip_list:
+        xoa_vlan_list = []
+        evp_vlan_list = []
+        ewl_vlan_list = []
+
+        for n in network:
+            lay2vlan = {'vlan': None,'func':None,'desc':None}
+            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr']) and n['func'] != 'VOIP网' and n['func'] != 'AP网' and n['func'] != '核心网段':
+                lay2vlan['vlan'] = n['vlan']
+                lay2vlan['func'] = n['func']
+                lay2vlan['desc'] = n['description']
+                xoa_vlan_list.append(lay2vlan)
+
+
+            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr']) and (n['func'] == '网络设备管理' or n['func'] == 'VOIP网'):
+                lay2vlan['vlan'] = n['vlan']
+                lay2vlan['func'] = n['func']
+                lay2vlan['desc'] = n['description']
+                evp_vlan_list.append(lay2vlan)
+
+
+
+            if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr'])  and (n['func'] == '网络设备管理' or n['func'] == 'AP网'):
+                lay2vlan['vlan'] = n['vlan']
+                lay2vlan['func'] = n['func']
+                lay2vlan['desc'] = n['description']
+                ewl_vlan_list.append(lay2vlan)
+
+
+
+
+        if 'XOA' in entry['device_name']:
+            entry.update({'vlan': xoa_vlan_list})
+            for access in access_vlan()['oa_access_vlan']:
+                if entry['device_name'] == access['device_name']:
+                    entry.update(access)
+
+
+        if 'EVP' in entry['device_name']:
+            entry.update({'vlan':evp_vlan_list})
+            for access in access_vlan()['evp_access_vlan']:
+                if entry['device_name'] == access['device_name']:
+                    entry.update(access)
+
+        if 'EWL' in entry['device_name']:
+            entry.update({'vlan':ewl_vlan_list})
+
+        if 'COA' in entry['device_name'] or 'DOA' in entry['device_name']:
+            pass
+        else:
+            access_config_list.append(entry)
+    return access_config_list
+
+
+def generation_access_config_file():
+    for a in access_device_config_info():
+        if 'XL' in a['device_name'] and 'CCS' in a['device_name']:
+            pass
+        else:
+            with open('/Users/wanghaoyu/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+                def login_acl(project):
+                    core_network = mysql_table_query.core_ip(project)
+                    core_ipaddress_list = []
+                    login_acl = []
+                    for acl in core_network:
+                        core_ipaddress_list.append(ipaddress.IPv4Network(acl['network']))
+                    for network in ipaddress.collapse_addresses(core_ipaddress_list):
+                        logacl = '\n'+' rule permit soure ' + str(
+                            network.network_address) + ' ' + str(
+                            network.hostmask)
+                        login_acl.append(logacl)
+                    return ''.join(login_acl).lstrip()
+
+                def layer2_vlan():
+                    layer2_vlan_list = []
+                    for vlan in a['vlan']:
+                        vlan_config = config_template.h3c_port_config_template.vlan_config().render(vlan_num=vlan['vlan'],
+                                                                                               vlan_des=vlan['desc'])
+                        layer2_vlan_list.append(vlan_config)
+                    return ''.join(layer2_vlan_list).lstrip()
+
+                def uplink_device():
+                    uplink_device = []
+                    for uplink in a['uplink']:
+                        uplink_device.append(uplink['A_device'])
+                    return uplink_device
+
+                def uplink_port():
+                    uplink_port = []
+                    for uplink in a['uplink']:
+                        uplink_port.append(convert_interface_name(uplink['A_port']))
+                    return uplink_port
+
+
+
+                if 'XOA' in a['device_name']:
+                    config.write(h3c_5130_xoa.h3c_5130_xoa().render(sysname=a['device_name'],layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
+                                                                    mgt_netmask=a['mgtmask'],vlan=a['access_vlan'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',radius_password='123456',local_password='123456'))
+                elif 'EVP' in a['device_name']:
+                    config.write(h3c_5130_evp.h3c_5130_evp().render(sysname=a['device_name'],layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
+                                                                    mgt_netmask=a['mgtmask'],vlan=a['access_vlan'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',radius_password='123456',local_password='123456'))
+                elif 'EWL' in a['device_name']:
+                    config.write(h3c_5560_ewl.h3c_5560_ewl().render(sysname=a['device_name'], layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
+                                                                    mgt_netmask=a['mgtmask'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',local_password='123456'))
+
+generation_access_config_file()
