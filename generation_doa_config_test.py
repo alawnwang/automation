@@ -6,13 +6,15 @@ import h3c_5130_evp
 import h3c_5560_ewl
 import config_template
 
-project = '深圳光启未来'
+project = '深圳金地威新'
 #
 # network = input('IP地址：')
 manage_ip_list = mysql_table_query.deivce_ip(project)
 network = mysql_table_query.ip_planning(project)
 connect = mysql_table_query.connection(project)
 endpoint = mysql_table_query.endpoint(project)
+
+
 
 def convert_interface_name(portname):
     interface_name = None
@@ -105,22 +107,12 @@ def basic_device_info_dict(project):
 
 
 
-# doa_config_infodef ip_planning(project):
-#     return mysql_table_query.ip_planning(project)
-#
-# def connect(project):
-#     return mysql_table_query.connection(project)
-#
-# def mgtip(project):
-#     return mysql_table_query.mgtip(project)
-
-
 def generation_doa_config(project):
     core_network = mysql_table_query.core_ip(project)
     ospf_area = ipaddress.IPv4Network(core_network[0]['network']).network_address
     for entry in basic_device_info_dict(project):
         if '-D-' in entry['device_name']:
-            with open('/Users/wanghaoyu/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
+            with open('/Users/alawn/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
                       'a+') as config:
                 config.seek(0,0)
                 def packet_filter():
@@ -430,7 +422,7 @@ def generation_doa_config(project):
                                                                                 console_password='123456',local_manage_network=login_acl(project),
                                                                                 manage_ip=entry['mgtip'],local_user_password='123456'))
         if '-E-' in entry['device_name']:
-            with open('/Users/wanghaoyu/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
+            with open('/Users/alawn/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
                       'a+') as config:
                 def packet_filter():
                     packet_filter=[]
@@ -739,6 +731,9 @@ def generation_doa_config(project):
                                                                                 manage_ip=entry['mgtip'],local_user_password='123456'))
 
 
+# def doa_list():
+#     for
+
 
 def access_vlan():
     access_vlan = {'oa_access_vlan':[],'evp_access_vlan':[]}
@@ -859,12 +854,12 @@ def access_device_config_info():
     return access_config_list
 
 
-def generation_access_config_file():
+def generation_access_config_file(project):
     for a in access_device_config_info():
-        if 'XL' in a['device_name'] and 'CCS' in a['device_name']:
+        if '-XL-' in a['device_name'] or '-CCS-' in a['device_name']:
             pass
         else:
-            with open('/Users/wanghaoyu/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
                 def login_acl(project):
                     core_network = mysql_table_query.core_ip(project)
                     core_ipaddress_list = []
@@ -899,7 +894,10 @@ def generation_access_config_file():
                     return uplink_port
 
 
-
+                print(a['device_name'],uplink_device(),uplink_port())
+                #
+                #
+                #
                 if 'XOA' in a['device_name']:
                     config.write(h3c_5130_xoa.h3c_5130_xoa().render(sysname=a['device_name'],layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
                                                                     mgt_netmask=a['mgtmask'],vlan=a['access_vlan'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',radius_password='123456',local_password='123456'))
@@ -910,4 +908,6 @@ def generation_access_config_file():
                     config.write(h3c_5560_ewl.h3c_5560_ewl().render(sysname=a['device_name'], layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
                                                                     mgt_netmask=a['mgtmask'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',local_password='123456'))
 
-generation_access_config_file()
+
+generation_doa_config(project)
+generation_access_config_file(project)
