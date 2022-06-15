@@ -112,7 +112,7 @@ def generation_doa_config(project):
     ospf_area = ipaddress.IPv4Network(core_network[0]['network']).network_address
     for entry in basic_device_info_dict(project):
         if '-D-' in entry['device_name']:
-            with open('/Users/alawn/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
+            with open('/Users/wanghaoyu/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
                       'a+') as config:
                 config.seek(0,0)
                 def packet_filter():
@@ -422,7 +422,7 @@ def generation_doa_config(project):
                                                                                 console_password='123456',local_manage_network=login_acl(project),
                                                                                 manage_ip=entry['mgtip'],local_user_password='123456'))
         if '-E-' in entry['device_name']:
-            with open('/Users/alawn/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
+            with open('/Users/wanghaoyu/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
                       'a+') as config:
                 def packet_filter():
                     packet_filter=[]
@@ -806,6 +806,7 @@ def access_device_config_info():
         ewl_vlan_list = []
 
         for n in network:
+            print(n)
             lay2vlan = {'vlan': None,'func':None,'desc':None}
             if str(n['floor'])+str(n['bdr']) == str(entry['floor'])+str(entry['bdr']) and n['func'] != 'VOIP网' and n['func'] != 'AP网' and n['func'] != '核心网段':
                 lay2vlan['vlan'] = n['vlan']
@@ -852,14 +853,14 @@ def access_device_config_info():
         else:
             access_config_list.append(entry)
     return access_config_list
-
+access_device_config_info()
 
 def generation_access_config_file(project):
     for a in access_device_config_info():
         if '-XL-' in a['device_name'] or '-CCS-' in a['device_name']:
             pass
         else:
-            with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+            with open('/Users/wanghaoyu/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
                 def login_acl(project):
                     core_network = mysql_table_query.core_ip(project)
                     core_ipaddress_list = []
@@ -898,15 +899,15 @@ def generation_access_config_file(project):
                 #
                 #
                 #
-                if 'XOA' in a['device_name']:
-                    config.write(h3c_5130_xoa.h3c_5130_xoa().render(sysname=a['device_name'],layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
-                                                                    mgt_netmask=a['mgtmask'],vlan=a['access_vlan'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',radius_password='123456',local_password='123456'))
-                elif 'EVP' in a['device_name']:
-                    config.write(h3c_5130_evp.h3c_5130_evp().render(sysname=a['device_name'],layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
-                                                                    mgt_netmask=a['mgtmask'],vlan=a['access_vlan'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',radius_password='123456',local_password='123456'))
-                elif 'EWL' in a['device_name']:
-                    config.write(h3c_5560_ewl.h3c_5560_ewl().render(sysname=a['device_name'], layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
-                                                                    mgt_netmask=a['mgtmask'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',local_password='123456'))
+                # if 'XOA' in a['device_name']:
+                #     config.write(h3c_5130_xoa.h3c_5130_xoa().render(sysname=a['device_name'],layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
+                #                                                     mgt_netmask=a['mgtmask'],vlan=a['access_vlan'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',radius_password='123456',local_password='123456'))
+                # elif 'EVP' in a['device_name']:
+                #     config.write(h3c_5130_evp.h3c_5130_evp().render(sysname=a['device_name'],layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
+                #                                                     mgt_netmask=a['mgtmask'],vlan=a['access_vlan'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',radius_password='123456',local_password='123456'))
+                # elif 'EWL' in a['device_name']:
+                #     config.write(h3c_5560_ewl.h3c_5560_ewl().render(sysname=a['device_name'], layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
+                #                                                     mgt_netmask=a['mgtmask'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',local_password='123456'))
 
 
 generation_doa_config(project)
