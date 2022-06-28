@@ -8,7 +8,7 @@ import config_template
 import queue
 import threading
 
-project = '深圳金地威新'
+project = '深圳光启未来'
 #
 # network = input('IP地址：')
 manage_ip_list = mysql_table_query.deivce_ip(project)
@@ -21,11 +21,13 @@ endpoint = mysql_table_query.endpoint(project)
 def convert_interface_name(portname):
     interface_name = None
     if 'Ten-GigabitEthernet' in portname:
-        interface_name = portname.replace('Ten-GigabitEthernet','Te')
+        interface_name = portname.replace('Ten-GigabitEthernet','T')
     elif 'GigabitEthernet1' in portname:
-        interface_name = portname.replace('GigabitEthernet','Gi')
+        interface_name = portname.replace('GigabitEthernet','G')
     elif 'Smartrate-Ethernet' in portname:
         interface_name = portname.replace('Smartrate-Ethernet','SGE')
+    elif 'Bridge-Aggregation' in portname:
+        interface_name = portname.replace('Bridge-Aggregation','BAGG')
     elif 'Bridge-Aggregation' in portname:
         interface_name = portname.replace('Bridge-Aggregation','BAGG')
     return interface_name
@@ -66,7 +68,6 @@ def basic_device_info_dict(project):
             layer3connection['layer3connection']['Z_port'] = c['Z_port']
             layer3connection['layer3connection']['Z_ipaddress'] = c['Z_ip']
             uplinkconnection_list.append(layer3connection)
-
     for ip in manage_ip_list:
         interconnect = {'interconnect':[]}
         for n in interconnection_list:
@@ -107,15 +108,16 @@ def basic_device_info_dict(project):
             doa_config_info.append(ip)
     return doa_config_info
 
-
+basic_device_info_dict(project)
 
 
 def generation_doa_config(project):
     core_network = mysql_table_query.core_ip(project)
     ospf_area = ipaddress.IPv4Network(core_network[0]['network']).network_address
     for entry in basic_device_info_dict(project):
+        print(entry)
         if '-D-' in entry['device_name']:
-            with open('/Users/wanghaoyu/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
+            with open('/Users/alawn/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
                       'a+') as config:
                 config.seek(0,0)
                 def packet_filter():
@@ -163,6 +165,7 @@ def generation_doa_config(project):
                         interconnect_port.append(n['Z_port'])
                     return interconnect_port
 
+
                 def layer3_interface_vlan():
                     all_ap_dhcp = str(mysql_table_query.dhcp(project)[0]['AP_dhcp']).split(';')
                     all_video_dhcp = str(mysql_table_query.dhcp(project)[0]['Video_dhcp']).split(';')
@@ -174,14 +177,14 @@ def generation_doa_config(project):
                     layer3_vlan = []
                     for n in entry['network']:
                         if n['func'] == '网络设备管理':
-                            mgt_vlan = config_template.h3c_port_config_template.vlan10_mater_interface_vlan_config().render(interface_vlan=n['vlan'], vlan_des=n['desc'],vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1])
+                            mgt_vlan = config_template.h3c_port_config_template.vlan10_mater_interface_vlan_config().render(interface_vlan=n['vlan'], vlan_des=n['desc'],vlan_ipaddress=ipaddress.ip_network(n['network'])[2],vlan_netmask=ipaddress.ip_network(n['network']).netmask,vlan_num=str(n['vlan']),vrrp_ip=ipaddress.ip_network(n['network'])[1])
                             layer3_vlan.append(mgt_vlan)
                         elif n['func'] == 'AP网':
                             ap_vlan = config_template.h3c_port_config_template.global_normal_mater_interface_vlan_config().render(
                                     interface_vlan=n['vlan'], vlan_des=n['desc'],
                                     vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                                     vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                                    vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1],
+                                    vrrp_num=str(n['vlan']),vrrp_ip=ipaddress.ip_network(n['network'])[1],
                                     acl_name=n['acl'])
                             layer3_vlan.append(ap_vlan)
                             for dhcp in all_ap_dhcp:
@@ -192,7 +195,7 @@ def generation_doa_config(project):
                                     interface_vlan=n['vlan'], vlan_des=n['desc'],
                                     vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                                     vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                                    vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1],
+                                    vrrp_num=str(n['vlan']),vrrp_ip=ipaddress.ip_network(n['network'])[1],
                                     acl_name=n['acl'])
                             layer3_vlan.append(video_vlan)
                             for dhcp in all_video_dhcp:
@@ -207,18 +210,22 @@ def generation_doa_config(project):
                                     interface_vlan=n['vlan'], vlan_des=n['desc'],
                                     vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                                     vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                                    vlan_num=n['vlan'], vrrp_num=vrrp_num,
+                                    vrrp_num=vrrp_num,
                                     vrrp_ip=ipaddress.ip_network(n['network'])[1], acl_name=n['acl'])
                             layer3_vlan.append(oa_device_vlan)
                             for dhcp in all_oadevice_dhcp:
                                 oa_device_dhcp = config_template.h3c_port_config_template.dhcp_relay().render(dhcp_relay=dhcp)
                                 layer3_vlan.append(oa_device_dhcp)
                         elif n['func'] == '隔离VLAN':
+                            if int(n['vlan']) > 254:
+                                vrrp_num = n['vlan'][0:2]
+                            else:
+                                vrrp_num = n['vlan']
                             geli_vlan = config_template.h3c_port_config_template.global_normal_mater_interface_vlan_config().render(
                                     interface_vlan=n['vlan'], vlan_des=n['desc'],
                                     vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                                     vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                                    vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1],
+                                    vrrp_num=vrrp_num,vrrp_ip=ipaddress.ip_network(n['network'])[1],
                                     acl_name=n['acl'])
                             layer3_vlan.append(geli_vlan)
                             for dhcp in all_geli_dhcp:
@@ -229,7 +236,7 @@ def generation_doa_config(project):
                                     interface_vlan=n['vlan'], vlan_des=n['desc'],
                                     vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                                     vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                                    vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1],
+                                    vrrp_num=str(n['vlan']),vrrp_ip=ipaddress.ip_network(n['network'])[1],
                                     acl_name=n['acl'])
                             layer3_vlan.append(oa_vlan)
 
@@ -243,7 +250,7 @@ def generation_doa_config(project):
                                     interface_vlan=n['vlan'], vlan_des=n['desc'],
                                     vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                                     vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                                    vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1],
+                                    vrrp_num=str(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1],
                                     acl_name=n['acl'])
                             layer3_vlan.append(ty_vlan)
                             for dhcp in all_ty_dhcp:
@@ -254,7 +261,7 @@ def generation_doa_config(project):
                                     interface_vlan=n['vlan'], vlan_des=n['desc'],
                                     vlan_ipaddress=ipaddress.ip_network(n['network'])[2],
                                     vlan_netmask=ipaddress.ip_network(n['network']).netmask,
-                                    vlan_num=n['vlan'], vrrp_ip=ipaddress.ip_network(n['network'])[1],
+                                    vrrp_num=str(n['vlan']), vrrp_ip=ipaddress.ip_network(n['network'])[1],
                                     acl_name=n['acl'])
                             layer3_vlan.append(voip_vlan)
                             for dhcp in all_voip_dhcp:
@@ -332,7 +339,7 @@ def generation_doa_config(project):
                                                     'Ten-GigabitEthernet1/0/33', 'Ten-GigabitEthernet1/0/34',
                                                     'Ten-GigabitEthernet1/0/35', 'Ten-GigabitEthernet1/0/36',
                                                     'Ten-GigabitEthernet1/0/37', 'Ten-GigabitEthernet1/0/38',
-                                                    'maTen-GigabitEthernet1/0/39', 'Ten-GigabitEthernet1/0/40',
+                                                    'Ten-GigabitEthernet1/0/39', 'Ten-GigabitEthernet1/0/40',
                                                     'Ten-GigabitEthernet1/0/41', 'Ten-GigabitEthernet1/0/42']
 
                     downlink_list = []
@@ -425,7 +432,7 @@ def generation_doa_config(project):
                                                                                 console_password='123456',local_manage_network=login_acl(project),
                                                                                 manage_ip=entry['mgtip'],local_user_password='123456'))
         if '-E-' in entry['device_name']:
-            with open('/Users/wanghaoyu/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
+            with open('/Users/alawn/Desktop/config/' + str(entry['mgtip'] + '_' + entry['device_name']) + '.cfg',
                       'a+') as config:
                 def packet_filter():
                     packet_filter=[]
@@ -732,10 +739,10 @@ def generation_doa_config(project):
                                                                                 interconnect_phyical_port2=convert_interface_name(interconnect_port()[2]),
                                                                                 console_password='123456',local_manage_network=login_acl(project),
                                                                                 manage_ip=entry['mgtip'],local_user_password='123456'))
-#
-#
-#
-#
+
+
+
+
 
 def doa_config():
     doa_config_list = []
@@ -881,11 +888,10 @@ def access_device_config_info():
 def generation_access_config_file(project):
     access_config = access_device_config_info()
     for a in access_config:
-        print(a)
         if '-XL-' in a['device_name'] or '-CCS-' in a['device_name']:
             pass
         else:
-            with open('/Users/wanghaoyu/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
+            with open('/Users/alawn/Desktop/config/'+str(a['mgtip']+'_'+a['device_name'])+'.cfg','a+') as config:
                 def login_acl(project):
                     core_network = mysql_table_query.core_ip(project)
                     core_ipaddress_list = []
@@ -902,8 +908,13 @@ def generation_access_config_file(project):
                 def layer2_vlan():
                     layer2_vlan_list = []
                     for vlan in a['vlan']:
-                        vlan_config = config_template.h3c_port_config_template.vlan_config().render(vlan_num=vlan['vlan'],
-                                                                                               vlan_des=vlan['desc'])
+                        if vlan['func'] == '有线办公网' or vlan['func'] == '有线体验网':
+                            vlan_config = config_template.h3c_port_config_template.vlan_config().render(vlan_num=vlan['vlan'],
+                                                                                               vlan_des=vlan['desc'],arp_detection='arp detection enable')
+                        else:
+                            vlan_config = config_template.h3c_port_config_template.vlan_config().render(
+                                vlan_num=vlan['vlan'],
+                                vlan_des=vlan['desc'])
                         layer2_vlan_list.append(vlan_config)
                     return ''.join(layer2_vlan_list).lstrip()
 
@@ -933,6 +944,6 @@ def generation_access_config_file(project):
                     config.write(h3c_5560_ewl.h3c_5560_ewl().render(sysname=a['device_name'], layer2_vlan=layer2_vlan(),mgt_ip=a['mgtip'],
                                                                     mgt_netmask=a['mgtmask'],uplink_device1=uplink_device()[0],uplink_device2=uplink_device()[1],uplink_port1=uplink_port()[0],uplink_port2=uplink_port()[1],console_password='123456',default_gateway=a['gateway'],snmp_password='123456',local_manage_network=login_acl(project),tacacs_password='123456',local_password='123456'))
 
-
+#
 generation_doa_config(project)
 generation_access_config_file(project)

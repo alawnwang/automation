@@ -704,14 +704,14 @@ line aux 0
  user-role network-admin
  set authentication password simple {{console_password}}
 #
-line vty 0 4   
+line vty 0 15
  authentication-mode scheme
  user-role network-admin
  user-role network-operator
  command authorization
  command accounting
 #
-line vty 5 63
+line vty 16 63
  user-role network-operator
 #
  ip route-static 0.0.0.0 0 {{default_gateway}}

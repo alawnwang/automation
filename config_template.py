@@ -518,7 +518,7 @@ interface {{phy_interface}}
  port link-type trunk
  undo port trunk permit vlan 1
  port trunk permit vlan 2 to 4094
- 2500
+ speed 2500
  dldp enable
 #''')
 
@@ -568,6 +568,7 @@ interface Bridge-Aggregation1
 #
 vlan {{vlan_num}}
  name {{vlan_des}}
+ {{arp_detection}}
 ''')
 
 

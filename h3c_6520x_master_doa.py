@@ -19,7 +19,7 @@ def h3c_6520x_master_doa():
 #
 {{packet_filter}}
 #
- link-aggregation global load-sharing mode dåestination-ip source-ip
+ link-aggregation global load-sharing mode destination-ip source-ip
 #
 ospf 100 router-id {{router_id}}
  silent-interface all
@@ -117,14 +117,14 @@ line aux 0
  user-role network-admin
  set authentication password simple {{console_password}}
 #
-line vty 0 4
+line vty 0 15
  authentication-mode scheme
  user-role network-admin
  user-role network-operator
  command authorization
  command accounting
 #
-line vty 5 63
+line vty 16 63
  user-role network-operator
 #
  info-center logbuffer size 1024

@@ -39,8 +39,8 @@ vlan 1
 #
 stp region-configuration
  region-name RG
- instance 1 vlan 1 to 99 110 to 4094 
- instance 2 vlan 100 to 109 
+ instance 1 vlan 1 to 99 110 to 679 690 to 4094 
+ instance 2 vlan 100 to 109 680 to 689  
  active region-configuration
 #
  stp bpdu-protection
@@ -1290,14 +1290,14 @@ line aux 0
  user-role network-admin
  set authentication password simple {{console_password}}
 #
-line vty 0 4
+line vty 0 15
  authentication-mode scheme
  user-role network-admin
  user-role network-operator
  command authorization
  command accounting
 #
-line vty 5 63
+line vty 16 63
  user-role network-operator
 #
  ip route-static 0.0.0.0 0 {{default_gateway}}
@@ -1310,7 +1310,6 @@ line vty 5 63
  info-center loghost 10.99.204.82
 #              
  snmp-agent
- snmp-agent local-engineid 800063A2806CE5F7BBD85300000001
  snmp-agent community read simple {{snmp_password}} acl 2010
  snmp-agent sys-info version v2c v3 
 #
