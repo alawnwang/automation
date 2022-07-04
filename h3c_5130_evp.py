@@ -775,7 +775,7 @@ hwtacacs scheme tencent_scheme
  key authorization simple {{tacacs_password}}
  key accounting simple {{tacacs_password}}
  user-name-format without-domain
- nas-ip 10.39.1.40
+ nas-ip {{manage_ip}}
 #
 radius scheme system
  user-name-format without-domain
@@ -857,5 +857,6 @@ local-user netman class manage
  password simple {{local_password}}
  service-type telnet ssh terminal
  authorization-attribute user-role network-admin
+ authorization-attribute user-role network-operator
 #
 return''')

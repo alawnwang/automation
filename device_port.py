@@ -71,7 +71,7 @@ def h3c(type):
         ddown_link = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (1,15)]
         edown_link = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (15,29)]
         vdown_link = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (29,43)]
-        wdown_link = ['Ten-GigabitEthernet1/0/51:' + str(portnum) for portnum in range(1,5)]
+        wdown_link = ['Ten-GigabitEthernet1/0/50:1','Ten-GigabitEthernet1/0/51:1','Ten-GigabitEthernet1/0/52:1']
         up_link = ['Ten-GigabitEthernet1/0/49:'+str(portnum) for portnum in range (1,5)]
         interconnect = ['Ten-GigabitEthernet1/0/'+str(portnum) for portnum in range (47,49)]
         return {'ddownlink':ddown_link,'edownlink':edown_link,'vdownlink':vdown_link,'wdownlink':wdown_link,'uplink':up_link,'interconnect':interconnect}

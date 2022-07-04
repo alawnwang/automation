@@ -29,9 +29,9 @@ def get_ccs_info(network,project):
     mgt_ip = ipaddress.IPv4Network((entry)['network'])
     connect_ip = ip_assign.network_class(network, project)['loopback']
     ccs_connect_ip = [ip for ip in ipaddress.collapse_addresses([connect_ip[8][0],connect_ip[9][0]])][0]
-    mgt_dict = {'floor': entry['floor'],'bdr':entry['bdr'],'MCCS': ('-'.join((generation_ccs_name(project), 'A01', str(get_ccs_type(project)['name']), 'CCS', '01')))
+    mgt_dict = {'floor': entry['floor'],'bdr':entry['bdr'],'MCCS': ('-'.join((generation_ccs_name(project), 'A02', str(get_ccs_type(project)['name']), 'CCS', 'A01')))
         , 'MMGTIP': {'vlan':entry['vlan'],'ip': str(mgt_ip[2])+'/'+str(mgt_ip.prefixlen),'hsrp':str(mgt_ip[1])+'/'+str(mgt_ip.prefixlen),'uplink':str(ccs_connect_ip[5])+'/'+str(ccs_connect_ip.prefixlen),'vlan_gateway':str(ccs_connect_ip[4])+'/'+str(ccs_connect_ip.prefixlen)}, 'SCCS': (
-            '-'.join((generation_ccs_name(project), 'A02', get_ccs_type(project)['name'], 'CCS', '01'))),
+            '-'.join((generation_ccs_name(project), 'A03', get_ccs_type(project)['name'], 'CCS', 'B01'))),
                 'SMGTIP': {'vlan':entry['vlan'],'ip': str(mgt_ip[3])+'/'+str(mgt_ip.prefixlen),'hsrp':str(mgt_ip[1])+'/'+str(mgt_ip.prefixlen),'uplink':str(ccs_connect_ip[6])+'/'+str(ccs_connect_ip.prefixlen),'vlan_gateway':str(ccs_connect_ip[4])+'/'+str(ccs_connect_ip.prefixlen)},'port_assign': get_ccs_type(project)['port_assign']}
     return mgt_dict
 

@@ -750,8 +750,6 @@ acl number 2000 name CL
  rule 55 permit source 10.6.3.0 0.0.0.3
  rule 65 permit source 10.99.130.0 0.0.0.255
  rule 70 permit source 10.99.204.0 0.0.0.255
- rule 75 permit source 10.39.1.0 0.0.0.255
- rule 80 permit source 10.39.0.0 0.0.0.255
  rule 85 permit source 10.99.196.224 0.0.0.31
  {{local_manage_network}}
 #
@@ -775,7 +773,7 @@ hwtacacs scheme tencent_scheme
  key authorization simple {{tacacs_password}}
  key accounting simple {{tacacs_password}}
  user-name-format without-domain
- nas-ip 10.39.1.40
+ nas-ip {{manage_ip}}
 #
 radius scheme system
  user-name-format without-domain
@@ -857,6 +855,7 @@ local-user netman class manage
  password simple {{local_password}}
  service-type telnet ssh terminal
  authorization-attribute user-role network-admin
+ authorization-attribute user-role network-operator
 #
 return
 ''')
